@@ -1,0 +1,43 @@
+//
+//  SignInState.swift
+//  MovieAppDemo
+//
+//  Created by h.yamaguchi on 2024/09/17.
+//
+
+import Foundation
+
+struct SignInPageState: ApplicationState {
+    var userName: String
+    var password: String
+    var showProgress: Bool
+    var progress: Float
+}
+
+extension SignInPageState {
+    init() {
+        userName = "y-hryk"
+        password = "test"
+        showProgress = false
+        progress = 0.0
+    }
+}
+
+extension SignInPageState {
+    static let reducer: Reducer<Self> = { state, actionContainer in
+        var state = state
+        switch actionContainer.action {
+        case SignInPageStateAction.updateProgress(let progress):
+            state.progress = progress
+        case SignInPageStateAction.showProgress(let showProgress):
+            state.showProgress = showProgress
+            if showProgress { state.progress = 0.0 }
+        case SignInPageStateAction.updateUserName(let userName):
+            state.userName = userName
+        case SignInPageStateAction.updatePassword(let password):
+            state.password = password
+        default: break
+        }
+        return state
+    }
+}
