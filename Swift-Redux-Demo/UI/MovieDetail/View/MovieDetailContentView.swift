@@ -11,29 +11,24 @@ struct MovieDetailContentView: View {
     @EnvironmentObject var store: ReduxStore<AppState>
     @Environment(\.colorScheme) var colorScheme
     let actionCreator: MovieDetailStateActionCreator<AppState>
-    let movieId: MovieId
-//    let stateId: String
-    /*
-    var state: MovieDetailState { store.state.routingState.movieDetailState[movieId] ?? MovieDetailState() }
-     */
+    let initalState: MovieDetailState
+
     var state: MovieDetailState {
-        store.state.routingState.find(stateID: movieId.value)
+        store.state.routingState.mapState(stateIdentifier: initalState.stateIdentifier)
     }
     
-    init(movieId: MovieId) {
-        self.movieId = movieId
-        self.actionCreator = ActionCreatorAssembler().resolve(movieId: movieId)
+    init(state: MovieDetailState) {
+        self.actionCreator = ActionCreatorAssembler().resolve(movieId: state.movieId)
+        self.initalState = state
     }
-    
-//    init(state: MovieDetailState) {
-//        self.movieId = state.movieId
-//        self.stateId = state.stateIdentifier
-//        self.actionCreator = ActionCreatorAssembler().resolve(movieId: state.movieId)
-//    }
     
     @State var imageOverlayOpacity: CGFloat = 0
     @State var imageOffset: CGFloat = 0
     @State var navigationBarOpacity: CGFloat = 0
+    
+    private func mapAction(action: Action) -> MapAction {
+        MapAction(id: initalState.stateIdentifier, originalAction: action)
+    }
     
     var body: some View {
         
@@ -54,11 +49,12 @@ struct MovieDetailContentView: View {
             .background(Color.Background.main)
             .onDidLoad {
                 Task {
-                    await store.dispatch(actionCreator.getMovieDetail())
-                    await store.dispatch(actionCreator.getImages())
-                    await store.dispatch(actionCreator.getCreditList())
-                    await store.dispatch(actionCreator.getReviews())
-                    await store.dispatch(actionCreator.isFavorite(movieId: movieId))
+                    await store.dispatch(RoutingStateAction.setInitialState(state: initalState))
+                    await store.dispatch(mapAction(action: actionCreator.getMovieDetail()))
+                    await store.dispatch(mapAction(action: actionCreator.getImages()))
+                    await store.dispatch(mapAction(action: actionCreator.getCreditList()))
+                    await store.dispatch(mapAction(action: actionCreator.getReviews()))
+//                    await store.dispatch(actionCreator.isFavorite(movieId: movieId))
                 }
             }
         }
@@ -166,6 +162,6 @@ struct MovieDetailContentView: View {
 }
 
 #Preview {
-    MovieDetailContentView(movieId: MovieId(value: 272))
+    MovieDetailContentView(state: MovieDetailState())
         .environmentObject(store)
 }

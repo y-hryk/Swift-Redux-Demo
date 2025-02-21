@@ -15,15 +15,19 @@ struct RoutingState: ApplicationState {
     var movieListPaths: [NavigationStackPath]
     var movieNavigationCache: [String: any ApplicationState]
     
-    func find<State: ApplicationState>(stateID: String? = nil) -> State {
-        let state = movieListPaths.first { path in
-            if let stateID = stateID {
-                return path.state() is State && path.state().stateIdentifier == stateID
-            }
-             return path.state() is State
-        }?.state() as? State
-        return state ?? State()
+    func mapState<State: ApplicationState>(stateIdentifier: String) -> State {
+        movieNavigationCache[stateIdentifier] as? State ?? State()
     }
+    
+//    func find<State: ApplicationState>(stateID: String? = nil) -> State {
+//        let state = movieListPaths.first { path in
+//            if let stateID = stateID {
+//                return path.state() is State && path.state().stateIdentifier == stateID
+//            }
+//             return path.state() is State
+//        }?.state() as? State
+//        return state ?? State()
+//    }
 }
 
 extension RoutingState {

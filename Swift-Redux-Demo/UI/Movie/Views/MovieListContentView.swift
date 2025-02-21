@@ -21,7 +21,7 @@ struct MovieListContentView: View {
                     Task {
                         await store.dispatch(
                             RoutingStateAction.showFromMovieList(
-                                .movieDetail(state: MovieDetailState(movieId: movieId))
+                                .movieDetail(movieId: movieId)
                             )
                         )
                     }

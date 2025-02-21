@@ -6,7 +6,7 @@
 //
 
 struct StateMapReduxStore<State: ApplicationState> {
-    let id: any ID
+    let id: String
     let store: ReduxStore<State>
     
     func dispatch(_ action: Action, file: String = #fileID, line: Int = #line, function: String = #function) async {

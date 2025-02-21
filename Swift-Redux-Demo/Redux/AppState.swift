@@ -43,19 +43,6 @@ extension AppState {
         default: break
         }
         
-//        if let mapAction = actionContainer.mapAction() {
-//
-////            state.pageState[mapAction.id]
-//        }
-//        
-//        state.pageState = state.pageState.mapValues {
-//            switch $0 {
-//            case let state as MovieDetailState:
-//                return MovieDetailState.reducer(state, actionContainer)
-//            default: return $0
-//            }
-//        }
-        
         return AppState(
             globalState: GlobalState.reducer(state.globalState, actionContainer),
             routingState: RoutingState.reducer(state.routingState, actionContainer),

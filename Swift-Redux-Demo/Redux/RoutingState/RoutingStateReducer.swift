@@ -13,18 +13,28 @@ extension RoutingState {
             state.movieListPaths = paths
         case RoutingStateAction.showFromMovieList(let navigation):
             state.movieListPaths.append(navigation)
+        case RoutingStateAction.setInitialState(let initialState):
+            state.movieNavigationCache[initialState.stateIdentifier] = initialState
         default: break
         }
         
-        state.movieListPaths = state.movieListPaths.map {
-            switch $0 {
-            case .movieDetail(let state):
-                return NavigationStackPath.movieDetail(
-                    state: MovieDetailState.reducer(state, actionContainer)
-                )
+        if let mapAction = actionContainer.mapAction() {
+            if let mapState = state.movieNavigationCache[mapAction.id] {
+                state.movieNavigationCache = state.movieNavigationCache.mapValues {
+                    if mapState.stateIdentifier != $0.stateIdentifier && mapState.className == $0.className {
+                        return $0
+                    }
+                    return $0.reducer(state: $0, actionContainer: actionContainer)
+                }
+            } else {
+                fatalError("更新対象のStateが設定されていません (\(actionContainer.caller)")
+            }
+        } else {
+            state.movieNavigationCache = state.movieNavigationCache.mapValues {
+                return $0.reducer(state: $0, actionContainer: actionContainer)
             }
         }
-
+        
         return RoutingState(
             tabState: TabState.reducer(state.tabState, actionContainer),
             signInPageState: SignInPageState.reducer(state.signInPageState, actionContainer),

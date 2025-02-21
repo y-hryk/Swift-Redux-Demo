@@ -8,20 +8,20 @@
 import SwiftUI
 
 enum NavigationStackPath: Hashable {
-    case movieDetail(state: MovieDetailState)
+    case movieDetail(movieId: MovieId)
     
     @ViewBuilder
     func destination() -> some View {
         switch self {
-        case .movieDetail(let state):
-            MovieDetailContentView(movieId: state.movieId)
+        case .movieDetail(let movieId):
+            MovieDetailContentView(state: initilState() as! MovieDetailState)
         }
     }
     
-    func state() -> any ApplicationState {
+    func initilState() -> any ApplicationState {
         switch self {
-        case .movieDetail(let state):
-            return state
+        case .movieDetail(let movieId):
+            return MovieDetailState(movieId: movieId)
         }
     }
 }
@@ -37,13 +37,22 @@ extension ApplicationState {
     var stateIdentifier: String {
         UUID().uuidString
     }
-}
 
-protocol PageState: ApplicationState {
-    func mapAction(action: Action)
+    var className: String {
+        return String(describing: type(of: self))
+    }
+    
+    func reducer<T: ApplicationState>(state: T, actionContainer: ActionContainer) -> T {
+        T.reducer(state, actionContainer)
+    }
 }
 
 protocol Action {}
+
+
+struct MapAction_: Action {
+    let stateIdentifier: String
+}
 
 struct ActionContainer {
     let caller: String
@@ -76,7 +85,7 @@ struct ActionContainer {
 }
 
 struct MapAction: Action {
-    let id: any ID
+    let id: String
     let originalAction: Action
 }
 
@@ -142,9 +151,9 @@ actor ReduxStore<State: ApplicationState>: ObservableObject {
         self.afterMiddlerare = afterMiddlerare
     }
     
-    func dispatch(id: any ID, _ action: Action, file: String = #fileID, line: Int = #line, function: String = #function) async {
+    func dispatch(action: MapAction, file: String = #fileID, line: Int = #line, function: String = #function) async {
         await dispatch(
-            MapAction(id: id, originalAction: action),
+            action,
             caller: "\(file):\(line) >>> \(function)"
         )
     }
