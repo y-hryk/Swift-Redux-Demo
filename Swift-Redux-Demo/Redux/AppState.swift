@@ -11,17 +11,16 @@ struct AppState: ApplicationState {
     var globalState: GlobalState
     var routingState: RoutingState
     var toastState: ToastState
-    var pageState: [String: any ApplicationState]
     
-    func find<State: ApplicationState>(stateID: String? = nil) -> State {
-        let state = pageState.first { key, value in
-            if let stateID = stateID {
-                return value is State && value.stateIdentifier == stateID
-            }
-            return value is State
-        }?.value as? State
-        return state ?? State()
-    }
+//    func find<State: ApplicationState>(stateID: String? = nil) -> State {
+//        let state = pageState.first { key, value in
+//            if let stateID = stateID {
+//                return value is State && value.stateIdentifier == stateID
+//            }
+//            return value is State
+//        }?.value as? State
+//        return state ?? State()
+//    }
 }
 
 extension AppState {
@@ -29,7 +28,14 @@ extension AppState {
         globalState = GlobalState()
         routingState = RoutingState()
         toastState = ToastState()
-        pageState = [:]
+    }
+    
+    static func demos() -> any ApplicationState {
+        AppState(
+            globalState: GlobalState(),
+            routingState: RoutingState.demos() as! RoutingState,
+            toastState: ToastState()
+        )
     }
     
     static let reducer: Reducer<Self> = { state, actionContainer in
@@ -46,8 +52,7 @@ extension AppState {
         return AppState(
             globalState: GlobalState.reducer(state.globalState, actionContainer),
             routingState: RoutingState.reducer(state.routingState, actionContainer),
-            toastState: ToastState.reducer(state.toastState, actionContainer),
-            pageState: state.pageState
+            toastState: ToastState.reducer(state.toastState, actionContainer)
         )
     }
 }

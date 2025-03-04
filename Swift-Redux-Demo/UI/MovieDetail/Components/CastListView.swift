@@ -16,7 +16,7 @@ struct CastListView: View {
         case .data(let value):
             contents(creditList: value)
         case .loading, .error:
-            contents(creditList: CreditList.demos(), isLoading: true)
+            contents(creditList: CreditList.loading(), isLoading: true)
         }
     }
     

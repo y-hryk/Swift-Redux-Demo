@@ -15,7 +15,7 @@ struct BackdropView: View {
             case .data(let value):
                 contents(backdrops: value)
             case .loading, .error:
-                contents(backdrops: Backdrop.demos(), isLoading: true)
+                contents(backdrops: Backdrop.loading(), isLoading: true)
             }
         }
     }

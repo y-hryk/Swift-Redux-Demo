@@ -39,7 +39,7 @@ struct MovieDetailContentView: View {
                 case .data(let movieDetail):
                     content(movieDetail: movieDetail, safeAreaInsetsTop: geometory.safeAreaInsets.top)
                 case .loading:
-                    content(movieDetail: MovieDetail.demos(), safeAreaInsetsTop: geometory.safeAreaInsets.top, isLoading: true)
+                    content(movieDetail: MovieDetail.loading(), safeAreaInsetsTop: geometory.safeAreaInsets.top, isLoading: true)
                 case .error(_):
                     CenterProgressView()
                 }
@@ -54,7 +54,7 @@ struct MovieDetailContentView: View {
                     await store.dispatch(mapAction(action: actionCreator.getImages()))
                     await store.dispatch(mapAction(action: actionCreator.getCreditList()))
                     await store.dispatch(mapAction(action: actionCreator.getReviews()))
-//                    await store.dispatch(actionCreator.isFavorite(movieId: movieId))
+                    await store.dispatch(mapAction(action: actionCreator.isFavorite(movieId: state.movieId)))
                 }
             }
         }
@@ -103,6 +103,7 @@ struct MovieDetailContentView: View {
                             await store.dispatch(actionCreator.removeFavorite(movie: movieDetail))
                         } else {
                             await store.dispatch(actionCreator.addFavorite(movie: movieDetail))
+    
                         }
                     }
                 }
@@ -162,6 +163,6 @@ struct MovieDetailContentView: View {
 }
 
 #Preview {
-    MovieDetailContentView(state: MovieDetailState())
-        .environmentObject(store)
+    MovieDetailContentView(state: MovieDetailState.preview())
+        .environmentObject(ReduxStore.preview)
 }

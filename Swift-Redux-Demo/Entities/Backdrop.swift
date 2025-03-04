@@ -16,7 +16,16 @@ struct Backdrop: Identifiable {
         "http://image.tmdb.org/t/p/w780\(filePath)"
     }
     
-    static func demos() -> [Backdrop] {
+    static func loading() -> [Backdrop] {
+        [
+            Backdrop(id: UUID().uuidString, filePath: "", aspectRatio: 0.667),
+            Backdrop(id: UUID().uuidString, filePath: "", aspectRatio: 0.667),
+            Backdrop(id: UUID().uuidString, filePath: "", aspectRatio: 0.667),
+            Backdrop(id: UUID().uuidString, filePath: "", aspectRatio: 0.667)
+        ]
+    }
+    
+    static func preview() -> [Backdrop] {
         [
             Backdrop(id: UUID().uuidString, filePath: "/6rle7VkpIgH0hk2xHIZKEAUkOW1.jpg", aspectRatio: 0.667),
             Backdrop(id: UUID().uuidString, filePath: "/6rle7VkpIgH0hk2xHIZKEAUkOW1.jpg", aspectRatio: 0.667),

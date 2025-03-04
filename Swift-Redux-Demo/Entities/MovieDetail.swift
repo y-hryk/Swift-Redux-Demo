@@ -45,7 +45,25 @@ struct MovieDetail: Identifiable, Hashable {
         releaseDateAt.split(separator: "-").first?.description ?? ""
     }
     
-    static func demos() -> MovieDetail {
+    static func preview() -> MovieDetail {
+        MovieDetail(
+            id: MovieId(value: "0"),
+            title: "Fight Club",
+            originalTitle: "Fight Club",
+            originalLanguage: "en",
+            overview: "心の中に問題を抱えるエグゼクティブ青年ジャックはタイラーと名乗る男と知り合う。ふとしたことからタイラーとジャックが殴り合いを始めると、そこには多くの見物人が。その後、タイラーは酒場の地下でファイト・クラブなる拳闘の秘密集会を仕切ることに。たくさんの男たちがスリルを求めて集まるようになるが、やがてそのクラブは恐るべきテロ集団へと変貌していく……。「セブン」のコンビ、ブラピとフィンチャー監督が再び組んだ衝撃作。",
+            rate: UserScore(value: 8.438000000000001),
+            reviewersCount: 100,
+            backdropPath: "/hZkgoQYus5vegHoetLkCJzb17zJ.jpg",
+            posterPath: "/7rNgfppzQsU7Gl6yV3eFxsXOga0.jpg",
+            releaseDateAt: "1999-10-15",
+            genres: [],
+            tagline: "",
+            runtime: 139
+        )
+    }
+    
+    static func loading() -> MovieDetail {
         MovieDetail(id: MovieId(value: "1"),
                     title: "aaaaaaaaaaaaaaa",
                     originalTitle: "aaaaaaaaaa",

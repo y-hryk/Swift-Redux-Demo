@@ -7,25 +7,9 @@
 
 import SwiftUI
 
-enum NavigationStackPath: Hashable {
-    case movieDetail(movieId: MovieId)
-    
-    @ViewBuilder
-    func destination() -> some View {
-        switch self {
-        case .movieDetail(let movieId):
-            MovieDetailContentView(state: initilState() as! MovieDetailState)
-        }
-    }
-    
-    func initilState() -> any ApplicationState {
-        switch self {
-        case .movieDetail(let movieId):
-            return MovieDetailState(movieId: movieId)
-        }
-    }
+struct StateIdentifier: Equatable {
+    let value: String
 }
-
 
 protocol ApplicationState {
     init()
@@ -49,10 +33,6 @@ extension ApplicationState {
 
 protocol Action {}
 
-
-struct MapAction_: Action {
-    let stateIdentifier: String
-}
 
 struct ActionContainer {
     let caller: String
@@ -87,12 +67,6 @@ struct ActionContainer {
 struct MapAction: Action {
     let id: String
     let originalAction: Action
-}
-
-struct MapAction2<State: ApplicationState>: Action {
-    let id: any ID
-    let originalAction: Action
-    let reducer: Reducer<State>
 }
 
 protocol ID: Hashable {
@@ -136,19 +110,26 @@ typealias AfterMiddleware<State: ApplicationState> = (State, State, ActionContai
 
 actor ReduxStore<State: ApplicationState>: ObservableObject {
     @MainActor @Published private(set) var state: State = .init()
-
+    
+    private let initalState: State
     nonisolated private let reducer: Reducer<State>
     private let middlewares: [Middleware<State>]
     nonisolated private let afterMiddlerare: AfterMiddleware<State>?
 
     init(
+        initalState: State,
         reducer: @escaping Reducer<State>,
         middlewares: [Middleware<State>],
         afterMiddlerare: AfterMiddleware<State>?
     ) {
+        self.initalState = initalState
         self.reducer = reducer
         self.middlewares = middlewares
         self.afterMiddlerare = afterMiddlerare
+        
+        Task {
+            await initializeState()
+        }
     }
     
     func dispatch(action: MapAction, file: String = #fileID, line: Int = #line, function: String = #function) async {
@@ -180,4 +161,22 @@ actor ReduxStore<State: ApplicationState>: ObservableObject {
             state = newState
         }
     }
+    
+    private func initializeState() {
+        Task { @MainActor in
+            state = await initalState
+        }
+    }
+}
+
+extension ReduxStore where State == AppState {
+    static let preview: ReduxStore<AppState> = {
+        let mock = AppState.demos()
+        return ReduxStore(
+            initalState: mock as! AppState,
+            reducer: { state, _ in state },
+            middlewares: [],
+            afterMiddlerare: nil
+        )
+    }()
 }

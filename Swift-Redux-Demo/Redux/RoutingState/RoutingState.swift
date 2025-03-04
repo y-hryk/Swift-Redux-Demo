@@ -38,6 +38,16 @@ extension RoutingState {
         movieNavigationCache = [:]
     }
     
+    static func demos() -> any ApplicationState {
+        return RoutingState(
+            tabState: TabState(),
+            signInPageState: SignInPageState(),
+            movieListPaths: [],
+            movieNavigationCache: [
+                MovieDetailState.preview().stateIdentifier: MovieDetailState.preview()
+            ]
+        )
+    }
 }
 
 class AppEnvironment: ObservableObject {

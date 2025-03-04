@@ -14,15 +14,6 @@ struct MovieDetailState: ApplicationState {
     var creditList: AsyncValue<CreditList>
     var reviews: AsyncValue<ReviewList>
     var isFavorite: AsyncValue<Bool>
-    
-    init(movieId: MovieId) {
-        self.movieId = movieId
-        self.movie = .loading
-        self.backdrops = .loading
-        self.creditList = .loading
-        self.reviews = .loading
-        self.isFavorite = .loading
-    }
 }
 
 extension MovieDetailState: Hashable {
@@ -33,13 +24,13 @@ extension MovieDetailState: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(movieId)
     }
-    
-    var stateIdentifier: String {
-        movieId.value
-    }
 }
 
 extension MovieDetailState {
+    var stateIdentifier: String {
+        className + "_" + movieId.value
+    }
+    
     init() {
         self.movieId = MovieId(value: 0)
         self.movie = .loading
@@ -47,5 +38,29 @@ extension MovieDetailState {
         self.creditList = .loading
         self.reviews = .loading
         self.isFavorite = .loading
+    }
+    
+    static func fromId(movieId: MovieId) -> MovieDetailState {
+        MovieDetailState(
+            movieId: movieId,
+            movie: .loading,
+            backdrops: .loading,
+            creditList: .loading,
+            reviews: .loading,
+            isFavorite: .loading
+        )
+    }
+    
+    static func preview() -> Self {
+        let movieDetail = MovieDetail.preview()
+    
+        return MovieDetailState(
+            movieId: movieDetail.id,
+            movie: .data(value: movieDetail),
+            backdrops: .data(value: Backdrop.preview()),
+            creditList: .data(value: CreditList.preview()),
+            reviews: .loading,
+            isFavorite: .data(value: false)
+        )
     }
 }

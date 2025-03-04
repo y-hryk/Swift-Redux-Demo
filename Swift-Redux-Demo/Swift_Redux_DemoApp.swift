@@ -8,6 +8,7 @@
 import SwiftUI
 
 let store = ReduxStore(
+    initalState: AppState(),
     reducer: AppState.reducer,
     middlewares: [
         debugDelayRequestMiddleware(),
