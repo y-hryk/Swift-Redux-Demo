@@ -32,6 +32,7 @@ extension ApplicationState {
 }
 
 protocol Action {}
+protocol BaseMapAction: Action {}
 
 
 struct ActionContainer {
@@ -67,6 +68,10 @@ struct ActionContainer {
 struct MapAction: Action {
     let id: String
     let originalAction: Action
+}
+
+class MapActionWrapper: Action {
+    
 }
 
 protocol ID: Hashable {

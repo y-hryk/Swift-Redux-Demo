@@ -11,7 +11,7 @@ let store = ReduxStore(
     initalState: AppState(),
     reducer: AppState.reducer,
     middlewares: [
-        debugDelayRequestMiddleware(),
+//        debugDelayRequestMiddleware(),
         thunkMiddleware(),
         errorToastMiddleware(),
         webApiErrorHandleMiddleware()

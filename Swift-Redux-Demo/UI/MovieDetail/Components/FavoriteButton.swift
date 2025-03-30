@@ -18,7 +18,6 @@ struct FavoriteButton: View, Equatable {
     init(isFavorite: AsyncValue<Bool>, completionHandler: @escaping (Bool) -> Void) {
         self.isFavorite = isFavorite
         self.completionHandler = completionHandler
-        print("isFavorits init")
     }
     
     var body: some View {

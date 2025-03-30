@@ -10,9 +10,16 @@ extension RoutingState {
         var state = state
         switch actionContainer.action {
         case RoutingStateAction.updateMovieList(let paths):
+            let difference = state.movieListPaths.filter { !paths.contains($0) }
             state.movieListPaths = paths
+            difference.forEach { path in
+                state.movieNavigationCache.removeValue(forKey: path.initilState().stateIdentifier)
+            }
         case RoutingStateAction.showFromMovieList(let navigation):
             state.movieListPaths.append(navigation)
+            if state.movieNavigationCache[navigation.initilState().stateIdentifier]  == nil {
+                state.movieNavigationCache[navigation.initilState().stateIdentifier] = navigation.initilState()
+            }
         case RoutingStateAction.setInitialState(let initialState):
             state.movieNavigationCache[initialState.stateIdentifier] = initialState
         default: break
@@ -27,7 +34,7 @@ extension RoutingState {
                     return $0.reducer(state: $0, actionContainer: actionContainer)
                 }
             } else {
-                fatalError("更新対象のStateが設定されていません (\(actionContainer.caller)")
+                print("該当なし \(actionContainer)")
             }
         } else {
             state.movieNavigationCache = state.movieNavigationCache.mapValues {

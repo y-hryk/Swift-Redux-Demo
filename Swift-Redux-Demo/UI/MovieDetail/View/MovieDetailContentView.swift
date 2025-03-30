@@ -31,8 +31,6 @@ struct MovieDetailContentView: View {
     }
     
     var body: some View {
-        
-        let _ = RefreshChecker()
         GeometryReader { geometory in
             ZStack(alignment: .top) {
                 switch state.movie {
@@ -49,7 +47,7 @@ struct MovieDetailContentView: View {
             .background(Color.Background.main)
             .onDidLoad {
                 Task {
-                    await store.dispatch(RoutingStateAction.setInitialState(state: initalState))
+//                    await store.dispatch(RoutingStateAction.setInitialState(state: initalState))
                     await store.dispatch(mapAction(action: actionCreator.getMovieDetail()))
                     await store.dispatch(mapAction(action: actionCreator.getImages()))
                     await store.dispatch(mapAction(action: actionCreator.getCreditList()))

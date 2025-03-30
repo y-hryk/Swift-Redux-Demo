@@ -7,7 +7,7 @@
 
 func debugDelayRequestMiddleware<S: ApplicationState>() -> Middleware<S> {
     return { store, state, actionContainer in
-        if let _ = actionContainer.baseAction as? ThunkAction<S> {
+        if let _: ThunkAction<S> = actionContainer.thunkAction() {
             try? await Task.sleep(for: .seconds(1))
         }
         return actionContainer.baseAction

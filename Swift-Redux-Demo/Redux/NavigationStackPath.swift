@@ -18,3 +18,9 @@ enum NavigationStackPath: Hashable {
         }
     }
 }
+
+extension NavigationStackPath: Equatable {
+    static func == (lhs: NavigationStackPath, rhs: NavigationStackPath) -> Bool {
+        lhs.initilState().stateIdentifier == rhs.initilState().stateIdentifier
+    }
+}
