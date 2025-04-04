@@ -16,6 +16,7 @@ enum Tab {
 struct TabState: ApplicationState {
     var seleced: Tab
     var moviePageState: MoviePageState
+    var watchListPageState: WatchListPageState
     var settingsPageState: DebugPageState
 }
 
@@ -23,6 +24,7 @@ extension TabState {
     init() {
         seleced = .movie
         moviePageState = MoviePageState()
+        watchListPageState = WatchListPageState()
         settingsPageState = DebugPageState()
     }
 }

@@ -23,7 +23,10 @@ struct CreditList {
             ],
             director: [],
             screenplay: [],
-            creators: [])
+            creators: [
+                Creator(personId: PersonId(value: "0"), name: "aaaaaaaaa", job: "aaa", profilePath: ""),
+                Creator(personId: PersonId(value: "1"), name: "aaaaaaaaa", job: "aaa", profilePath: ""),
+            ])
     }
     
     static func preview() -> CreditList {
@@ -36,6 +39,9 @@ struct CreditList {
             ],
             director: [],
             screenplay: [],
-            creators: [])
+            creators: [
+                Creator(personId: PersonId(value: "0"), name: "aaaaaaaaa", job: "aaa", profilePath: ""),
+                Creator(personId: PersonId(value: "1"), name: "aaaaaaaaa", job: "aaa", profilePath: ""),
+            ])
     }
 }

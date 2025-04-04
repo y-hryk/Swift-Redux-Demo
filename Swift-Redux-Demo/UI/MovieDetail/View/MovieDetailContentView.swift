@@ -14,7 +14,7 @@ struct MovieDetailContentView: View {
     let initalState: MovieDetailState
 
     var state: MovieDetailState {
-        store.state.routingState.mapState(stateIdentifier: initalState.stateIdentifier)
+        store.state.routingState.mapStateFromMovieList(stateIdentifier: initalState.stateIdentifier)
     }
     
     init(state: MovieDetailState) {
@@ -22,77 +22,31 @@ struct MovieDetailContentView: View {
         self.initalState = state
     }
     
-    @State var imageOverlayOpacity: CGFloat = 0
-    @State var imageOffset: CGFloat = 0
-    @State var navigationBarOpacity: CGFloat = 0
-    
     private func mapAction(action: Action) -> MapAction {
         MapAction(id: initalState.stateIdentifier, originalAction: action)
     }
     
     var body: some View {
-        GeometryReader { geometory in
-            ZStack(alignment: .top) {
-                switch state.movie {
-                case .data(let movieDetail):
-                    content(movieDetail: movieDetail, safeAreaInsetsTop: geometory.safeAreaInsets.top)
-                case .loading:
-                    content(movieDetail: MovieDetail.loading(), safeAreaInsetsTop: geometory.safeAreaInsets.top, isLoading: true)
-                case .error(_):
-                    CenterProgressView()
-                }
-                navigationBar(height: geometory.safeAreaInsets.top)
+        MovieDetailScrollView(
+            state: state,
+            colorScheme: colorScheme) { movieDetail in
+                detail(movieDetail: movieDetail)
             }
             .toolbarBackground(.hidden, for: .navigationBar)
             .background(Color.Background.main)
             .onDidLoad {
                 Task {
-//                    await store.dispatch(RoutingStateAction.setInitialState(state: initalState))
+    //                    await store.dispatch(RoutingStateAction.setInitialState(state: initalState))
+                    await store.dispatch(mapAction(action: actionCreator.isFavorite(movieId: state.movieId)))
                     await store.dispatch(mapAction(action: actionCreator.getMovieDetail()))
                     await store.dispatch(mapAction(action: actionCreator.getImages()))
                     await store.dispatch(mapAction(action: actionCreator.getCreditList()))
                     await store.dispatch(mapAction(action: actionCreator.getReviews()))
-                    await store.dispatch(mapAction(action: actionCreator.isFavorite(movieId: state.movieId)))
                 }
             }
-        }
     }
     
-    func content(movieDetail: MovieDetail, safeAreaInsetsTop: CGFloat, isLoading: Bool = false) -> some View {
-        OffsetReadableScrollView(onChangeOffset: { offset in
-            self.imageOverlayOpacity = -offset.y / NetworkImageView.height()
-            self.imageOffset = min(-offset.y / 3.0, -offset.y)
-            self.navigationBarOpacity = min(CGFloat(-offset.y / (NetworkImageView.height() - safeAreaInsetsTop)), 1.0)
-        }) {
-            heaerImage(movieDetail: movieDetail, isLoading: isLoading)
-            ZStack {
-                LinearGradient(gradient: Gradient(colors: [
-                    colorScheme == .dark ? Color.Background.main.opacity(0.1) : Color.Background.main,
-                    Color.Background.main
-                ]), startPoint: .top, endPoint: .bottom)
-                detail(movieDetail: movieDetail, isLoading: isLoading)
-                    .redacted(reason: isLoading ? .placeholder : [])
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .cornerRadius(colorScheme == .dark ? 0.0 : 20.0)
-            .padding(.top, colorScheme == .dark ? -160 : -30)
-        }
-        .ignoresSafeArea(edges: [.top])
-    }
-
-    func heaerImage(movieDetail: MovieDetail, isLoading: Bool) -> some View {
-        ZStack(alignment: .bottomLeading) {
-            NetworkImageView(imageUrl: movieDetail.posterUrl, 
-                             aspectRatio: movieDetail.posterImageAspectRatio)
-            .offset(y: imageOffset)
-            Rectangle()
-                .fill(Color.Background.main
-                    .opacity(colorScheme == .dark ? (imageOverlayOpacity + 0.4) : imageOverlayOpacity))
-                .offset(y: imageOffset)
-        }
-    }
-    
-    func detail(movieDetail: MovieDetail, isLoading: Bool) -> some View {
+    func detail(movieDetail: MovieDetail) -> some View {
         VStack(alignment: .leading, spacing: 0.0) {
             HStack(alignment: .center, spacing: 16) {
                 FavoriteButton(isFavorite: state.isFavorite) { isFavorite in
@@ -148,15 +102,6 @@ struct MovieDetailContentView: View {
             ReviewView(reviews: state.reviews)
         }
         .padding()
-    }
-    
-    func navigationBar(height: CGFloat) -> some View {
-        ZStack {
-            Rectangle()
-                .fill(.ultraThinMaterial.opacity(navigationBarOpacity))
-                .frame(height: height)
-        }
-        .ignoresSafeArea()
     }
 }
 

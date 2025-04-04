@@ -22,6 +22,7 @@ extension TabState {
         return TabState(
             seleced: state.seleced,
             moviePageState: MoviePageState.reducer(state.moviePageState, actionContainer),
+            watchListPageState: WatchListPageState.reducer(state.watchListPageState, actionContainer),
             settingsPageState: DebugPageState.reducer(state.settingsPageState, actionContainer)
         )
     }

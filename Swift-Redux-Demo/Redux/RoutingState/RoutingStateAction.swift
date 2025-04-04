@@ -9,6 +9,7 @@ import SwiftUI
 
 enum RoutingStateAction: Action {
     case updateMovieList([NavigationStackPath])
+    case updateWatchList([NavigationStackPath])
     case showFromMovieList(NavigationStackPath)
-    case setInitialState(state: any ApplicationState)
+    case showFromWatchList(NavigationStackPath)
 }

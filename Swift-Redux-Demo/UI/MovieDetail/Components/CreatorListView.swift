@@ -10,35 +10,39 @@ import SwiftUI
 struct CreatorListView: View {
     var creditList: AsyncValue<CreditList>
     let handler: (PersonId) -> Void
+    
     var body: some View {
         switch creditList {
         case .data(let value):
-            if value.creators.isEmpty {
-                EmptyView()
-            } else {
-                Text("Creator")
-                    .font(.subTitleL())
-                Spacer().frame(height: 10)
-                ScrollView(.horizontal) {
-                    LazyHStack {
-                        ForEach(value.creators) { creator in
-                            Button {
-                                handler(creator.personId)
-                            } label: {
-                                NetworkImageView(imageUrl: creator.imagePath, aspectRatio: 185 / 278)
-                            }
-                            .overlay {
-                                gradationLayer(name: creator.name, job: creator.job)
-                            }
-                            .cornerRadius(8)
+            contents(creditList: value)
+        case .loading, .error:
+            contents(creditList: CreditList.loading(), isLoading: true)
+        }
+    }
+    
+    private func contents(creditList: CreditList, isLoading: Bool = false) -> some View {
+        VStack(alignment: .leading, spacing: 0.0) {
+            Text("Creator")
+                .font(.subTitleL())
+            Spacer().frame(height: 10)
+            ScrollView(.horizontal) {
+                LazyHStack {
+                    ForEach(creditList.creators) { creator in
+                        Button {
+                            handler(creator.personId)
+                        } label: {
+                            NetworkImageView(imageUrl: creator.imagePath, aspectRatio: creator.imageAspectRatio)
                         }
+                        .overlay {
+                            gradationLayer(name: creator.name, job: creator.job)
+                        }
+                        .cornerRadius(8)
                     }
                 }
-                .frame(height: 180)
             }
-        case .loading, .error:
-            ProgressView()
+            .frame(height: 180)
         }
+        .redacted(reason: isLoading ? .placeholder : [])
     }
     
     private func gradationLayer(name: String, job: String) -> some View {
@@ -49,9 +53,11 @@ struct CreatorListView: View {
             ]), startPoint: .bottom, endPoint: .center)
             Spacer()
             VStack(alignment: .leading, spacing: 0.0) {
-                Text(name)                                    .foregroundStyle(Color.Text.bodyWhite)
+                Text(name)
+                    .foregroundStyle(Color.Text.bodyWhite)
                     .font(.captionL())
-                Text(job)                                    .foregroundStyle(Color.Text.bodyWhite)
+                Text(job)
+                    .foregroundStyle(Color.Text.bodyWhite)
                     .font(.captionS())
             }
             .padding(6)

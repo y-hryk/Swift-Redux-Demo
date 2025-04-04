@@ -10,6 +10,7 @@ import SwiftUI
 struct MovieListView: View {
     var movieList: AsyncValue<MovieList>
     var onPressed: ((MovieId) -> Void)? = nil
+    var refreshHandler: (() async -> Void)? = nil
     var scrolledToBottom: ((MovieList) -> Void)? = nil
     var body: some View {
         switch movieList {
@@ -41,6 +42,11 @@ struct MovieListView: View {
             .listRowInsets(EdgeInsets())
         }
         .scrollContentBackground(.hidden)
+        .listStyle(.inset)
+        .background(Color.Background.main)
+        .refreshable {
+            await refreshHandler?()
+        }
         .redacted(reason: isLoading ? .placeholder : [])
     }
     

@@ -30,8 +30,6 @@ struct AboutFilmView: View {
         }
     }
     
-    
-    
     private func about(title: String, detail: String) -> some View {
         HStack(alignment: .top, spacing: 5.0) {
             HStack {

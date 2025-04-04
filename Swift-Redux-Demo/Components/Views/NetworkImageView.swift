@@ -18,10 +18,6 @@ struct NetworkImageView: View {
         self.size = size
     }
     
-    static func height() -> CGFloat {
-        (UIScreen.main.bounds.width * 1112) / 780
-    }
-    
     var body: some View {
         AsyncImage(url: URL(string: imageUrl),
                    transaction: .init(animation: .easeOut)
@@ -38,18 +34,18 @@ struct NetworkImageView: View {
                 }
             } else {
                 if let size = size {
-                    Color.Background.main
+                    Color.Background.placeholder
                         .aspectRatio(contentMode: .fill)
                         .frame(width: size.width, height: size.height)
-                        .overlay {
-                            ProgressView()
-                        }
+//                        .overlay {
+//                            ProgressView()
+//                        }
                 } else {
-                    Color.Background.main
+                    Color.Background.placeholder
                         .aspectRatio(aspectRatio, contentMode: .fill)
-                        .overlay {
-                            ProgressView()
-                        }
+//                        .overlay {
+//                            ProgressView()
+//                        }
                 }
             }
         }

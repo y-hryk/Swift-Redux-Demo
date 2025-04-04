@@ -24,7 +24,7 @@ struct TabContentView: View {
             set: { value, _ in
                 if state.seleced == value {
                     Task {
-                        await store.dispatch(RoutingStateAction.updateMovieList([]))
+//                        await store.dispatch(RoutingStateAction.updateMovieList([]))
                     }
                 } else {
                     Task {
@@ -38,13 +38,11 @@ struct TabContentView: View {
                     Label("Movie", systemImage: "movieclapper")
                 }
                 .tag(Tab.movie)
-//            
-//            WatchListContentView()
-//                .tabItem {
-//                    Label("Watch List", systemImage: "star")
-//                }
-//                .tag(Tab.watchList)
-//            
+            WatchListContentView()
+                .tabItem {
+                    Label("Watch List", systemImage: "star")
+                }
+                .tag(Tab.watchList)
             DebugPage()
                 .tabItem {
                     Label("Debug", systemImage: "wrench.and.screwdriver")

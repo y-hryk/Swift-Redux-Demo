@@ -12,16 +12,21 @@ extension RoutingState {
         case RoutingStateAction.updateMovieList(let paths):
             let difference = state.movieListPaths.filter { !paths.contains($0) }
             state.movieListPaths = paths
-            difference.forEach { path in
-                state.movieNavigationCache.removeValue(forKey: path.initilState().stateIdentifier)
-            }
+            state.movieNavigationCache = state.fixNavitionStackPaths(difference: difference)
         case RoutingStateAction.showFromMovieList(let navigation):
             state.movieListPaths.append(navigation)
             if state.movieNavigationCache[navigation.initilState().stateIdentifier]  == nil {
                 state.movieNavigationCache[navigation.initilState().stateIdentifier] = navigation.initilState()
             }
-        case RoutingStateAction.setInitialState(let initialState):
-            state.movieNavigationCache[initialState.stateIdentifier] = initialState
+        case RoutingStateAction.updateWatchList(let paths):
+            let difference = state.watchListPaths.filter { !paths.contains($0) }
+            state.watchListPaths = paths
+            state.movieNavigationCache = state.fixNavitionStackPaths(difference: difference)
+        case RoutingStateAction.showFromWatchList(let navigation):
+            state.watchListPaths.append(navigation)
+            if state.movieNavigationCache[navigation.initilState().stateIdentifier]  == nil {
+//                state.movieNavigationCache[navigation.initilState().stateIdentifier] = navigation.initilState()
+            }
         default: break
         }
         
@@ -46,7 +51,9 @@ extension RoutingState {
             tabState: TabState.reducer(state.tabState, actionContainer),
             signInPageState: SignInPageState.reducer(state.signInPageState, actionContainer),
             movieListPaths: state.movieListPaths,
-            movieNavigationCache: state.movieNavigationCache
+            watchListPaths: state.watchListPaths,
+            movieNavigationCache: state.movieNavigationCache,
+            watchListNavigationCache: state.watchListNavigationCache
         )
     }
 }

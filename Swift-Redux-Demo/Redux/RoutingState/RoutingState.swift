@@ -13,21 +13,31 @@ struct RoutingState: ApplicationState {
     var signInPageState: SignInPageState
     // NavitionsStacks
     var movieListPaths: [NavigationStackPath]
+    var watchListPaths: [NavigationStackPath]
     var movieNavigationCache: [String: any ApplicationState]
+    var watchListNavigationCache: [String: any ApplicationState]
     
-    func mapState<State: ApplicationState>(stateIdentifier: String) -> State {
+    func mapStateFromMovieList<State: ApplicationState>(stateIdentifier: String) -> State {
         movieNavigationCache[stateIdentifier] as? State ?? State()
     }
     
-//    func find<State: ApplicationState>(stateID: String? = nil) -> State {
-//        let state = movieListPaths.first { path in
-//            if let stateID = stateID {
-//                return path.state() is State && path.state().stateIdentifier == stateID
-//            }
-//             return path.state() is State
-//        }?.state() as? State
-//        return state ?? State()
-//    }
+    func mapStateFromWatch<State: ApplicationState>(stateIdentifier: String) -> State {
+        movieNavigationCache[stateIdentifier] as? State ?? State()
+    }
+    
+    func fixNavitionStackPaths(difference: [NavigationStackPath]) -> [String: any ApplicationState] {
+        var cache: [String: any ApplicationState] = movieNavigationCache
+        difference.forEach { path in
+            if !allNavitionPaths.contains(path) {
+                cache.removeValue(forKey: path.initilState().stateIdentifier)
+            }
+        }
+        return cache
+    }
+    
+    private var allNavitionPaths: [NavigationStackPath] {
+        movieListPaths + watchListPaths
+    }
 }
 
 extension RoutingState {
@@ -35,7 +45,9 @@ extension RoutingState {
         tabState = TabState()
         signInPageState = SignInPageState()
         movieListPaths = []
+        watchListPaths = []
         movieNavigationCache = [:]
+        watchListNavigationCache = [:]
     }
     
     static func demos() -> any ApplicationState {
@@ -43,9 +55,11 @@ extension RoutingState {
             tabState: TabState(),
             signInPageState: SignInPageState(),
             movieListPaths: [],
+            watchListPaths: [],
             movieNavigationCache: [
                 MovieDetailState.preview().stateIdentifier: MovieDetailState.preview()
-            ]
+            ],
+            watchListNavigationCache: [:]
         )
     }
 }

@@ -54,9 +54,7 @@ struct ActionCreatorAssembler {
 //        )
 //    }
 //    
-//    func resolve() -> WatchListStateActionCreator {
-//        WatchListStateActionCreator(with: WatchListStateActionCreator.Dependency(favoriteRepository: RepositoryAssembler().resolve()))
-//    }
-    
-    
+    func resolve() -> WatchListStateActionCreator<AppState> {
+        WatchListStateActionCreator(with: WatchListStateActionCreator.Dependency(favoriteRepository: RepositoryAssembler().resolve()))
+    }
 }

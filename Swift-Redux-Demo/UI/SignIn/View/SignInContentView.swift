@@ -19,7 +19,6 @@ struct SignInContentView: View {
     let actionCreator: SignInPageStateActionCreator = ActionCreatorAssembler().resolve()
     
     var body: some View {
-        let _ = RefreshChecker()
         ZStack() {
             VStack(spacing: 0.0) {
                 Text("Demo App")

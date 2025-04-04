@@ -14,6 +14,10 @@ struct Creator: Identifiable {
     let job: String
     let profilePath: String
     
+    var imageAspectRatio: CGFloat {
+        185 / 278
+    }
+    
     var imagePath: String {
         "http://image.tmdb.org/t/p/w780\(profilePath)"
     }
