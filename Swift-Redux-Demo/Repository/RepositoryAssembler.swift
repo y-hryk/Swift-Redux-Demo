@@ -19,11 +19,11 @@ struct RepositoryAssembler {
     func resolve() -> MaintenanceRepository {
         MaintenanceRepositoryImpl()
     }
-//    
-//    func resolve() -> PersonRepository {
-//        PersonRepositoryImpl(with: PersonRepositoryImpl.Dependency())
-//    }
-//    
+    
+    func resolve() -> PersonRepository {
+        PersonRepositoryImpl(with: PersonRepositoryImpl.Dependency())
+    }
+    
     func resolve() -> FavoriteRepository {
         FavoriteRepositoryImpl(with: FavoriteRepositoryImpl.Dependency(dataStore: FavoriteMemoryCache.shared))
     }

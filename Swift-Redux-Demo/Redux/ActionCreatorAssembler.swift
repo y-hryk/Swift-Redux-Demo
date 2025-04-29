@@ -45,15 +45,15 @@ struct ActionCreatorAssembler {
             movieId: movieId)
         )
     }
-//    
-//    func resolve(personId: PersonId, type: FilmographyType) -> FilmographyStateActionCreator {
-//        FilmographyStateActionCreator(with: FilmographyStateActionCreator.Dependency(
-//            personRepository: RepositoryAssembler().resolve(),
-//            personId: personId,
-//            type: type)
-//        )
-//    }
-//    
+    
+    func resolve(personId: PersonId, type: FilmographyType) -> FilmographyStateActionCreator<AppState> {
+        FilmographyStateActionCreator(with: FilmographyStateActionCreator.Dependency(
+            personRepository: RepositoryAssembler().resolve(),
+            personId: personId,
+            type: type)
+        )
+    }
+    
     func resolve() -> WatchListStateActionCreator<AppState> {
         WatchListStateActionCreator(with: WatchListStateActionCreator.Dependency(favoriteRepository: RepositoryAssembler().resolve()))
     }

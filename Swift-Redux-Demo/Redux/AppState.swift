@@ -11,16 +11,6 @@ struct AppState: ApplicationState {
     var globalState: GlobalState
     var routingState: RoutingState
     var toastState: ToastState
-    
-//    func find<State: ApplicationState>(stateID: String? = nil) -> State {
-//        let state = pageState.first { key, value in
-//            if let stateID = stateID {
-//                return value is State && value.stateIdentifier == stateID
-//            }
-//            return value is State
-//        }?.value as? State
-//        return state ?? State()
-//    }
 }
 
 extension AppState {

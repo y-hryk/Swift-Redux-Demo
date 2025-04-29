@@ -70,10 +70,6 @@ struct MapAction: Action {
     let originalAction: Action
 }
 
-class MapActionWrapper: Action {
-    
-}
-
 protocol ID: Hashable {
     var value: String { get set }
     init(value: Int)
@@ -116,21 +112,21 @@ typealias AfterMiddleware<State: ApplicationState> = (State, State, ActionContai
 actor ReduxStore<State: ApplicationState>: ObservableObject {
     @MainActor @Published private(set) var state: State = .init()
     
-    private let initalState: State
+    private let initialState: State
     nonisolated private let reducer: Reducer<State>
-    private let middlewares: [Middleware<State>]
-    nonisolated private let afterMiddlerare: AfterMiddleware<State>?
+    private let middleware: [Middleware<State>]
+    nonisolated private let afterMiddleware: AfterMiddleware<State>?
 
     init(
-        initalState: State,
+        initialState: State,
         reducer: @escaping Reducer<State>,
-        middlewares: [Middleware<State>],
-        afterMiddlerare: AfterMiddleware<State>?
+        middleware: [Middleware<State>],
+        afterMiddleware: AfterMiddleware<State>?
     ) {
-        self.initalState = initalState
+        self.initialState = initialState
         self.reducer = reducer
-        self.middlewares = middlewares
-        self.afterMiddlerare = afterMiddlerare
+        self.middleware = middleware
+        self.afterMiddleware = afterMiddleware
         
         Task {
             await initializeState()
@@ -150,8 +146,8 @@ actor ReduxStore<State: ApplicationState>: ObservableObject {
 
     func dispatch(_ action: Action, caller: String) async {
         var currentAction: Action = action
-        for middleware in middlewares {
-            if let converAction = await middleware(self, state, ActionContainer(caller: caller, baseAction: currentAction)) {
+        for m in middleware {
+            if let converAction = await m(self, state, ActionContainer(caller: caller, baseAction: currentAction)) {
                 currentAction = converAction
             }
         }
@@ -159,7 +155,7 @@ actor ReduxStore<State: ApplicationState>: ObservableObject {
         await MainActor.run {
             let currentState = state
             let newState = reducer(currentState, newActionContainer)
-            afterMiddlerare?(currentState,
+            afterMiddleware?(currentState,
                              newState,
                              ActionContainer(caller: caller, baseAction: action),
                              newActionContainer)
@@ -169,7 +165,7 @@ actor ReduxStore<State: ApplicationState>: ObservableObject {
     
     private func initializeState() {
         Task { @MainActor in
-            state = await initalState
+            state = await initialState
         }
     }
 }
@@ -178,10 +174,10 @@ extension ReduxStore where State == AppState {
     static let preview: ReduxStore<AppState> = {
         let mock = AppState.demos()
         return ReduxStore(
-            initalState: mock as! AppState,
+            initialState: AppState.demos() as! AppState,
             reducer: { state, _ in state },
-            middlewares: [],
-            afterMiddlerare: nil
+            middleware: [],
+            afterMiddleware: nil
         )
     }()
 }

@@ -22,4 +22,3 @@ func thunkMiddleware<S: ApplicationState>() -> Middleware<S> {
         return actionContainer.baseAction
     }
 }
-

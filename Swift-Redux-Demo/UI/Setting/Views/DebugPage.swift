@@ -78,6 +78,7 @@ struct DebugPage: View {
                     }
                 }
             }
+            .listStyle(.grouped)
 //            .scrollContentBackground(.hidden)
 //            .background(Color.Background.main)
         }

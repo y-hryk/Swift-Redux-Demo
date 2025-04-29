@@ -8,9 +8,9 @@
 import SwiftUI
 
 let store = ReduxStore(
-    initalState: AppState(),
+    initialState: AppState(),
     reducer: AppState.reducer,
-    middlewares: [
+    middleware: [
 //        debugDelayRequestMiddleware(),
         thunkMiddleware(),
         errorToastMiddleware(),
@@ -18,7 +18,7 @@ let store = ReduxStore(
 //        Middlewares.errorToast,
 //        Middlewares.webApiErrorHandle
     ],
-    afterMiddlerare: Middlewares.loggerAfter
+    afterMiddleware: Middlewares.loggerAfter
 )
 
 @main

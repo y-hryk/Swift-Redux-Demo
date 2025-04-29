@@ -2,12 +2,15 @@ import SwiftUI
 
 enum NavigationStackPath: Hashable {
     case movieDetail(movieId: MovieId)
+    case filmography(personId: PersonId, type: FilmographyType)
     
     @ViewBuilder
     func destination() -> some View {
         switch self {
         case .movieDetail:
             MovieDetailContentView(state: initilState() as! MovieDetailState)
+        case .filmography:
+            FilmographyContentView(state: initilState() as! FilmographyState)
         }
     }
     
@@ -15,6 +18,8 @@ enum NavigationStackPath: Hashable {
         switch self {
         case .movieDetail(let movieId):
             return MovieDetailState.fromId(movieId: movieId)
+        case .filmography(let personId, let type):
+            return FilmographyState(personId: personId, type: type)
         }
     }
 }

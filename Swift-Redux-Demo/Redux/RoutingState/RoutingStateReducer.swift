@@ -25,7 +25,7 @@ extension RoutingState {
         case RoutingStateAction.showFromWatchList(let navigation):
             state.watchListPaths.append(navigation)
             if state.movieNavigationCache[navigation.initilState().stateIdentifier]  == nil {
-//                state.movieNavigationCache[navigation.initilState().stateIdentifier] = navigation.initilState()
+                state.movieNavigationCache[navigation.initilState().stateIdentifier] = navigation.initilState()
             }
         default: break
         }
@@ -52,8 +52,7 @@ extension RoutingState {
             signInPageState: SignInPageState.reducer(state.signInPageState, actionContainer),
             movieListPaths: state.movieListPaths,
             watchListPaths: state.watchListPaths,
-            movieNavigationCache: state.movieNavigationCache,
-            watchListNavigationCache: state.watchListNavigationCache
+            movieNavigationCache: state.movieNavigationCache
         )
     }
 }

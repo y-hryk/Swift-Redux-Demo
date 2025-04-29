@@ -15,13 +15,8 @@ struct RoutingState: ApplicationState {
     var movieListPaths: [NavigationStackPath]
     var watchListPaths: [NavigationStackPath]
     var movieNavigationCache: [String: any ApplicationState]
-    var watchListNavigationCache: [String: any ApplicationState]
     
     func mapStateFromMovieList<State: ApplicationState>(stateIdentifier: String) -> State {
-        movieNavigationCache[stateIdentifier] as? State ?? State()
-    }
-    
-    func mapStateFromWatch<State: ApplicationState>(stateIdentifier: String) -> State {
         movieNavigationCache[stateIdentifier] as? State ?? State()
     }
     
@@ -47,7 +42,6 @@ extension RoutingState {
         movieListPaths = []
         watchListPaths = []
         movieNavigationCache = [:]
-        watchListNavigationCache = [:]
     }
     
     static func demos() -> any ApplicationState {
@@ -58,8 +52,7 @@ extension RoutingState {
             watchListPaths: [],
             movieNavigationCache: [
                 MovieDetailState.preview().stateIdentifier: MovieDetailState.preview()
-            ],
-            watchListNavigationCache: [:]
+            ]
         )
     }
 }
