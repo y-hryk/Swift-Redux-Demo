@@ -5,11 +5,11 @@
 //  Created by h.yamaguchi on 2025/02/08.
 //
 
-func debugDelayRequestMiddleware<S: ApplicationState>() -> Middleware<S> {
-    return { store, state, actionContainer in
-        if let _: ThunkAction<S> = actionContainer.thunkAction() {
-            try? await Task.sleep(for: .seconds(1))
-        }
-        return actionContainer.baseAction
-    }
-}
+//func debugDelayRequestMiddleware<S: ApplicationState>() -> Middleware<S> {
+//    return { store, state, actionContainer in
+//        if let _: ThunkAction<S> = actionContainer.thunkAction() {
+//            try? await Task.sleep(for: .seconds(1))
+//        }
+//        return actionContainer.baseAction
+//    }
+//}

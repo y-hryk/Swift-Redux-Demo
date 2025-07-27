@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Actor: Identifiable {
+struct Actor: Identifiable, Equatable {
     let id: PersonId
     let castId: Int
     let name: String

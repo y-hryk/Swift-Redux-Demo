@@ -7,12 +7,12 @@
 
 import UIKit
 
-enum AuthenticationStateAction: Action {
+enum AuthenticationStateAction: Redux.GlobalAction {
     case changeAuthenticated(isAuthenticated: Bool)
     case signOutStart
 }
 
-struct AuthenticationStateActionCreator<S: ApplicationState>: Injectable {
+struct AuthenticationStateActionCreator<S: Redux.State>: Injectable {
     struct Dependency {
         let userRepository: UserRepository
     }
@@ -22,26 +22,25 @@ struct AuthenticationStateActionCreator<S: ApplicationState>: Injectable {
         self.dependency = dependency
     }
     
-    func isSignIn() async -> ThunkAction<S> {
-        ThunkAction(function: { store, action in
+    func isSignIn() async -> Redux.ThunkAction<S> {
+        Redux.ThunkAction(function: { store, action in
             do {
                 try? await Task.sleep(for: .seconds(3))
                 let isSignIn = try await dependency.userRepository.isSignIn()
-                await store.dispatch(AuthenticationStateAction.changeAuthenticated(isAuthenticated: isSignIn))
                 if isSignIn {
-                    return GlobalStateAction.update(startScreen: .root)
+                    return GlobalStateAction.update(startScreen: .signedIn)
                 } else {
-                    return GlobalStateAction.update(startScreen: .onboarding)
+                    return GlobalStateAction.update(startScreen: .signedOut)
                 }
             } catch _ {
                 await store.dispatch(AuthenticationStateAction.changeAuthenticated(isAuthenticated: false))
-                return GlobalStateAction.update(startScreen: .onboarding)
+                return GlobalStateAction.update(startScreen: .signedOut)
             }
         }, className: "\(type(of: self))")
     }
     
-    func signOut() async -> ThunkAction<S> {
-        ThunkAction(function: { store, action in
+    func signOut() async -> Redux.ThunkAction<S> {
+        Redux.ThunkAction(function: { store, action in
             do {
                 try await dependency.userRepository.signOut()
                 await store.dispatch(AuthenticationStateAction.changeAuthenticated(isAuthenticated: false))

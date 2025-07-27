@@ -7,14 +7,14 @@
 
 import Foundation
 
-enum SignInPageStateAction: Action {
+enum SignInPageStateAction: Redux.Action {
     case updateProgress(Float)
     case showProgress(Bool)
     case updateUserName(String)
     case updatePassword(String)
 }
 
-struct SignInPageStateActionCreator<S: ApplicationState> : Injectable {
+struct SignInPageStateActionCreator<S: Redux.State> : Injectable {
     struct Dependency {
         let userRepository: UserRepository
     }
@@ -24,12 +24,14 @@ struct SignInPageStateActionCreator<S: ApplicationState> : Injectable {
         self.dependency = dependency
     }
     
-    func signIn() async -> ThunkAction<S> {
-        ThunkAction(function: { store, action in
+    func signIn() async -> Redux.ThunkAction<S> {
+        Redux.ThunkAction(function: { store, action in
             do {
                 await store.dispatch(SignInPageStateAction.showProgress(true))
+                print(">> showIndicator")
                 try? await Task.sleep(for: .seconds(0.5))
                 await store.dispatch(SignInPageStateAction.updateProgress(0.25))
+                print(">> updateProgress")
                 try? await Task.sleep(for: .seconds(1))
                 await store.dispatch(SignInPageStateAction.updateProgress(0.45))
                 try? await Task.sleep(for: .seconds(0.5))

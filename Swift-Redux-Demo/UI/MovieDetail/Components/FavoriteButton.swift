@@ -9,7 +9,7 @@ import SwiftUI
 
 struct FavoriteButton: View, Equatable {
     static func == (lhs: FavoriteButton, rhs: FavoriteButton) -> Bool {
-        lhs.isFavorite == rhs.isFavorite
+        return lhs.isFavorite.value == rhs.isFavorite.value
     }
     
     let isFavorite: AsyncValue<Bool>
@@ -21,7 +21,7 @@ struct FavoriteButton: View, Equatable {
     }
     
     var body: some View {
-        
+        let _ = print(">> FavoriteButton body")
         switch isFavorite {
         case .data(let isFavorite):
             PrimaryButton(title: isFavorite ? "Remove Watch List" : "Add Watch List") {

@@ -27,6 +27,7 @@ struct MovieDetailScrollView<Content: View>: View {
     }
     
     var body: some View {
+        let _ = print(">> MovieDetailScrollView body")
         GeometryReader { geometory in
             ZStack(alignment: .top) {
                 ZStack(alignment: .top) {
@@ -84,7 +85,7 @@ struct MovieDetailScrollView<Content: View>: View {
     func navigationBar(height: CGFloat) -> some View {
         ZStack {
             Rectangle()
-                .fill(.ultraThinMaterial.opacity(navigationBarOpacity))
+                .fill(.ultraThinMaterial.opacity(navigationBarOpacity + 0.4))
                 .frame(height: height)
         }
         .ignoresSafeArea()

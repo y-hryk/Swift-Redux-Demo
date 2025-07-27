@@ -7,7 +7,7 @@
 
 import UIKit
 
-enum GlobalStateAction: Action {
+enum GlobalStateAction: Redux.GlobalAction {
     case didReceiveError(Error)
     case update(startScreen: StartScreen)
 }

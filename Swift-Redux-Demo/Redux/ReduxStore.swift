@@ -14,7 +14,6 @@ struct StateIdentifier: Equatable {
 protocol ApplicationState {
     init()
     var stateIdentifier: String { get }
-    static var reducer: Reducer<Self> { get }
 }
 
 extension ApplicationState {
@@ -26,9 +25,9 @@ extension ApplicationState {
         return String(describing: type(of: self))
     }
     
-    func reducer<T: ApplicationState>(state: T, actionContainer: ActionContainer) -> T {
-        T.reducer(state, actionContainer)
-    }
+//    func reducer<T: ApplicationState>(state: T, actionContainer: ActionContainer) -> T {
+//        T.reducer(state, actionContainer)
+//    }
 }
 
 protocol Action {}
@@ -89,13 +88,16 @@ struct ThunkAction<S: ApplicationState>: Action {
     let function: (ReduxStore<S>, Action) async -> Action?
     let className: String
     let functionName: String
+    let isFullScreenLoading: Bool
     
     init(function: @escaping (ReduxStore<S>, Action) async -> Action?,
          className: String,
-         functionName: String = #function) {
+         functionName: String = #function,
+         isFullScreenLoading: Bool = false) {
         self.function = function
         self.className = className
         self.functionName = functionName
+        self.isFullScreenLoading = isFullScreenLoading
     }
     
     func caller() -> String {
@@ -106,13 +108,12 @@ struct ThunkAction<S: ApplicationState>: Action {
 // name space
 enum Middlewares {}
 typealias Reducer<State: ApplicationState> = (State, ActionContainer) -> State
+typealias ReducerWithHashMap<State: ApplicationState> = ([AnyHashable: ApplicationState], ActionContainer) -> [AnyHashable: ApplicationState]
 typealias Middleware<State: ApplicationState> = (ReduxStore<State>, State, ActionContainer) async -> Action?
 typealias AfterMiddleware<State: ApplicationState> = (State, State, ActionContainer, ActionContainer) -> Void
 
 actor ReduxStore<State: ApplicationState>: ObservableObject {
-    @MainActor @Published private(set) var state: State = .init()
-    
-    private let initialState: State
+    @MainActor @Published private(set) var state: State
     nonisolated private let reducer: Reducer<State>
     private let middleware: [Middleware<State>]
     nonisolated private let afterMiddleware: AfterMiddleware<State>?
@@ -123,14 +124,10 @@ actor ReduxStore<State: ApplicationState>: ObservableObject {
         middleware: [Middleware<State>],
         afterMiddleware: AfterMiddleware<State>?
     ) {
-        self.initialState = initialState
         self.reducer = reducer
         self.middleware = middleware
         self.afterMiddleware = afterMiddleware
-        
-        Task {
-            await initializeState()
-        }
+        self._state = Published(wrappedValue: initialState)
     }
     
     func dispatch(action: MapAction, file: String = #fileID, line: Int = #line, function: String = #function) async {
@@ -162,22 +159,16 @@ actor ReduxStore<State: ApplicationState>: ObservableObject {
             state = newState
         }
     }
-    
-    private func initializeState() {
-        Task { @MainActor in
-            state = await initialState
-        }
-    }
 }
 
-extension ReduxStore where State == AppState {
-    static let preview: ReduxStore<AppState> = {
-        let mock = AppState.demos()
-        return ReduxStore(
-            initialState: AppState.demos() as! AppState,
-            reducer: { state, _ in state },
-            middleware: [],
-            afterMiddleware: nil
-        )
-    }()
-}
+//extension ReduxStore where State == AppState {
+//    static let preview: ReduxStore<AppState> = {
+//        let mock = AppState.demos()
+//        return ReduxStore(
+//            initialState: AppState.demos() as! AppState,
+//            reducer: { state, _ in state },
+//            middleware: [],
+//            afterMiddleware: nil
+//        )
+//    }()
+//}

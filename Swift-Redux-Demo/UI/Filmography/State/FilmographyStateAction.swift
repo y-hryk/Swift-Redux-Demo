@@ -7,12 +7,12 @@
 
 import Foundation
 
-enum FilmographyStateAction: Action {
+enum FilmographyStateAction: Redux.Action {
     case didReceivePerson(AsyncValue<Person>)
     case didReceiveFilmography(AsyncValue<Filmography>)
 }
 
-struct FilmographyStateActionCreator<S: ApplicationState>: Injectable {
+struct FilmographyStateActionCreator<S: Redux.State>: Injectable {
     struct Dependency {
         let personRepository: PersonRepository
         let personId: PersonId
@@ -24,8 +24,8 @@ struct FilmographyStateActionCreator<S: ApplicationState>: Injectable {
         self.dependency = dependency
     }
     
-    func getPerson() async -> ThunkAction<S> {
-        ThunkAction(function: { store, action in
+    func getPerson() async -> Redux.ThunkAction<S> {
+        Redux.ThunkAction(function: { store, action in
             do {
                 let person = try await dependency.personRepository.getPerson(personId: dependency.personId)
                 return FilmographyStateAction.didReceivePerson(.data(value: person))
@@ -35,8 +35,8 @@ struct FilmographyStateActionCreator<S: ApplicationState>: Injectable {
         }, className: "\(type(of: self))")
     }
     
-    func getFilmogry() async -> ThunkAction<S> {
-        ThunkAction(function: { store, action in
+    func getFilmogry() async -> Redux.ThunkAction<S> {
+        Redux.ThunkAction(function: { store, action in
             do {
                 let filmogry = try await dependency.personRepository.getFilmogry(personId: dependency.personId, type: dependency.type)
                 return FilmographyStateAction.didReceiveFilmography(.data(value: filmogry))

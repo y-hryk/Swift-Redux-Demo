@@ -7,13 +7,13 @@
 
 import Foundation
 
-enum MoviePageStateAction: Action {
+enum MoviePageStateAction: Redux.Action {
     case didReceiveMovieList(AsyncValue<MovieList>)
     case didMoreReceiveMovieList(MovieList)
     case shuffleRateScore
 }
 
-struct MoviePageStateActionCreator<S: ApplicationState>: Injectable {
+struct MoviePageStateActionCreator<S: Redux.State>: Injectable {
     struct Dependency {
         let movieRepository: MovieRepository
     }
@@ -23,8 +23,8 @@ struct MoviePageStateActionCreator<S: ApplicationState>: Injectable {
         self.dependency = dependency
     }
     
-    func getMovies() async -> ThunkAction<S> {
-        ThunkAction(function: { store, action in
+    func getMovies() async -> Redux.ThunkAction<S> {
+        Redux.ThunkAction(function: { store, action in
             do {
                 let movieList = try await dependency.movieRepository.getMovieTopRated(page: nil)
                 return MoviePageStateAction.didReceiveMovieList(.data(value: movieList))
@@ -35,8 +35,8 @@ struct MoviePageStateActionCreator<S: ApplicationState>: Injectable {
         }, className: "\(type(of: self))")
     }
     
-    func getMoreMovies(movieList: MovieList) async -> ThunkAction<S> {
-        return ThunkAction(function: { store, action in
+    func getMoreMovies(movieList: MovieList) async -> Redux.ThunkAction<S> {
+        return Redux.ThunkAction(function: { store, action in
             if !movieList.shouldLoadData() { return nil }
             do {
                 let nextPage = movieList.nextPage()

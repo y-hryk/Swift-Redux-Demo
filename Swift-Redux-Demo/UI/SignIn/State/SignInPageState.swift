@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SignInPageState: ApplicationState {
+struct SignInPageState: Redux.State {
     var userName: String
     var password: String
     var showProgress: Bool
@@ -24,9 +24,9 @@ extension SignInPageState {
 }
 
 extension SignInPageState {
-    static let reducer: Reducer<Self> = { state, actionContainer in
+    static let reducer: Redux.Reducer<Self> = { state, action in
         var state = state
-        switch actionContainer.action {
+        switch action {
         case SignInPageStateAction.updateProgress(let progress):
             state.progress = progress
         case SignInPageStateAction.showProgress(let showProgress):

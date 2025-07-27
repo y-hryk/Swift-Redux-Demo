@@ -5,21 +5,56 @@
 //  Created by h.yamaguchi on 2024/12/31.
 //
 
+import SwiftUI
+
 enum StartScreen: Equatable {
     case splash
-    case root
-    case onboarding
+    case signedIn
+    case signedOut
     case maintenance
 }
 
-struct GlobalState: ApplicationState {
+struct GlobalState: Redux.State {
     var startScreen: StartScreen
     var authenticationState: AuthenticationState
+    var routingState: RoutingState
+    var toastState: ToastState
+    var favoriteState: FavoriteState
 }
 
 extension GlobalState {
     init() {
         startScreen = .splash
         authenticationState = AuthenticationState()
+        routingState = RoutingState()
+        toastState = ToastState()
+        favoriteState = FavoriteState()
+    }
+}
+
+extension GlobalState {
+    static let reducer: Redux.Reducer<Self> = { state, action in
+        var state = state
+        switch action {
+        case GlobalStateAction.update(let startScreen):
+            state.startScreen = startScreen
+            if startScreen == .signedOut {
+                return GlobalState(
+                    startScreen: state.startScreen,
+                    authenticationState: AuthenticationState(),
+                    routingState: RoutingState(),
+                    toastState: ToastState(),
+                    favoriteState: FavoriteState()
+                )
+            }
+        default: break
+        }
+        return GlobalState(
+            startScreen: state.startScreen,
+            authenticationState: AuthenticationState.reducer(state.authenticationState, action),
+            routingState: RoutingState.reducer(state.routingState, action),
+            toastState: ToastState.reducer(state.toastState, action),
+            favoriteState: FavoriteState.reducer(state.favoriteState, action)
+        )
     }
 }

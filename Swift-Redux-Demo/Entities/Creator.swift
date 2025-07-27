@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Creator: Identifiable {
+struct Creator: Identifiable, Equatable {
     let id: String = UUID().uuidString
     let personId: PersonId
     let name: String

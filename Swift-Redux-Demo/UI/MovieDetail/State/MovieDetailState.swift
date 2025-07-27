@@ -7,13 +7,12 @@
 
 import Foundation
 
-struct MovieDetailState: ApplicationState {
+struct MovieDetailState: Redux.State {
     var movieId: MovieId
     var movie: AsyncValue<MovieDetail>
     var backdrops: AsyncValue<[Backdrop]>
     var creditList: AsyncValue<CreditList>
     var reviews: AsyncValue<ReviewList>
-    var isFavorite: AsyncValue<Bool>
 }
 
 extension MovieDetailState: Hashable {
@@ -37,7 +36,6 @@ extension MovieDetailState {
         self.backdrops = .loading
         self.creditList = .loading
         self.reviews = .loading
-        self.isFavorite = .loading
     }
     
     static func fromId(movieId: MovieId) -> MovieDetailState {
@@ -46,8 +44,7 @@ extension MovieDetailState {
             movie: .loading,
             backdrops: .loading,
             creditList: .loading,
-            reviews: .loading,
-            isFavorite: .loading
+            reviews: .loading
         )
     }
     
@@ -59,8 +56,7 @@ extension MovieDetailState {
             movie: .data(value: movieDetail),
             backdrops: .data(value: Backdrop.preview()),
             creditList: .data(value: CreditList.preview()),
-            reviews: .loading,
-            isFavorite: .data(value: false)
+            reviews: .loading
         )
     }
 }

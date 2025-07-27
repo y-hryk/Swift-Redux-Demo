@@ -1,11 +1,11 @@
 import UIKit
 
-struct WatchListPageState: ApplicationState {
-    var movies: AsyncValue<[MovieDetail]>
+struct WatchListPageState: Redux.State {
 }
 
 extension WatchListPageState {
-    init() {
-        self.movies = .loading
+    static let reducer: Redux.Reducer<Self> = { state, action in
+        var state = state
+        return state
     }
 }

@@ -7,24 +7,12 @@
 
 import SwiftUI
 
-enum Tab {
-    case movie
-    case watchList
-    case debug
-}
-
-struct TabState: ApplicationState {
-    var seleced: Tab
-    var moviePageState: MoviePageState
-    var watchListPageState: WatchListPageState
-    var settingsPageState: DebugPageState
+struct TabState: Redux.State {
+    
 }
 
 extension TabState {
-    init() {
-        seleced = .movie
-        moviePageState = MoviePageState()
-        watchListPageState = WatchListPageState()
-        settingsPageState = DebugPageState()
+    static let reducer: Redux.Reducer<Self> = { state, action in
+        return state
     }
 }

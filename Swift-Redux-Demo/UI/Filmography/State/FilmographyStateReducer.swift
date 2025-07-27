@@ -8,9 +8,9 @@
 import Foundation
 
 extension FilmographyState {
-    static let reducer: Reducer<Self> = { state, actionContainer in
+    static let reducer: Redux.Reducer<Self> = { state, action in
         var state = state
-        switch actionContainer.action {
+        switch action {
         case FilmographyStateAction.didReceivePerson(let person):
             state.person = person
         case FilmographyStateAction.didReceiveFilmography(let filmography):

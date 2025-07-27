@@ -8,9 +8,9 @@
 import Foundation
 
 extension MoviePageState {
-    static let reducer: Reducer<Self> = { state, actionContainer in
+    static let reducer: Redux.Reducer<Self> = { state, action in
         var state = state
-        switch actionContainer.action {
+        switch action {
         case MoviePageStateAction.didReceiveMovieList(let movieList):
             state.movieList = movieList
         case MoviePageStateAction.didMoreReceiveMovieList(let movieList):

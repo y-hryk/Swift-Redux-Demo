@@ -27,5 +27,6 @@ struct ListTextButton: View {
         // ButtonStyleでタップ中のスタイルを指定
         .buttonStyle(ListButtonStyle())
         .listRowInsets(.init())
+//        .background(Color.Background.main)
     }
 }

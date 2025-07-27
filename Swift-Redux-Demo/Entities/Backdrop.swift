@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Backdrop: Identifiable {
+struct Backdrop: Identifiable, Equatable {
     let id: String
     let filePath: String
     let aspectRatio: Double

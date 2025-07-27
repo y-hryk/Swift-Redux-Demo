@@ -7,44 +7,23 @@
 
 import Foundation
 
-//extension Middlewares {
-//    static let errorToast: Middleware<AppState> = { store, state, actionContainer in
-//        switch actionContainer.action {
-//        case GlobalStateAction.didReceiveError(let error):
-//            if let error = error as? ApplicationError {
-//                await store.dispatch(GlobalStateAction.didReceiveToast(
-//                    Toast(style: .error, title: error.title, message: error.message)
-//                ))
-//                return actionContainer.baseAction
-//            } else {
-//                await store.dispatch(GlobalStateAction.didReceiveToast(
-//                    Toast(style: .error, message: error.localizedDescription)
-//                ))
-//                return actionContainer.baseAction
-//            }
-//        default: break
-//        }
-//        return actionContainer.baseAction
-//    }
-//}
-
-func errorToastMiddleware<S: ApplicationState>() -> Middleware<S> {
-    return { store, state, actionContainer in
-        switch actionContainer.action {
-        case GlobalStateAction.didReceiveError(let error):
-            if let error = error as? ApplicationError {
-                await store.dispatch(ToastStateAction.didReceiveToast(
-                    Toast(style: .error, title: error.title, message: error.message)
-                ))
-                return actionContainer.baseAction
-            } else {
-                await store.dispatch(ToastStateAction.didReceiveToast(
-                    Toast(style: .error, message: error.localizedDescription)
-                ))
-                return actionContainer.baseAction
+extension Redux {
+    static func errorToastMiddleware<S: Redux.State>() -> Redux.Middleware<S> {
+        return { store, action in
+            switch action {
+            case GlobalStateAction.didReceiveError(let error):
+                if let error = error as? ApplicationError {
+                    await store.dispatch(ToastStateAction.didReceiveToast(
+                        Toast(style: .error, title: error.title, message: error.message)
+                    ))
+                } else {
+                    await store.dispatch(ToastStateAction.didReceiveToast(
+                        Toast(style: .error, message: error.localizedDescription)
+                    ))
+                }
+            default: break
             }
-        default: break
+            return action
         }
-        return actionContainer.baseAction
     }
 }

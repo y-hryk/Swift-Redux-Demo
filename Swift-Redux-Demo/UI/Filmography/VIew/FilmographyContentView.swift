@@ -8,29 +8,16 @@
 import SwiftUI
 
 struct FilmographyContentView: View {
-    @EnvironmentObject var store: ReduxStore<AppState>
-    let actionCreator: FilmographyStateActionCreator<AppState>
-    let initalState: FilmographyState
-
-    var state: FilmographyState {
-        store.state.routingState.mapStateFromMovieList(stateIdentifier: initalState.stateIdentifier)
-    }
-    
-    init(state: FilmographyState) {
-        self.initalState = state
-        self.actionCreator = ActionCreatorAssembler().resolve(
-            personId: state.personId,
-            type: state.type
-        )
-    }
+    @StateObject var store: Redux.LocalStore<FilmographyState>
+    let actionCreator: FilmographyStateActionCreator<FilmographyState>
     
     var body: some View {
         ZStack(alignment: .top) {
-            switch state.person {
+            switch store.state.person {
             case .data(let person):
                 ScrollView {
                     profile(person: person)
-                    filmography(filmography: state.filmography)
+                    filmography(filmography: store.state.filmography)
                 }
             case .loading:
                 ProgressView()

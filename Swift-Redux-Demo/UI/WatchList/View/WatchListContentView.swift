@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct WatchListContentView: View {
-    @EnvironmentObject var store: ReduxStore<AppState>
-    let actionCreator: WatchListStateActionCreator = ActionCreatorAssembler().resolve()
-    var state: WatchListPageState { store.state.routingState.tabState.watchListPageState }
+    @EnvironmentObject var globalStore: Redux.GlobalStore
+    @StateObject var store: Redux.LocalStore<WatchListPageState>
+    let actionCreator: FavoriteStateActionCreator<WatchListPageState>
     
     var body: some View {
         NavigationStack(path: Binding(
-            get: { store.state.routingState.watchListPaths },
+            get: { globalStore.state.routingState.watchListPaths },
             set: { value,_ in
                 Task {
                     await store.dispatch(RoutingStateAction.updateWatchList(value))
@@ -22,16 +22,11 @@ struct WatchListContentView: View {
             }
         )) {
             ZStack {
-                WatchListView(movies: state.movies) { movie in
+                WatchListView(movies: globalStore.state.favoriteState.favoriteItems) { movie in
                     Task {
                         await store.dispatch(RoutingStateAction.showFromWatchList(.movieDetail(movieId: movie.id))
                         )
                     }
-                }
-            }
-            .onDidLoad {
-                Task {
-                    await store.dispatch(actionCreator.getFavorites())
                 }
             }
             .navigationTitle("Watch List")
@@ -40,14 +35,19 @@ struct WatchListContentView: View {
             .toolbarBackground(.visible, for: .navigationBar)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.Background.main)
-            .navigationDestination(for: NavigationStackPath.self) { path in
+            .navigationDestination(for: RoutingPath.self) { path in
                 path.destination()
+            }
+        }
+        .onDidLoad() {
+            Task {
+                await store.dispatch(actionCreator.getFavorites())
             }
         }
     }
 }
 
 #Preview {
-    WatchListContentView()
-        .environmentObject(store)
+//    WatchListContentView()
+//        .environmentObject(store)
 }

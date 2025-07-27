@@ -7,6 +7,6 @@
 
 import UIKit
 
-enum TabStateAction: Action {
-    case select(tab: Tab)
-}
+//enum TabStateAction: Action {
+//    case select(tab: Tab)
+//}

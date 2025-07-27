@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct MaintenancePage: View {
-    @EnvironmentObject var store: ReduxStore<AppState>
-    let actionCreator: MaintenancePageStateActionCreator = ActionCreatorAssembler().resolve()
+    @StateObject var store: Redux.LocalStore<MaintenancePageState>
+    let maintenanceActionCreator: MaintenancePageActionCreator<MaintenancePageState>
     var body: some View {
         VStack {
             Text("Under maintenance")
@@ -26,7 +26,7 @@ struct MaintenancePage: View {
             
             PrimaryButton(title: "Update") {
                 Task {
-                    await store.dispatch(actionCreator.signIn())
+                    await store.dispatch(maintenanceActionCreator.signIn())
                 }
             }
             .padding(.horizontal, 32)
@@ -37,5 +37,11 @@ struct MaintenancePage: View {
 }
 
 #Preview {
-    MaintenancePage()
+    let store = Redux.LocalStore<MaintenancePageState>(
+        initialState: MaintenancePageState(),
+        reducer: { state, action in state },
+        middleware: [],
+        afterMiddleware: nil
+    )
+    MaintenancePage(store: store, maintenanceActionCreator: ActionCreatorAssembler().resolve())
 }

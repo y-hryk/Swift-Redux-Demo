@@ -1,0 +1,81 @@
+//
+//  TabPage.swift
+//  Swift-Redux-Demo
+//
+//  Created by h.yamaguchi on 2025/01/19.
+//
+
+import SwiftUI
+
+struct TabScreen: View {
+    @EnvironmentObject var globalStore: Redux.GlobalStore
+    @StateObject var store: Redux.LocalStore<TabState>
+    
+    var body: some View {
+        SignedInTabView(selecedTab: globalStore.state.routingState.selecedTab) { tab in
+            Task {
+                await store.dispatch(RoutingStateAction.selectTab(tab: tab))
+            }
+        }
+    }
+}
+
+struct LazyView: View {
+    var path: RoutingPath
+    
+    init(_ path: RoutingPath) {
+        self.path = path
+    }
+    
+    var body: some View {
+        path.destination()
+    }
+}
+
+
+struct SignedInTabView: View, Equatable {
+    let selecedTab: Tab
+    let selectedHandler: (Tab) -> Void
+    
+    var body: some View {
+        TabView(selection: Binding(
+            get: { selecedTab },
+            set: { value, _ in
+                if selecedTab == value {
+                    Task {
+//                        await store.dispatch(RoutingStateAction.updateMovieList([]))
+                    }
+                } else {
+                    selectedHandler(value)
+                }
+            }
+        )) {
+            LazyView(RoutingPath.movieList)
+                .tabItem {
+                    Label("Movie", systemImage: "movieclapper")
+                }
+                .tag(Tab.movie)
+            LazyView(RoutingPath.watchList)
+                .tabItem {
+                    Label("Watch List", systemImage: "star")
+                }
+                .tag(Tab.watchList)
+            LazyView(RoutingPath.debug)
+                .tabItem {
+                    Label("Debug", systemImage: "wrench.and.screwdriver")
+                }
+                .tag(Tab.debug)
+        }
+        .tint(Color(red: 138 / 255, green: 111 / 255, blue: 245 / 255, opacity:1.0))
+    }
+    
+    // Equatableの実装: selectedTabのみを比較
+    static func == (lhs: SignedInTabView, rhs: SignedInTabView) -> Bool {
+        return lhs.selecedTab == rhs.selecedTab
+    }
+}
+
+#Preview {
+//    TabContentView()
+//        .environmentObject(store)
+}

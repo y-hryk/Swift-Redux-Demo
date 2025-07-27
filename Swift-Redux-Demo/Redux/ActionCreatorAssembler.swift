@@ -8,37 +8,31 @@
 import Foundation
 
 struct ActionCreatorAssembler {
-    func resolve() -> AuthenticationStateActionCreator<AppState> {
+    func resolve<State: Redux.State>() -> AuthenticationStateActionCreator<State> {
         AuthenticationStateActionCreator(with: AuthenticationStateActionCreator.Dependency(
             userRepository: RepositoryAssembler().resolve())
         )
     }
     
-//    func resolve() -> RoutingStateActionCreator {
-//        RoutingStateActionCreator(with: RoutingStateActionCreator.Dependency(
-//            userRepository: RepositoryAssembler().resolve())
-//        )
-//    }
-//    
-    func resolve() -> SignInPageStateActionCreator<AppState> {
+    func resolve<State: Redux.State>() -> SignInPageStateActionCreator<State> {
         SignInPageStateActionCreator(
             with: SignInPageStateActionCreator.Dependency(userRepository: RepositoryAssembler().resolve())
         )
     }
     
-    func resolve() -> MaintenancePageStateActionCreator<AppState> {
-        MaintenancePageStateActionCreator(with: MaintenancePageStateActionCreator.Dependency(
+    func resolve<State: Redux.State>() -> MaintenancePageActionCreator<State> {
+        MaintenancePageActionCreator(with: MaintenancePageActionCreator.Dependency(
             maintenanceRepository: RepositoryAssembler().resolve())
         )
     }
     
-    func resolve() -> MoviePageStateActionCreator<AppState> {
+    func resolve<State: Redux.State>() -> MoviePageStateActionCreator<State> {
         MoviePageStateActionCreator(with: MoviePageStateActionCreator.Dependency(
             movieRepository: RepositoryAssembler().resolve())
         )
     }
     
-    func resolve(movieId: MovieId) -> MovieDetailStateActionCreator<AppState> {
+    func resolve<State: Redux.State>(movieId: MovieId) -> MovieDetailStateActionCreator<State> {
         MovieDetailStateActionCreator(with: MovieDetailStateActionCreator.Dependency(
             movieRepository: RepositoryAssembler().resolve(),
             favoriteRepository: RepositoryAssembler().resolve(),
@@ -46,7 +40,7 @@ struct ActionCreatorAssembler {
         )
     }
     
-    func resolve(personId: PersonId, type: FilmographyType) -> FilmographyStateActionCreator<AppState> {
+    func resolve<State: Redux.State>(personId: PersonId, type: FilmographyType) -> FilmographyStateActionCreator<State> {
         FilmographyStateActionCreator(with: FilmographyStateActionCreator.Dependency(
             personRepository: RepositoryAssembler().resolve(),
             personId: personId,
@@ -54,7 +48,7 @@ struct ActionCreatorAssembler {
         )
     }
     
-    func resolve() -> WatchListStateActionCreator<AppState> {
-        WatchListStateActionCreator(with: WatchListStateActionCreator.Dependency(favoriteRepository: RepositoryAssembler().resolve()))
+    func resolve<State: Redux.State>() -> FavoriteStateActionCreator<State> {
+        FavoriteStateActionCreator(with: FavoriteStateActionCreator.Dependency(favoriteRepository: RepositoryAssembler().resolve()))
     }
 }

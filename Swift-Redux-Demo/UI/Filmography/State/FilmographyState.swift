@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct FilmographyState: ApplicationState {
+struct FilmographyState: Redux.State {
     var personId: PersonId
     var type: FilmographyType
     var person: AsyncValue<Person>

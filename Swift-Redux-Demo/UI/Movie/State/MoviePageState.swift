@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct MoviePageState: ApplicationState {
+struct MoviePageState: Redux.State {
     var movieList: AsyncValue<MovieList>
     var presentedUserSetting: Bool
 }

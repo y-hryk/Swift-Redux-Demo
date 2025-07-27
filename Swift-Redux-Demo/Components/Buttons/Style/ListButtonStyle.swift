@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct ListButtonStyle: ButtonStyle {
-    var backgroundColor: Color = Color(UIColor.secondarySystemGroupedBackground)
-    var pressedBackgroundColor: Color = Color("list/default_highlight_color")
+    var backgroundColor: Color = Color(Color.Background.main)
+    var pressedBackgroundColor: Color = Color(Color.gray)
     
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
