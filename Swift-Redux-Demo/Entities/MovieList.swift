@@ -24,3 +24,11 @@ struct MovieList {
         MovieList(currentPage: 1, totalPages: 1, results: Movie.demos())
     }
 }
+
+extension MovieList: Equatable {
+    static func == (lhs: MovieList, rhs: MovieList) -> Bool {
+          return lhs.currentPage == rhs.currentPage &&
+                 lhs.totalPages == rhs.totalPages &&
+                 lhs.results == rhs.results
+    }
+}

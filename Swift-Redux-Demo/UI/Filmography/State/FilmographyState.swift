@@ -14,6 +14,12 @@ struct FilmographyState: Redux.State {
     var filmography: AsyncValue<Filmography>
 }
 
+extension FilmographyState: Equatable {
+    static func == (lhs: FilmographyState, rhs: FilmographyState) -> Bool {
+        lhs.personId == rhs.personId
+    }
+}
+
 extension FilmographyState {
     var stateIdentifier: String {
         className + "_" + personId.value

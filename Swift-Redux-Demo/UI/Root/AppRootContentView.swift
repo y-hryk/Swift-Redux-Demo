@@ -39,16 +39,19 @@ struct AppRootContentView: View {
 //                FullScreenIndicator()
 //            }
         }
+        .onOpenURL { url in
+            print(url)
+        }
+        .onAppear() {
+            Task {
+                await store.dispatch(actionCreator.isSignIn())
+            }
+        }
         .onChange(of: globalStore.state.authenticationState.shouldLogoutTriger) { oldValue, newValue in
             if newValue {
                 Task {
                     await store.dispatch(actionCreator.signOut())
                 }
-            }
-        }
-        .onAppear() {
-            Task {
-                await store.dispatch(actionCreator.isSignIn())
             }
         }
         .toastView(toast: Binding(
@@ -67,6 +70,16 @@ struct AppRootContentView: View {
             set: { value in
                 Task {
                     await store.dispatch(RoutingStateAction.updateModel(value))
+                }
+            }
+        ))
+        .loadingOverlay(isLoading: Binding(
+            get: {
+                globalStore.state.showIndicator
+            },
+            set: { value in
+                Task {
+                    await store.dispatch(GlobalStateAction.showIndicator(value))
                 }
             }
         ))

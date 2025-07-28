@@ -45,3 +45,12 @@ struct CreditList {
             ])
     }
 }
+
+extension CreditList: Equatable {
+    static func == (lhs: CreditList, rhs: CreditList) -> Bool {
+        return lhs.actors == rhs.actors &&
+               lhs.director == rhs.director &&
+               lhs.screenplay == rhs.screenplay &&
+               lhs.creators == rhs.creators
+    }
+}

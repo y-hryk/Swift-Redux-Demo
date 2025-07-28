@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct PersonId: ID {
+struct PersonId: ID, Equatable {
     var value: String
 }

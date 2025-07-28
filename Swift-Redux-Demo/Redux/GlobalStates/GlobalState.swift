@@ -20,6 +20,7 @@ struct GlobalState: Redux.State {
     var routingState: RoutingState
     var toastState: ToastState
     var favoriteState: FavoriteState
+    var showIndicator: Bool
 }
 
 extension GlobalState {
@@ -29,6 +30,7 @@ extension GlobalState {
         routingState = RoutingState()
         toastState = ToastState()
         favoriteState = FavoriteState()
+        showIndicator = false
     }
 }
 
@@ -38,15 +40,18 @@ extension GlobalState {
         switch action {
         case GlobalStateAction.update(let startScreen):
             state.startScreen = startScreen
-            if startScreen == .signedOut {
+            if startScreen == .splash {
                 return GlobalState(
                     startScreen: state.startScreen,
                     authenticationState: AuthenticationState(),
                     routingState: RoutingState(),
                     toastState: ToastState(),
-                    favoriteState: FavoriteState()
+                    favoriteState: FavoriteState(),
+                    showIndicator: false
                 )
             }
+        case GlobalStateAction.showIndicator(let isVisible):
+            state.showIndicator = isVisible
         default: break
         }
         return GlobalState(
@@ -54,7 +59,8 @@ extension GlobalState {
             authenticationState: AuthenticationState.reducer(state.authenticationState, action),
             routingState: RoutingState.reducer(state.routingState, action),
             toastState: ToastState.reducer(state.toastState, action),
-            favoriteState: FavoriteState.reducer(state.favoriteState, action)
+            favoriteState: FavoriteState.reducer(state.favoriteState, action),
+            showIndicator: state.showIndicator
         )
     }
 }

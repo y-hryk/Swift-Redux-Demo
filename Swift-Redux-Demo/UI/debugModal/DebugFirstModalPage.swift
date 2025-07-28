@@ -26,6 +26,11 @@ struct DebugFirstModalPage: View {
                             ))
                         }
                     }
+                    ListTextButton("401 Unauthorized") {
+                        Task {
+                            await store.dispatch(GlobalStateAction.didReceiveError(NetworkError.unauthorized))
+                        }
+                    }
                     ListTextButton("Show Modal") {
                         Task {
                             await store.dispatch(RoutingStateAction.showModal(ModalItem(routingPath: RoutingPath.debugSecondModal, presentationStyle: .sheet)))

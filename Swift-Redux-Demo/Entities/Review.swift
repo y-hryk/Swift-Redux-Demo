@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Review: Identifiable {
+struct Review: Identifiable, Equatable {
     let id: String = UUID().uuidString
     let author: String
     let content: String
@@ -15,7 +15,7 @@ struct Review: Identifiable {
     let createdAt: String
     let updatedAt: String
     
-    struct AuthorDetails {
+    struct AuthorDetails: Equatable {
         let avatarPath: String?
         let rating: Double?
     }

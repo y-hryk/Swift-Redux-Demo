@@ -23,9 +23,7 @@ struct MovieDetailContentView: View {
             .toolbarBackground(.hidden, for: .navigationBar)
             .background(Color.Background.main)
             .onDidLoad {
-                print("onDidLoad")
                 Task {
-    //                    await store.dispatch(RoutingStateAction.setInitialState(state: initalState))
                     await store.dispatch(favoriteStateActionCreator.getFavorites())
                     await store.dispatch(movieDetailStateActionCreator.getMovieDetail())
                     await store.dispatch(movieDetailStateActionCreator.getImages())

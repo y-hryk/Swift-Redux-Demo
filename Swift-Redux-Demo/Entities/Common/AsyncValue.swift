@@ -1,6 +1,6 @@
 import Foundation
 
-enum AsyncValue<Element> {
+enum AsyncValue<Element: Equatable> {
     case data(value: Element)
     case loading
     case error(error: Error)
@@ -34,6 +34,8 @@ extension AsyncValue: Equatable {
         switch (lhs, rhs) {
         case (.loading, .loading):
             return true
+        case (.data(let a), .data(let b)):
+            return a == b
         default: return false
         }
     }

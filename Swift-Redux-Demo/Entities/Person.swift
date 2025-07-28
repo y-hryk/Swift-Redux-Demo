@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Person {
+struct Person: Equatable {
     let id: PersonId
     let biography: String
     let birthday: String

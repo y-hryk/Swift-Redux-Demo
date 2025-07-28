@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct ReviewList {
+struct ReviewList: Equatable {
     let currentPage: Int
     let totalPages: Int
     let results: [Review]

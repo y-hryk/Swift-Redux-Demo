@@ -42,13 +42,20 @@ struct DebugPage: View {
                     ListTextButton("Show Toast") {
                         Task {
                             await store.dispatch(ToastStateAction.didReceiveToast(
-                                Toast(style: .success, title: "", message: "Show Toast")
+                                Toast(style: .success, title: "Show Toast", message: "xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx ")
                             ))
                         }
                     }
                     ListTextButton("Show Modal") {
                         Task {
-                            await store.dispatch(RoutingStateAction.showModal(ModalItem(routingPath: RoutingPath.debugFirstModel, presentationStyle: .sheet)))
+                            await store.dispatch(RoutingStateAction.showModal(ModalItem(routingPath: RoutingPath.debugFirstModel, presentationStyle: .fullScreenCover)))
+                        }
+                    }
+                    ListTextButton("Show FullScreen Indicator") {
+                        Task {
+                            await store.dispatch(GlobalStateAction.showIndicator(true))
+                            try? await Task.sleep(for: .seconds(3))
+                            await store.dispatch(GlobalStateAction.showIndicator(false))
                         }
                     }
                 }

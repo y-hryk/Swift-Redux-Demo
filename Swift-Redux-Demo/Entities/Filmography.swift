@@ -12,7 +12,7 @@ enum FilmographyType {
     case crew
 }
 
-struct Filmography {
+struct Filmography: Equatable {
     let type: FilmographyType
     let personId: PersonId
     let cast: [Movie]
