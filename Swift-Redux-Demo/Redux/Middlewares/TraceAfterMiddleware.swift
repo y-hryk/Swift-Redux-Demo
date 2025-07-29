@@ -41,7 +41,6 @@ extension Redux {
             var log = ""
             
             if let action = action as? Redux.ThunkAction<S> {
-//                log += "\n⬜ Caller: \(action.caller.replacingOccurrences(of: "MovieAppDemo/", with: ""))"
                 log += "\n➡️ ThunkAction: \(action.caller())"
                 log += "\n➡️➡️ New Action: \(type(of: newAction)).\(newAction)"
             } else {

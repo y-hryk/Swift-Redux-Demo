@@ -30,8 +30,8 @@ struct FilmographyContentView: View {
         .toolbarBackground(.visible, for: .navigationBar)
         .onDidLoad {
             Task {
-//                await store.dispatch(id: personId, actionCreator.getPerson())
-//                await store.dispatch(id: personId, actionCreator.getFilmogry())
+                await store.dispatch(actionCreator.getPerson())
+                await store.dispatch(actionCreator.getFilmogry())
             }
         }
     }
@@ -83,7 +83,7 @@ struct FilmographyContentView: View {
                         ForEach(filmography.movies) { movie in
                             Button {
                                 Task {
-//                                    await store.dispatch(RoutingStateAction.Tab.show(.movieDetail(movieId: movie.id)))
+                                    await store.dispatch(RoutingStateAction.push(.movieDetail(movieId: movie.id)))
                                 }
                             } label: {
                                 HStack(alignment: .center, spacing: 0.0) {

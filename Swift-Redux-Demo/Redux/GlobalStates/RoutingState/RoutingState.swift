@@ -35,22 +35,31 @@ extension RoutingState {
 extension RoutingState {
     static let reducer: Redux.Reducer<Self> = { state, action in
         var state = state
+        
+        guard let action = action as? RoutingStateAction else {
+            return state
+        }
+        
         switch action {
         case RoutingStateAction.selectTab(let tab):
             state.selecedTab = tab
+            
+        case RoutingStateAction.push(let navigation):
+            switch state.selecedTab {
+            case .movie:
+                state.movieListPaths.append(navigation)
+            case .watchList:
+                state.watchListPaths.append(navigation)
+            case .debug: break
+            }
+            
         case RoutingStateAction.updateMovieList(let paths):
             let difference = state.movieListPaths.filter { !paths.contains($0) }
             state.movieListPaths = paths
             
-        case RoutingStateAction.showFromMovieList(let navigation):
-            state.movieListPaths.append(navigation)
-            
         case RoutingStateAction.updateWatchList(let paths):
             let difference = state.watchListPaths.filter { !paths.contains($0) }
             state.watchListPaths = paths
-            
-        case RoutingStateAction.showFromWatchList(let navigation):
-            state.watchListPaths.append(navigation)
             
         case RoutingStateAction.showModal(let navigation):
             state.modalPaths.append(navigation)
@@ -58,7 +67,6 @@ extension RoutingState {
         case RoutingStateAction.updateModel(let paths):
             state.modalPaths = paths
             
-        default: break
         }
         
         return RoutingState(

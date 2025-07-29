@@ -18,6 +18,7 @@ enum RoutingPath: Hashable {
     case watchList
     case debug
     // other
+    case filmography(personId: PersonId, type: FilmographyType)
     case movieDetail(movieId: MovieId)
     case debugFirstModel
     case debugSecondModal
@@ -55,6 +56,11 @@ enum RoutingPath: Hashable {
         case .debug:
             let store = LocalStoreBuilder.create(initialState: DebugPageState(), reducer: DebugPageState.reducer)
             DebugPage(store: store)
+            
+        case .filmography(let personId, let type):
+            let store = LocalStoreBuilder.create(initialState: FilmographyState(), reducer: FilmographyState.reducer)
+            FilmographyContentView(store: store,
+                                   actionCreator: ActionCreatorAssembler().resolve(personId: personId, type: type))
         
         case .movieDetail(let movieId):
             let store = LocalStoreBuilder.create(

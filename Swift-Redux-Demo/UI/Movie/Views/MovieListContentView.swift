@@ -25,7 +25,7 @@ struct MovieListContentView: View {
                 movieList: store.state.movieList,
                 onPressed: { movieId in
                     Task {
-                        await store.dispatch(RoutingStateAction.showFromMovieList(.movieDetail(movieId: movieId))
+                        await store.dispatch(RoutingStateAction.push(.movieDetail(movieId: movieId))
                         )
                     }
                 },

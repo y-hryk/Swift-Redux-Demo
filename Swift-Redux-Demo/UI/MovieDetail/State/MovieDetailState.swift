@@ -7,22 +7,12 @@
 
 import Foundation
 
-struct MovieDetailState: Redux.State {
+struct MovieDetailState: Redux.State, Equatable {
     var movieId: MovieId
     var movie: AsyncValue<MovieDetail>
     var backdrops: AsyncValue<[Backdrop]>
     var creditList: AsyncValue<CreditList>
     var reviews: AsyncValue<ReviewList>
-}
-
-extension MovieDetailState: Hashable {
-    static func == (lhs: MovieDetailState, rhs: MovieDetailState) -> Bool {
-        lhs.movieId.value == rhs.movieId.value
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(movieId)
-    }
 }
 
 extension MovieDetailState {

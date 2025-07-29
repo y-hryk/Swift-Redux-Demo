@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct MovieDetail: Identifiable, Hashable {
+struct MovieDetail: Identifiable, Hashable, Equatable {
     let id: MovieId
     let title: String
     let originalTitle: String
@@ -77,11 +77,5 @@ struct MovieDetail: Identifiable, Hashable {
                     genres: [],
                     tagline: "",
                     runtime: 120)
-    }
-}
-
-extension MovieDetail: Equatable {
-    static func == (lhs: MovieDetail, rhs: MovieDetail) -> Bool {
-        lhs.id == rhs.id
     }
 }

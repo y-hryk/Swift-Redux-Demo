@@ -9,10 +9,9 @@ import SwiftUI
 
 enum RoutingStateAction: Redux.GlobalAction {
     case selectTab(tab: Tab)
+    case push(RoutingPath)
     case updateMovieList([RoutingPath])
     case updateWatchList([RoutingPath])
-    case showFromMovieList(RoutingPath)
-    case showFromWatchList(RoutingPath)
     case showModal(ModalItem)
     case updateModel([ModalItem])
 }

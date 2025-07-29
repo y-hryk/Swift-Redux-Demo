@@ -7,17 +7,11 @@
 
 import Foundation
 
-struct FilmographyState: Redux.State {
+struct FilmographyState: Redux.State, Equatable {
     var personId: PersonId
     var type: FilmographyType
     var person: AsyncValue<Person>
     var filmography: AsyncValue<Filmography>
-}
-
-extension FilmographyState: Equatable {
-    static func == (lhs: FilmographyState, rhs: FilmographyState) -> Bool {
-        lhs.personId == rhs.personId
-    }
 }
 
 extension FilmographyState {

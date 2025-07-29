@@ -24,7 +24,7 @@ struct WatchListContentView: View {
             ZStack {
                 WatchListView(movies: globalStore.state.favoriteState.favoriteItems) { movie in
                     Task {
-                        await store.dispatch(RoutingStateAction.showFromWatchList(.movieDetail(movieId: movie.id))
+                        await store.dispatch(RoutingStateAction.push(.movieDetail(movieId: movie.id))
                         )
                     }
                 }

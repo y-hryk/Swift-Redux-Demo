@@ -72,17 +72,17 @@ struct MovieDetailContentView: View {
             BackdropView(backdrops: store.state.backdrops)
             Spacer().frame(height: 20)
             CastListView(creditList: store.state.creditList) { personId in
-//                Task {
-//                    await store.dispatch(RoutingStateAction.Tab.show(.filmography(personId: personId, type: .cast)))
-//                }
+                Task {
+                    await store.dispatch(RoutingStateAction.push(.filmography(personId: personId, type: .cast)))
+                }
             }
             Spacer().frame(height: 20)
             AboutFilmView(movieDetail: movieDetail, creditList: store.state.creditList)
             Spacer().frame(height: 20)
             CreatorListView(creditList: store.state.creditList) { personId in
-//                Task {
-//                    await store.dispatch(RoutingStateAction.Tab.show(.filmography(personId: personId, type: .crew)))
-//                }
+                Task {
+                    await store.dispatch(RoutingStateAction.push(.filmography(personId: personId, type: .crew)))
+                }
             }
             Spacer().frame(height: 20)
             ReviewView(reviews: store.state.reviews)
