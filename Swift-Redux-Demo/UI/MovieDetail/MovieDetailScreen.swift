@@ -1,5 +1,5 @@
 //
-//  MovieDetailContentView.swift
+//  MovieDetailScreen.swift
 //  MovieAppDemo
 //
 //  Created by h.yamaguchi on 2024/09/13.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MovieDetailContentView: View {
+struct MovieDetailScreen: View {
     @EnvironmentObject var globalStore: Redux.GlobalStore
     @StateObject var store: Redux.LocalStore<MovieDetailState>
     @Environment(\.colorScheme) var colorScheme

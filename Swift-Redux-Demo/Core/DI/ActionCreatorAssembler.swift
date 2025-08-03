@@ -1,0 +1,38 @@
+//
+//  ActionCreatorAssembler.swift
+//  MovieAppDemo
+//
+//  Created by h.yamaguchi on 2024/09/17.
+//
+
+import Foundation
+
+struct ActionCreatorAssembler {
+    func resolve<State: Redux.State>() -> AuthenticationStateActionCreator<State> {
+        AuthenticationStateActionCreator<State>()
+    }
+    
+    func resolve<State: Redux.State>() -> SignInPageStateActionCreator<State> {
+        SignInPageStateActionCreator<State>()
+    }
+    
+    func resolve<State: Redux.State>() -> MaintenancePageActionCreator<State> {
+        MaintenancePageActionCreator<State>()
+    }
+    
+    func resolve<State: Redux.State>() -> MoviePageStateActionCreator<State> {
+        MoviePageStateActionCreator<State>()
+    }
+    
+    func resolve<State: Redux.State>(movieId: MovieId) -> MovieDetailStateActionCreator<State> {
+        MovieDetailStateActionCreator<State>(movieId: movieId)
+    }
+    
+    func resolve<State: Redux.State>(personId: PersonId, type: FilmographyType) -> FilmographyStateActionCreator<State> {
+        FilmographyStateActionCreator<State>(personId: personId, filmographyType: type)
+    }
+    
+    func resolve<State: Redux.State>() -> FavoriteStateActionCreator<State> {
+        FavoriteStateActionCreator<State>()
+    }
+}

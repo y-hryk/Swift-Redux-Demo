@@ -14,17 +14,10 @@ enum SignInPageStateAction: Redux.Action {
     case updatePassword(String)
 }
 
-struct SignInPageStateActionCreator<S: Redux.State> : Injectable {
-    struct Dependency {
-        let userRepository: UserRepository
-    }
-    private let dependency: Dependency
+struct SignInPageStateActionCreator<State: Redux.State> {
+    @Injected(\.userRepository) private var userRepository: UserRepository
     
-    init(with dependency: Dependency) {
-        self.dependency = dependency
-    }
-    
-    func signIn() async -> Redux.ThunkAction<S> {
+    func signIn() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
                 await store.dispatch(SignInPageStateAction.showProgress(true))
@@ -39,7 +32,7 @@ struct SignInPageStateActionCreator<S: Redux.State> : Injectable {
                 try? await Task.sleep(for: .seconds(1))
                 await store.dispatch(SignInPageStateAction.updateProgress(1.0))
                 try? await Task.sleep(for: .seconds(1))
-                let _ = try await dependency.userRepository.signIn()
+                let _ = try await userRepository.signIn()
                 await store.dispatch(ToastStateAction.didReceiveToast(
                     Toast(style: .success, message: "Login successful")
                 ))

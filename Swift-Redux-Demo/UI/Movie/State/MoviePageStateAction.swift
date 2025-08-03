@@ -13,20 +13,13 @@ enum MoviePageStateAction: Redux.Action {
     case shuffleRateScore
 }
 
-struct MoviePageStateActionCreator<S: Redux.State>: Injectable {
-    struct Dependency {
-        let movieRepository: MovieRepository
-    }
-    private let dependency: Dependency
+struct MoviePageStateActionCreator<State: Redux.State> {
+    @Injected(\.movieRepository) private var movieRepository: MovieRepository
     
-    init(with dependency: Dependency) {
-        self.dependency = dependency
-    }
-    
-    func getMovies() async -> Redux.ThunkAction<S> {
+    func getMovies() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
-                let movieList = try await dependency.movieRepository.getMovieTopRated(page: nil)
+                let movieList = try await movieRepository.getMovieTopRated(page: nil)
                 return MoviePageStateAction.didReceiveMovieList(.data(value: movieList))
             } catch let error {
                 await store.dispatch(GlobalStateAction.didReceiveError(error))
@@ -35,12 +28,12 @@ struct MoviePageStateActionCreator<S: Redux.State>: Injectable {
         }, className: "\(type(of: self))")
     }
     
-    func getMoreMovies(movieList: MovieList) async -> Redux.ThunkAction<S> {
+    func getMoreMovies(movieList: MovieList) async -> Redux.ThunkAction<State> {
         return Redux.ThunkAction(function: { store, action in
             if !movieList.shouldLoadData() { return nil }
             do {
                 let nextPage = movieList.nextPage()
-                let movieList = try await dependency.movieRepository.getMovieTopRated(page: nextPage)
+                let movieList = try await movieRepository.getMovieTopRated(page: nextPage)
                 return MoviePageStateAction.didMoreReceiveMovieList(movieList)
             } catch let error {
                 return GlobalStateAction.didReceiveError(error)

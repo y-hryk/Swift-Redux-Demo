@@ -1,5 +1,5 @@
 //
-//  MaintenanceContentView.swift
+//  MaintenanceScreen.swift
 //  MovieAppDemo
 //
 //  Created by h.yamaguchi on 2024/09/21.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MaintenancePage: View {
+struct MaintenanceScreen: View {
     @StateObject var store: Redux.LocalStore<MaintenancePageState>
     let maintenanceActionCreator: MaintenancePageActionCreator<MaintenancePageState>
     var body: some View {
@@ -43,5 +43,5 @@ struct MaintenancePage: View {
         middleware: [],
         afterMiddleware: nil
     )
-    MaintenancePage(store: store, maintenanceActionCreator: ActionCreatorAssembler().resolve())
+    MaintenanceScreen(store: store, maintenanceActionCreator: ActionCreatorAssembler().resolve())
 }

@@ -18,7 +18,7 @@ struct UserIconView: View {
             Image(systemName: "person.crop.circle")
                 .resizable()
                 .frame(width: 30, height: 30)
-                .tint(Color("tint_color"))
+                .tint(Color.tint)
                 .cornerRadius(15)
         }
     }

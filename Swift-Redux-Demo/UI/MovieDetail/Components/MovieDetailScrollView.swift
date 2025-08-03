@@ -27,7 +27,6 @@ struct MovieDetailScrollView<Content: View>: View {
     }
     
     var body: some View {
-        let _ = print(">> MovieDetailScrollView body")
         GeometryReader { geometory in
             ZStack(alignment: .top) {
                 ZStack(alignment: .top) {

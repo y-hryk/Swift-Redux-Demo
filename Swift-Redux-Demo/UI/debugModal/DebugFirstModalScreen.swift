@@ -1,5 +1,5 @@
 //
-//  DebugFirstModal.swift
+//  DebugFirstModalScreen.swift
 //  Swift-Redux-Demo
 //
 //  Created by h.yamaguchi on 2025/07/23.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DebugFirstModalPage: View {
+struct DebugFirstModalScreen: View {
     @StateObject var store: Redux.LocalStore<EmptyState>
     
     var body: some View {
@@ -44,6 +44,19 @@ struct DebugFirstModalPage: View {
             .navigationTitle("Debug Menu")
             .navigationBarTitleDisplayMode(.inline)
             .background(Color.Background.main)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: {
+                        Task {
+                            await store.dispatch(RoutingStateAction.dismiss)
+                        }
+                    }, label: {
+                        Image(systemName: "xmark")
+                            .tint(Color.tint)
+                        
+                    })
+                }
+            }
         }
 
     }

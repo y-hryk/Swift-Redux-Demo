@@ -12,21 +12,14 @@ enum AuthenticationStateAction: Redux.GlobalAction {
     case signOutStart
 }
 
-struct AuthenticationStateActionCreator<S: Redux.State>: Injectable {
-    struct Dependency {
-        let userRepository: UserRepository
-    }
-    private let dependency: Dependency
+struct AuthenticationStateActionCreator<State: Redux.State> {
+    @Injected(\.userRepository) private var userRepository: UserRepository
     
-    init(with dependency: Dependency) {
-        self.dependency = dependency
-    }
-    
-    func isSignIn() async -> Redux.ThunkAction<S> {
+    func isSignIn() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
                 try? await Task.sleep(for: .seconds(3))
-                let isSignIn = try await dependency.userRepository.isSignIn()
+                let isSignIn = try await userRepository.isSignIn()
                 if isSignIn {
                     return GlobalStateAction.update(startScreen: .signedIn)
                 } else {
@@ -39,10 +32,10 @@ struct AuthenticationStateActionCreator<S: Redux.State>: Injectable {
         }, className: "\(type(of: self))")
     }
     
-    func signOut() async -> Redux.ThunkAction<S> {
+    func signOut() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
-                try await dependency.userRepository.signOut()
+                try await userRepository.signOut()
                 await store.dispatch(AuthenticationStateAction.changeAuthenticated(isAuthenticated: false))
                 return GlobalStateAction.update(startScreen: .splash)
             } catch {

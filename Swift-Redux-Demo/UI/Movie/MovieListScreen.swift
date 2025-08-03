@@ -1,5 +1,5 @@
 //
-//  HomePage.swift
+//  MovieListScreen.swift
 //  MovieAppDemo
 //
 //  Created by h.yamaguchi on 2024/09/07.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MovieListContentView: View {
+struct MovieListScreen: View {
     @EnvironmentObject var globalStore: Redux.GlobalStore
     @StateObject var store: Redux.LocalStore<MoviePageState>
     let actionCreator: MoviePageStateActionCreator<MoviePageState>
@@ -45,16 +45,6 @@ struct MovieListContentView: View {
             }
             .toolbarBackground(Color.Background.main, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .toolbar {
-                Button(action: {
-                    Task {
-                        await store.dispatch(GlobalStateAction.update(startScreen: .splash))
-                    }
-                }, label: {
-                    Image(systemName: "person.crop.circle")
-                        .tint(Color("tint_color"))
-                })
-            }
         }
         .onDidLoad() {
             Task {

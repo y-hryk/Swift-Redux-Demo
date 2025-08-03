@@ -1,5 +1,5 @@
 //
-//  AppRootContentView.swift
+//  AppRootScreen.swift
 //  Swift-Redux-Demo
 //
 //  Created by h.yamaguchi on 2025/07/16.
@@ -24,7 +24,7 @@ struct StartScreenView: View {
     }
 }
 
-struct AppRootContentView: View {
+struct AppRootScreen: View {
     @EnvironmentObject var globalStore: Redux.GlobalStore
     @StateObject var store: Redux.LocalStore<AppRootState>
     let actionCreator: AuthenticationStateActionCreator<AppRootState>
@@ -35,9 +35,6 @@ struct AppRootContentView: View {
                 StartScreenView(startScreen: globalStore.state.startScreen)
             }
             .animation(.easeInOut, value: globalStore.state.startScreen)
-//            if state.globalState.fullScreenIndicatorVisible {
-//                FullScreenIndicator()
-//            }
         }
         .onOpenURL { url in
             print(url)
@@ -63,7 +60,7 @@ struct AppRootContentView: View {
                 }
             })
         )
-        .infiniteModal(path: Binding(
+        .modalStack(path: Binding(
             get: {
                 globalStore.state.routingState.modalPaths
             },
@@ -95,17 +92,4 @@ struct AppRootContentView: View {
 //    )
 //    AppRootContentView(store: store)
 //        .environmentObject(globalStore)
-}
-
-struct FullScreenIndicator: View {
-    var body: some View {
-        Color.clear
-            .edgesIgnoringSafeArea(.all)
-            .overlay(
-                ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-            )
-            .contentShape(Rectangle())
-            .onTapGesture {}
-    }
 }

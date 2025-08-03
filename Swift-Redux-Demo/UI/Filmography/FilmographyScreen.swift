@@ -1,5 +1,5 @@
 //
-//  FilmographyContentView.swift
+//  FilmographyScreen.swift
 //  MovieAppDemo
 //
 //  Created by h.yamaguchi on 2024/09/27.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct FilmographyContentView: View {
+struct FilmographyScreen: View {
     @StateObject var store: Redux.LocalStore<FilmographyState>
     let actionCreator: FilmographyStateActionCreator<FilmographyState>
     

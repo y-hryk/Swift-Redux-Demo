@@ -69,8 +69,6 @@ struct WatchListView: View {
         }
         .listStyle(.inset)
         .scrollContentBackground(.hidden)
-//        .listSectionSpacing(10.0)
-//        .padding(.horizontal, 8)
     }
 }
 

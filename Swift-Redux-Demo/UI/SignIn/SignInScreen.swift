@@ -1,5 +1,5 @@
 //
-//  SignInContentView.swift
+//  SignInScreen.swift
 //  MovieAppDemo
 //
 //  Created by h.yamaguchi on 2024/09/17.
@@ -7,18 +7,11 @@
 
 import SwiftUI
 
-struct RefreshChecker {
-    init() {
-        print("refreshed!")
-    }
-}
-
-struct SignInContentView: View {
+struct SignInScreen: View {
     @StateObject var store: Redux.LocalStore<SignInPageState>
     let actionCreator: SignInPageStateActionCreator<SignInPageState>
     
     var body: some View {
-        let _ = RefreshChecker()
         ZStack() {
             VStack(spacing: 0.0) {
                 Text("Demo App")

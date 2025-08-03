@@ -12,22 +12,20 @@ enum FilmographyStateAction: Redux.Action {
     case didReceiveFilmography(AsyncValue<Filmography>)
 }
 
-struct FilmographyStateActionCreator<S: Redux.State>: Injectable {
-    struct Dependency {
-        let personRepository: PersonRepository
-        let personId: PersonId
-        let type: FilmographyType
-    }
-    private let dependency: Dependency
+struct FilmographyStateActionCreator<State: Redux.State> {
+    @Injected(\.personRepository) private var personRepository: PersonRepository
+    private let personId: PersonId
+    private let filmographyType: FilmographyType
     
-    init(with dependency: Dependency) {
-        self.dependency = dependency
+    init(personId: PersonId, filmographyType: FilmographyType) {
+        self.personId = personId
+        self.filmographyType = filmographyType
     }
     
-    func getPerson() async -> Redux.ThunkAction<S> {
+    func getPerson() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
-                let person = try await dependency.personRepository.getPerson(personId: dependency.personId)
+                let person = try await personRepository.getPerson(personId: personId)
                 return FilmographyStateAction.didReceivePerson(.data(value: person))
             } catch let error {
                 return GlobalStateAction.didReceiveError(error)
@@ -35,10 +33,10 @@ struct FilmographyStateActionCreator<S: Redux.State>: Injectable {
         }, className: "\(type(of: self))")
     }
     
-    func getFilmogry() async -> Redux.ThunkAction<S> {
+    func getFilmogry() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
-                let filmogry = try await dependency.personRepository.getFilmogry(personId: dependency.personId, type: dependency.type)
+                let filmogry = try await personRepository.getFilmogry(personId: personId, type: filmographyType)
                 return FilmographyStateAction.didReceiveFilmography(.data(value: filmogry))
             } catch let error {
                 return GlobalStateAction.didReceiveError(error)

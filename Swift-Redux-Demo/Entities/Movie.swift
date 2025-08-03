@@ -61,10 +61,6 @@ struct Movie: Identifiable, Hashable {
     }
 }
 
-extension Movie: CustomStringConvertible {
-    var description: String { "\(title)" }
-}
-
 extension Movie: Equatable {
     static func == (lhs: Movie, rhs: Movie) -> Bool {
         lhs.id.value == rhs.id.value

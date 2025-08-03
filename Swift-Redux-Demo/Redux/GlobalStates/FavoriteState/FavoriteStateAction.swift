@@ -12,20 +12,13 @@ enum FaroriteStateAction: Redux.GlobalAction {
     case removeFavorite(detail: MovieDetail)
 }
 
-struct FavoriteStateActionCreator<S: Redux.State>: Injectable {
-    struct Dependency {
-        let favoriteRepository: FavoriteRepository
-    }
-    private let dependency: Dependency
+struct FavoriteStateActionCreator<State: Redux.State> {
+    @Injected(\.favoriteRepository) private var favoriteRepository: FavoriteRepository
     
-    init(with dependency: Dependency) {
-        self.dependency = dependency
-    }
-    
-    func getFavorites() async -> Redux.ThunkAction<S> {
+    func getFavorites() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
-                let favorites = try await dependency.favoriteRepository.getFavorites()
+                let favorites = try await favoriteRepository.getFavorites()
                 return FaroriteStateAction.didReceiveFavorites(.data(value: favorites))
             } catch let error {
                 return GlobalStateAction.didReceiveError(error)
@@ -33,21 +26,10 @@ struct FavoriteStateActionCreator<S: Redux.State>: Injectable {
         }, className: "\(type(of: self))")
     }
     
-//    func isFavorite(movieId: MovieId) async -> Redux.ThunkAction<S> {
-//        Redux.ThunkAction(function: { store, action in
-//            do {
-//                let isFavorite = try await dependency.favoriteRepository.isFavorite(movieId: movieId)
-//                return FaroriteStateAction.didReceiveIsFavorite(.data(value: isFavorite))
-//            } catch let error {
-//                return GlobalStateAction.didReceiveError(error)
-//            }
-//        }, className: "\(type(of: self))")
-//    }
-    
-    func addFavorite(movie: MovieDetail) async -> Redux.ThunkAction<S> {
+    func addFavorite(movie: MovieDetail) async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
-                let newer = try await dependency.favoriteRepository.addFavorite(movie: movie)
+                let newer = try await favoriteRepository.addFavorite(movie: movie)
                 return FaroriteStateAction.didReceiveFavorites(.data(value: newer))
             } catch let error {
                 return GlobalStateAction.didReceiveError(error)
@@ -55,10 +37,10 @@ struct FavoriteStateActionCreator<S: Redux.State>: Injectable {
         }, className: "\(type(of: self))")
     }
     
-    func removeFavorite(movie: MovieDetail) async -> Redux.ThunkAction<S> {
+    func removeFavorite(movie: MovieDetail) async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
-                let newer = try await dependency.favoriteRepository.removeFavorite(movie: movie)
+                let newer = try await favoriteRepository.removeFavorite(movie: movie)
                 return FaroriteStateAction.didReceiveFavorites(.data(value: newer))
             } catch let error {
                 return GlobalStateAction.didReceiveError(error)

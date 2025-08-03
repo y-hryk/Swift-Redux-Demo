@@ -14,22 +14,19 @@ enum MovieDetailStateAction: Redux.Action {
     case didReceiveReviews(AsyncValue<ReviewList>)
 }
 
-struct MovieDetailStateActionCreator<S: Redux.State>: Injectable {
-    struct Dependency {
-        let movieRepository: MovieRepository
-        let favoriteRepository: FavoriteRepository
-        let movieId: MovieId
-    }
-    private let dependency: Dependency
+struct MovieDetailStateActionCreator<State: Redux.State> {
+    @Injected(\.movieRepository) private var movieRepository: MovieRepository
+    @Injected(\.favoriteRepository) private var favoriteRepository: FavoriteRepository
+    private let movieId: MovieId
     
-    init(with dependency: Dependency) {
-        self.dependency = dependency
+    init(movieId: MovieId) {
+        self.movieId = movieId
     }
     
-    func getMovieDetail() async -> Redux.ThunkAction<S> {
+    func getMovieDetail() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
-                let movieDetail = try await dependency.movieRepository.getMovieDetail(movieId: dependency.movieId)
+                let movieDetail = try await movieRepository.getMovieDetail(movieId: movieId)
                 return MovieDetailStateAction.didReceiveMovieDetail(.data(value: movieDetail)
                 )
             } catch let error {
@@ -38,10 +35,10 @@ struct MovieDetailStateActionCreator<S: Redux.State>: Injectable {
         }, className: "\(type(of: self))")
     }
     
-    func getImages() async -> Redux.ThunkAction<S> {
+    func getImages() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
-                let backDrops = try await dependency.movieRepository.getBackdrpos(movieId: dependency.movieId)
+                let backDrops = try await movieRepository.getBackdrpos(movieId: movieId)
                 return MovieDetailStateAction.didReceiveBackdrops(.data(value: backDrops))
             } catch let error {
                 return GlobalStateAction.didReceiveError(error)
@@ -49,10 +46,10 @@ struct MovieDetailStateActionCreator<S: Redux.State>: Injectable {
         }, className: "\(type(of: self))")
     }
     
-    func getCreditList() async -> Redux.ThunkAction<S> {
+    func getCreditList() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
-                let credits = try await dependency.movieRepository.getCreditList(movieId: dependency.movieId)
+                let credits = try await movieRepository.getCreditList(movieId: movieId)
                 return MovieDetailStateAction.didReceiveCreditList(.data(value: credits))
             } catch let error {
                 return GlobalStateAction.didReceiveError(error)
@@ -60,10 +57,10 @@ struct MovieDetailStateActionCreator<S: Redux.State>: Injectable {
         }, className: "\(type(of: self))")
     }
     
-    func getReviews() async -> Redux.ThunkAction<S> {
+    func getReviews() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
-                let reviews = try await dependency.movieRepository.getReviews(movieId: dependency.movieId)
+                let reviews = try await movieRepository.getReviews(movieId: movieId)
                 return MovieDetailStateAction.didReceiveReviews(.data(value: reviews))
             } catch let error {
                 return GlobalStateAction.didReceiveError(error)

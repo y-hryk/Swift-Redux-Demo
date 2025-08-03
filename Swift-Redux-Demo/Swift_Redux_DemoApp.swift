@@ -38,7 +38,7 @@ struct Swift_Redux_DemoApp: App {
     
     var body: some Scene {
         WindowGroup {
-            AppRootContentView(
+            AppRootScreen(
                 store: LocalStoreBuilder.create(initialState: AppRootState(), reducer: AppRootState.reducer),
                 actionCreator: ActionCreatorAssembler().resolve()
             )

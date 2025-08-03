@@ -7,20 +7,14 @@
 
 import UIKit
 
-struct MaintenancePageActionCreator<S: Redux.State>: Injectable {
-    struct Dependency {
-        let maintenanceRepository: MaintenanceRepository
-    }
-    private let dependency: Dependency
+
+struct MaintenancePageActionCreator<State: Redux.State> {
+    @Injected(\.maintenanceRepository) private var maintenanceRepository: MaintenanceRepository
     
-    init(with dependency: Dependency) {
-        self.dependency = dependency
-    }
-    
-    func signIn() async -> Redux.ThunkAction<S> {
+    func signIn() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
-                let status = try await dependency.maintenanceRepository.getStatus()
+                let status = try await maintenanceRepository.getStatus()
                 switch status {
                 case .InProgress:
                     return GlobalStateAction.update(startScreen: .maintenance)
