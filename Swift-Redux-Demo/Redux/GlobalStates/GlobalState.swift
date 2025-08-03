@@ -46,7 +46,7 @@ extension GlobalState {
                     authenticationState: AuthenticationState(),
                     routingState: RoutingState(),
                     toastState: ToastState(),
-                    favoriteState: FavoriteState(),
+                    favoriteState: state.favoriteState,
                     showIndicator: false
                 )
             }

@@ -8,20 +8,13 @@
 import SwiftUI
 
 struct WatchListView: View {
-    let movies: AsyncValue<[MovieDetail]>
+    let movies: [MovieDetail]
     let completionHandler: ((MovieDetail) -> Void)
     var body: some View {
-        switch movies {
-        case .data(let movies):
-            if movies.isEmpty {
-                Text("No contents")
-            } else {
-                contents(movies: movies)
-            }
-        case .loading:
-            CenterProgressView()
-        case .error:
-            CenterProgressView()
+        if movies.isEmpty {
+            Text("No contents")
+        } else {
+            contents(movies: movies)
         }
     }
     
@@ -73,7 +66,7 @@ struct WatchListView: View {
 }
 
 #Preview {
-    WatchListView(movies: .loading) { _ in 
+    WatchListView(movies: []) { _ in 
         
     }
 }

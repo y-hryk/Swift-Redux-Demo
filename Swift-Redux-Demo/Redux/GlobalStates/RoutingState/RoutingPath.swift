@@ -54,7 +54,7 @@ enum RoutingPath: Hashable {
             
         case .debug:
             let store = LocalStoreBuilder.create(initialState: DebugPageState(), reducer: DebugPageState.reducer)
-            DebugPage(store: store)
+            DebugScreen(store: store)
             
         case .filmography(let personId, let type):
             let store = LocalStoreBuilder.create(initialState: FilmographyState(), reducer: FilmographyState.reducer)

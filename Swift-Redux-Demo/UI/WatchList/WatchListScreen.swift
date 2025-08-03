@@ -40,9 +40,9 @@ struct WatchListContentView: View {
             }
         }
         .onDidLoad() {
-            Task {
-                await store.dispatch(actionCreator.getFavorites())
-            }
+//            Task {
+//                await store.dispatch(actionCreator.getFavorites())
+//            }
         }
     }
 }

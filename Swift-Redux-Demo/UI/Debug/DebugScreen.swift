@@ -1,5 +1,5 @@
 //
-//  SettingsPage.swift
+//  DebugScreen.swift
 //  MovieAppDemo
 //
 //  Created by h.yamaguchi on 2024/09/10.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DebugPage: View {
+struct DebugScreen: View {
     @StateObject var store: Redux.LocalStore<DebugPageState>
     let actionCreator = DebugPageStateActionCreator(with: DebugPageStateActionCreator.Dependency())
     

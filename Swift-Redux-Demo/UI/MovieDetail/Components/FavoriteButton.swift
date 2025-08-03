@@ -9,42 +9,26 @@ import SwiftUI
 
 struct FavoriteButton: View, Equatable {
     static func == (lhs: FavoriteButton, rhs: FavoriteButton) -> Bool {
-        return lhs.isFavorite.value == rhs.isFavorite.value
+        return lhs.isFavorite == rhs.isFavorite
     }
     
-    let isFavorite: AsyncValue<Bool>
+    let isFavorite: Bool
     let completionHandler: ((Bool) -> Void)
     
-    init(isFavorite: AsyncValue<Bool>, completionHandler: @escaping (Bool) -> Void) {
+    init(isFavorite: Bool, completionHandler: @escaping (Bool) -> Void) {
         self.isFavorite = isFavorite
         self.completionHandler = completionHandler
     }
     
     var body: some View {
-        let _ = print(">> FavoriteButton body")
-        switch isFavorite {
-        case .data(let isFavorite):
-            PrimaryButton(title: isFavorite ? "Remove Watch List" : "Add Watch List") {
-                completionHandler(isFavorite)
-            }
-        case .loading:
-            ZStack {
-                PrimaryButton(title: "") {}
-                ProgressView()
-                    .tint(.white)
-            }
-        case .error:
-            ZStack {
-                PrimaryButton(title: "") {}
-                ProgressView()
-                    .tint(.white)
-            }
+        PrimaryButton(title: isFavorite ? "Remove Watch List" : "Add Watch List") {
+            completionHandler(isFavorite)
         }
     }
 }
 
 #Preview {
-    FavoriteButton(isFavorite: .loading) { _ in
+    FavoriteButton(isFavorite: false) { _ in
         
     }
 }

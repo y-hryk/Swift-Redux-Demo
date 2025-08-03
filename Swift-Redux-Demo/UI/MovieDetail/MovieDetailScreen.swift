@@ -24,7 +24,7 @@ struct MovieDetailScreen: View {
             .background(Color.Background.main)
             .onDidLoad {
                 Task {
-                    await store.dispatch(favoriteStateActionCreator.getFavorites())
+//                    await store.dispatch(favoriteStateActionCreator.getFavorites())
                     await store.dispatch(movieDetailStateActionCreator.getMovieDetail())
                     await store.dispatch(movieDetailStateActionCreator.getImages())
                     await store.dispatch(movieDetailStateActionCreator.getCreditList())
