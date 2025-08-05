@@ -12,7 +12,6 @@ struct MovieDetailScreen: View {
     @StateObject var store: Redux.LocalStore<MovieDetailState>
     @Environment(\.colorScheme) var colorScheme
     let movieDetailStateActionCreator: MovieDetailStateActionCreator<MovieDetailState>
-    let favoriteStateActionCreator: FavoriteStateActionCreator<MovieDetailState>
     
     var body: some View {
         MovieDetailScrollView(
@@ -24,7 +23,6 @@ struct MovieDetailScreen: View {
             .background(Color.Background.main)
             .onDidLoad {
                 Task {
-//                    await store.dispatch(favoriteStateActionCreator.getFavorites())
                     await store.dispatch(movieDetailStateActionCreator.getMovieDetail())
                     await store.dispatch(movieDetailStateActionCreator.getImages())
                     await store.dispatch(movieDetailStateActionCreator.getCreditList())
@@ -39,9 +37,9 @@ struct MovieDetailScreen: View {
                 FavoriteButton(isFavorite: globalStore.state.favoriteState.isFavorite(movieId: movieDetail.id)) { isFavorite in
                     Task {
                         if isFavorite {
-                            await store.dispatch(favoriteStateActionCreator.removeFavorite(movie: movieDetail))
+                            await store.dispatch(FavoriteStateAction.removeFavorite(detail: movieDetail))
                         } else {
-                            await store.dispatch(favoriteStateActionCreator.addFavorite(movie: movieDetail))
+                            await store.dispatch(FavoriteStateAction.addFavorite(detail: movieDetail))
                         }
                     }
                 }

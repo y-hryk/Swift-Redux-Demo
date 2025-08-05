@@ -32,7 +32,7 @@ struct ActionCreatorAssembler {
         FilmographyStateActionCreator<State>(personId: personId, filmographyType: type)
     }
     
-    func resolve<State: Redux.State>() -> FavoriteStateActionCreator<State> {
-        FavoriteStateActionCreator<State>()
+    func resolve<State: Redux.State>() -> DeepLinkStateActionCreator<State> {
+        DeepLinkStateActionCreator()
     }
 }

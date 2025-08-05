@@ -78,6 +78,8 @@ extension RoutingState {
         case RoutingStateAction.updateModel(let paths):
             state.modalPaths = paths
             
+        case RoutingStateAction.resetAll:
+            state = RoutingState()
         }
         
         return RoutingState(

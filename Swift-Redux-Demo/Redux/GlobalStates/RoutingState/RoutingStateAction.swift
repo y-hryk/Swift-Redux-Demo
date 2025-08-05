@@ -16,4 +16,5 @@ enum RoutingStateAction: Redux.GlobalAction {
     case showModal(ModalItem)
     case dismiss
     case updateModel([ModalItem])
+    case resetAll
 }

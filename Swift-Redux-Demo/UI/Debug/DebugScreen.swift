@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DebugScreen: View {
+    @EnvironmentObject var globalStore: Redux.GlobalStore
     @StateObject var store: Redux.LocalStore<DebugPageState>
     let actionCreator = DebugPageStateActionCreator(with: DebugPageStateActionCreator.Dependency())
     
@@ -58,6 +59,22 @@ struct DebugScreen: View {
                             await store.dispatch(GlobalStateAction.showIndicator(false))
                         }
                     }
+                    ListTextButton("DeepLink MovieDetail") {
+                        Task {
+                            await store.dispatch(DeepLinkAction.updateDeepLink(DeepLink(to: .movieDetail(MovieId(value: "550")))))
+                        }
+                    }
+                    ListTextButton("DeepLink WatchList") {
+                        Task {
+                            await store.dispatch(DeepLinkAction.updateDeepLink(DeepLink(to: .watchList)))
+                        }
+                    }
+                    ListTextButton("DeepLink FirstModal") {
+                        Task {
+                            await store.dispatch(DeepLinkAction.updateDeepLink(DeepLink(to: .firstModal)))
+                        }
+                    }
+
                 }
                 .listStyle(.grouped)
                 .scrollContentBackground(.hidden)

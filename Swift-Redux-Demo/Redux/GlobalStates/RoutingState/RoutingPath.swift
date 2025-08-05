@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum RoutingPath: Hashable {
+enum RoutingPath: Equatable, Hashable {
     // root
     case splash
     case maintenance
@@ -50,7 +50,7 @@ enum RoutingPath: Hashable {
             
         case .watchList:
             let store = LocalStoreBuilder.create(initialState: WatchListPageState(), reducer: WatchListPageState.reducer)
-            WatchListContentView(store: store, actionCreator: ActionCreatorAssembler().resolve())
+            WatchListContentView(store: store)
             
         case .debug:
             let store = LocalStoreBuilder.create(initialState: DebugPageState(), reducer: DebugPageState.reducer)
@@ -67,8 +67,7 @@ enum RoutingPath: Hashable {
                 reducer: MovieDetailState.reducer
             )
             MovieDetailScreen(store: store,
-                              movieDetailStateActionCreator: ActionCreatorAssembler().resolve(movieId: movieId),
-                              favoriteStateActionCreator: ActionCreatorAssembler().resolve())
+                              movieDetailStateActionCreator: ActionCreatorAssembler().resolve(movieId: movieId))
         case .debugFirstModel:
             let store = LocalStoreBuilder.create(
                 initialState: EmptyState(),

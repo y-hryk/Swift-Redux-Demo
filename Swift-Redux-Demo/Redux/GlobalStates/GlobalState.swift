@@ -20,6 +20,7 @@ struct GlobalState: Redux.State {
     var routingState: RoutingState
     var toastState: ToastState
     var favoriteState: FavoriteState
+    var deepLinkState: DeepLinkState
     var showIndicator: Bool
 }
 
@@ -30,6 +31,7 @@ extension GlobalState {
         routingState = RoutingState()
         toastState = ToastState()
         favoriteState = FavoriteState()
+        deepLinkState = DeepLinkState()
         showIndicator = false
     }
 }
@@ -47,6 +49,7 @@ extension GlobalState {
                     routingState: RoutingState(),
                     toastState: ToastState(),
                     favoriteState: state.favoriteState,
+                    deepLinkState: DeepLinkState(),
                     showIndicator: false
                 )
             }
@@ -60,6 +63,7 @@ extension GlobalState {
             routingState: RoutingState.reducer(state.routingState, action),
             toastState: ToastState.reducer(state.toastState, action),
             favoriteState: FavoriteState.reducer(state.favoriteState, action),
+            deepLinkState: DeepLinkState.reducer(state.deepLinkState, action),
             showIndicator: state.showIndicator
         )
     }

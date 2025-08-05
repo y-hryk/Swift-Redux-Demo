@@ -7,20 +7,6 @@
 
 import SwiftUI
 
-//let store = ReduxStore(
-//    initialState: AppState(),
-//    reducer: AppState.reducer,
-//    middleware: [
-////        debugDelayRequestMiddleware(),
-////        thunkMiddleware(),
-////        errorToastMiddleware(),
-////        webApiErrorHandleMiddleware()
-////        Middlewares.errorToast,
-////        Middlewares.webApiErrorHandle
-//    ],
-//    afterMiddleware: Middlewares.loggerAfter
-//)
-
 let globalStore = Redux.GlobalStore(
     reducer: GlobalState.reducer,
     afterMiddleware: Redux.traceAfterMiddleware()
@@ -28,21 +14,26 @@ let globalStore = Redux.GlobalStore(
 
 @main
 struct Swift_Redux_DemoApp: App {
-    
+    @StateObject private var stateObservationBuilder: StateObservationBuilder
+
     init() {
         let appearance: UITabBarAppearance = UITabBarAppearance()
         appearance.backgroundColor = Color.Background.main.toUIColor()
         UITabBar.appearance().scrollEdgeAppearance = appearance
         UITabBar.appearance().standardAppearance = appearance
+        _stateObservationBuilder = StateObject(wrappedValue: StateObservationBuilder(store: globalStore))
     }
     
     var body: some Scene {
         WindowGroup {
             AppRootScreen(
                 store: LocalStoreBuilder.create(initialState: AppRootState(), reducer: AppRootState.reducer),
-                actionCreator: ActionCreatorAssembler().resolve()
+                authenticationStateActionCreator: ActionCreatorAssembler().resolve(),
+                deepLinkStateActionCreator: ActionCreatorAssembler().resolve()
             )
             .environmentObject(globalStore)
+            .environment(\.globalStore, globalStore)
+            .environmentObject(stateObservationBuilder)
         }
     }
 }

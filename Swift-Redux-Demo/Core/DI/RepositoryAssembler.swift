@@ -55,17 +55,3 @@ extension InjectedValues {
     }
 
 }
-
-// FavoriteRepository
-private struct FavoriteRepositoryKey: InjectionKey {
-    static var currentValue: FavoriteRepository = FavoriteRepositoryImpl(
-        with: FavoriteRepositoryImpl.Dependency(dataStore: FavoriteMemoryCache.shared)
-    )
-}
-
-extension InjectedValues {
-    var favoriteRepository: FavoriteRepository {
-        get { Self[FavoriteRepositoryKey.self] }
-        set { Self[FavoriteRepositoryKey.self] = newValue }
-    }
-}

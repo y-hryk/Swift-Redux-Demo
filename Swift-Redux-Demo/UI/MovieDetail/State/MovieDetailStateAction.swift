@@ -16,7 +16,6 @@ enum MovieDetailStateAction: Redux.Action {
 
 struct MovieDetailStateActionCreator<State: Redux.State> {
     @Injected(\.movieRepository) private var movieRepository: MovieRepository
-    @Injected(\.favoriteRepository) private var favoriteRepository: FavoriteRepository
     private let movieId: MovieId
     
     init(movieId: MovieId) {

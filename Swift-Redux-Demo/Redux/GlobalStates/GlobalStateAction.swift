@@ -12,13 +12,3 @@ enum GlobalStateAction: Redux.GlobalAction {
     case update(startScreen: StartScreen)
     case showIndicator(Bool)
 }
-
-struct GlobalStateActionCreator: Injectable {
-    struct Dependency {
-    }
-    private let dependency: Dependency
-    
-    init(with dependency: Dependency) {
-        self.dependency = dependency
-    }
-}

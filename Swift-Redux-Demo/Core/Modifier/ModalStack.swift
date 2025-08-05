@@ -36,7 +36,6 @@ struct ModalItem: Identifiable, Hashable {
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
-        hasher.combine(routingPath)
     }
     
     static func == (lhs: ModalItem, rhs: ModalItem) -> Bool {

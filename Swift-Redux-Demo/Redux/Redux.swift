@@ -11,7 +11,7 @@ struct Redux {
     typealias AfterMiddleware<State: Redux.State> = (State, State, Redux.Action, Redux.Action) -> Void
     
     // State
-    protocol State {
+    protocol State: Equatable {
         static var reducer: Redux.Reducer<Self> { get }
     }
     

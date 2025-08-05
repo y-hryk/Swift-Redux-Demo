@@ -23,10 +23,10 @@ extension FavoriteState {
     static let reducer: Redux.Reducer<Self> = { state, action in
         var state = state
         switch action {
-        case FaroriteStateAction.addFavorite(let movie):
+        case FavoriteStateAction.addFavorite(let movie):
             state.favoriteItems.append(movie)
             
-        case FaroriteStateAction.removeFavorite(let movie):
+        case FavoriteStateAction.removeFavorite(let movie):
             state.favoriteItems.removeAll { value in
                 value.id == movie.id
             }

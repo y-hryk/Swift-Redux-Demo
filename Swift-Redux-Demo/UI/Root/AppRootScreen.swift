@@ -27,7 +27,8 @@ struct StartScreenView: View {
 struct AppRootScreen: View {
     @EnvironmentObject var globalStore: Redux.GlobalStore
     @StateObject var store: Redux.LocalStore<AppRootState>
-    let actionCreator: AuthenticationStateActionCreator<AppRootState>
+    let authenticationStateActionCreator: AuthenticationStateActionCreator<AppRootState>
+    let deepLinkStateActionCreator: DeepLinkStateActionCreator<AppRootState>
     
     var body: some View {
         ZStack {
@@ -38,17 +39,33 @@ struct AppRootScreen: View {
         }
         .onOpenURL { url in
             print(url)
+            let deepLink = DeepLink.handleDeepLink(url: url, isSignIn: globalStore.state.authenticationState.isAuthenticated)
+            Task {
+                await store.dispatch(DeepLinkAction.updateDeepLink(deepLink))
+            }
         }
         .onAppear() {
             Task {
-                await store.dispatch(actionCreator.isSignIn())
+                await store.dispatch(authenticationStateActionCreator.isSignIn())
             }
         }
         .onChange(of: globalStore.state.authenticationState.shouldLogoutTriger) { oldValue, newValue in
             if newValue {
                 Task {
-                    await store.dispatch(actionCreator.signOut())
+                    await store.dispatch(authenticationStateActionCreator.signOut())
                 }
+            }
+        }
+        .onChange(of: globalStore.state.authenticationState.shouldLogoutTriger) { _, newValue in
+            if newValue {
+                Task {
+                    await store.dispatch(authenticationStateActionCreator.signOut())
+                }
+            }
+        }
+        .onChange(of: globalStore.state.deepLinkState.deepLink) { _, newValue in
+            Task {
+                await store.dispatch(deepLinkStateActionCreator.execute(deepLink: newValue))
             }
         }
         .toastView(toast: Binding(
