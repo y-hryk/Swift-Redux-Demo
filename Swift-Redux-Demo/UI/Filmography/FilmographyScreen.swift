@@ -83,7 +83,7 @@ struct FilmographyScreen: View {
                         ForEach(filmography.movies) { movie in
                             Button {
                                 Task {
-                                    await store.dispatch(RoutingStateAction.push(.movieDetail(movieId: movie.id)))
+                                    await store.dispatch(RoutingStateAction.routePushed(.movieDetail(movieId: movie.id)))
                                 }
                             } label: {
                                 HStack(alignment: .center, spacing: 0.0) {

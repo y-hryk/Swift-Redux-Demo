@@ -70,8 +70,8 @@ enum RoutingPath: Equatable, Hashable {
                               movieDetailStateActionCreator: ActionCreatorAssembler().resolve(movieId: movieId))
         case .debugFirstModel:
             let store = LocalStoreBuilder.create(
-                initialState: EmptyState(),
-                reducer: EmptyState.reducer
+                initialState: EmptyState2(),
+                reducer: EmptyState2.reducer
             )
             DebugFirstModalScreen(store: store)
             

@@ -7,6 +7,16 @@
 
 import SwiftUI
 
+struct EmptyState2: Redux.State {
+
+}
+
+extension EmptyState2 {
+    static let reducer: Redux.Reducer<Self> = { state, action in
+        return state
+    }
+}
+
 struct EmptyState: Redux.State {
 
 }
@@ -15,6 +25,10 @@ extension EmptyState {
     static let reducer: Redux.Reducer<Self> = { state, action in
         return state
     }
+}
+
+enum EmptyStateAction: Redux.Action {
+    case processingComplete
 }
 
 struct LocalStoreBuilder {

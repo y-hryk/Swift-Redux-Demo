@@ -50,3 +50,21 @@ extension MovieDetailState {
         )
     }
 }
+
+extension MovieDetailState {
+    static let reducer: Redux.Reducer<Self> = { state, action in
+        var state = state
+        switch action {
+        case MovieDetailStateAction.movieDetailReceived(let detail):
+            state.movie = detail
+        case MovieDetailStateAction.didReceiveBackdrops(let backdrops):
+            state.backdrops = backdrops
+        case MovieDetailStateAction.didReceiveCreditList(let creditList):
+            state.creditList = creditList
+        case MovieDetailStateAction.didReceiveReviews(let reviews):
+            state.reviews = reviews
+        default: break
+        }
+        return state
+    }
+}

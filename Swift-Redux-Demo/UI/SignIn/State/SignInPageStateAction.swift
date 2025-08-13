@@ -8,10 +8,10 @@
 import Foundation
 
 enum SignInPageStateAction: Redux.Action {
-    case updateProgress(Float)
-    case showProgress(Bool)
-    case updateUserName(String)
-    case updatePassword(String)
+    case progressUpdated(Float)
+    case progressShown(Bool)
+    case userNameUpdated(String)
+    case passwordUpdated(String)
 }
 
 struct SignInPageStateActionCreator<State: Redux.State> {
@@ -20,27 +20,25 @@ struct SignInPageStateActionCreator<State: Redux.State> {
     func signIn() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
-                await store.dispatch(SignInPageStateAction.showProgress(true))
-                print(">> showIndicator")
+                await store.dispatch(SignInPageStateAction.progressShown(true))
                 try? await Task.sleep(for: .seconds(0.5))
-                await store.dispatch(SignInPageStateAction.updateProgress(0.25))
-                print(">> updateProgress")
+                await store.dispatch(SignInPageStateAction.progressUpdated(0.25))
                 try? await Task.sleep(for: .seconds(1))
-                await store.dispatch(SignInPageStateAction.updateProgress(0.45))
+                await store.dispatch(SignInPageStateAction.progressUpdated(0.45))
                 try? await Task.sleep(for: .seconds(0.5))
-                await store.dispatch(SignInPageStateAction.updateProgress(0.75))
+                await store.dispatch(SignInPageStateAction.progressUpdated(0.75))
                 try? await Task.sleep(for: .seconds(1))
-                await store.dispatch(SignInPageStateAction.updateProgress(1.0))
+                await store.dispatch(SignInPageStateAction.progressUpdated(1.0))
                 try? await Task.sleep(for: .seconds(1))
                 let _ = try await userRepository.signIn()
                 await store.dispatch(ToastStateAction.didReceiveToast(
                     Toast(style: .success, message: "Login successful")
                 ))
-                await store.dispatch(SignInPageStateAction.showProgress(false))
-                return GlobalStateAction.update(startScreen: .splash)
+                await store.dispatch(SignInPageStateAction.progressShown(false))
+                return GlobalStateAction.startScreenChanged(startScreen: .splash)
             } catch let error {
-                await store.dispatch(SignInPageStateAction.showProgress(false))
-                return GlobalStateAction.didReceiveError(error)
+                await store.dispatch(SignInPageStateAction.progressShown(false))
+                return GlobalStateAction.errorReceived(error)
             }
         }, className: "\(type(of: self))")
     }

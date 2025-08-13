@@ -8,16 +8,16 @@
 import SwiftUI
 
 struct MovieListScreen: View {
-    @EnvironmentObject var globalStore: Redux.GlobalStore
+    @StateBinding(\.routingState.movieListPaths, default: []) var movieListPaths
     @StateObject var store: Redux.LocalStore<MoviePageState>
     let actionCreator: MoviePageStateActionCreator<MoviePageState>
     
     var body: some View {
         NavigationStack(path: Binding(
-            get: { globalStore.state.routingState.movieListPaths },
+            get: { movieListPaths },
             set: { value in
                 Task {
-                    await store.dispatch(RoutingStateAction.updateMovieList(value))
+                    await store.dispatch(RoutingStateAction.movieListNavigationsChanged(value))
                 }
             }
         )) {
@@ -25,16 +25,16 @@ struct MovieListScreen: View {
                 movieList: store.state.movieList,
                 onPressed: { movieId in
                     Task {
-                        await store.dispatch(RoutingStateAction.push(.movieDetail(movieId: movieId))
+                        await store.dispatch(RoutingStateAction.routePushed(.movieDetail(movieId: movieId))
                         )
                     }
                 },
                 refreshHandler: {
-                    await store.dispatch(actionCreator.getMovies())
+                    await store.dispatch(actionCreator.movieListRequested())
                 },
                 scrolledToBottom: { moviewList in
                     Task {
-                        await store.dispatch(actionCreator.getMoreMovies(movieList: moviewList))
+                        await store.dispatch(actionCreator.movieListMoreRequested(movieList: moviewList))
                     }
                 }
             )
@@ -48,17 +48,11 @@ struct MovieListScreen: View {
         }
         .onDidLoad() {
             Task {
-                await store.dispatch(actionCreator.getMovies())
+                await store.dispatch(actionCreator.movieListRequested())
             }
         }
         .onAppear {
             print("viewwill Appear")
-        }
-        .onChange(of: globalStore.state.routingState.movieListPaths.count) { oldValue, newValue in
-            // スタックが減った時（戻ってきた時）にrefresh
-            if oldValue > newValue {
-                print("++ refresh")
-            }
         }
     }
 }

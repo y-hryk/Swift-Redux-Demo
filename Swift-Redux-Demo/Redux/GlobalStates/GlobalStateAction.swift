@@ -8,7 +8,7 @@
 import UIKit
 
 enum GlobalStateAction: Redux.GlobalAction {
-    case didReceiveError(Error)
-    case update(startScreen: StartScreen)
-    case showIndicator(Bool)
+    case errorReceived(Error)
+    case startScreenChanged(startScreen: StartScreen)
+    case indicatorShown(Bool)
 }

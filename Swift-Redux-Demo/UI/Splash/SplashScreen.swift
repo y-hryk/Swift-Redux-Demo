@@ -17,7 +17,7 @@ struct SplashScreen: View {
                 .font(.titleM())
                 .onAppear() {
                     Task {
-                        await store.dispatch(actionCreator.isSignIn())
+                        await store.dispatch(actionCreator.verifyAuthentication())
                     }
                 }
         }

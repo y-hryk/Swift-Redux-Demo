@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-@MainActor
+// MARK: - ModifierStateSelector (内部実装)
 class ModifierStateSelector<Value: Equatable>: ObservableObject {
     @Published var value: Value
     private var cancellable: AnyCancellable?
@@ -47,7 +47,12 @@ class ModifierStateSelector<Value: Equatable>: ObservableObject {
     }
 }
 
-// MARK: - StateObservationBuilder (Pattern 2)
+// MARK: - StateModifierObservation (監視定義)
+struct StateModifierObservation {
+    let apply: @MainActor (AnyView, StateObservationBuilder) -> AnyView
+}
+
+// MARK: - StateObservationBuilder (メインクラス - APIを提供)
 @MainActor
 class StateObservationBuilder: ObservableObject {
     private let store: Redux.GlobalStore
@@ -57,7 +62,7 @@ class StateObservationBuilder: ObservableObject {
         self.store = store
     }
     
-    func getSelector<Value: Equatable>(
+    private func getSelector<Value: Equatable>(
         for keyPath: KeyPath<GlobalState, Value>,
         defaultValue: Value
     ) -> ModifierStateSelector<Value> {
@@ -74,75 +79,72 @@ class StateObservationBuilder: ObservableObject {
         return selector
     }
     
-    func observeState<Value: Equatable>(
-        _ keyPath: KeyPath<GlobalState, Value>,
-        defaultValue: Value,
-        perform action: @escaping (Value) -> Void
-    ) -> AnyPublisher<Value, Never> {
-        let selector = getSelector(for: keyPath, defaultValue: defaultValue)
-        return selector.$value.eraseToAnyPublisher()
-    }
-}
-
-// MARK: - View Extensions (汎用的な実装)
-extension View {
-    // 完全に汎用的なメソッド（デフォルト値必須）
-    func observeState<Value: Equatable>(
-        _ keyPath: KeyPath<GlobalState, Value>,
-        from builder: StateObservationBuilder,
-        default defaultValue: Value,
-        perform action: @escaping (Value) -> Void
-    ) -> some View {
-        self.onReceive(
-            builder.observeState(keyPath, defaultValue: defaultValue) { _ in }
-        ) { value in
-            action(value)
-        }
-    }
+    // MARK: - Public API Methods
     
-    // Optional値専用（デフォルト値はnil）
-    func observeOptionalState<Value: Equatable>(
-        _ keyPath: KeyPath<GlobalState, Value?>,
-        from builder: StateObservationBuilder,
-        perform action: @escaping (Value?) -> Void
-    ) -> some View {
-        self.observeState(keyPath, from: builder, default: nil as Value?) { value in
-            action(value)
-        }
-    }
-    
-    // ViewModifierスタイル（チェーン可能）
-    func observingState<Value: Equatable>(
+    // 通常の値用
+    func observe<Value: Equatable>(
         _ keyPath: KeyPath<GlobalState, Value>,
-        from builder: StateObservationBuilder,
         default defaultValue: Value,
         into binding: Binding<Value>
-    ) -> some View {
-        self.observeState(keyPath, from: builder, default: defaultValue) { value in
-            binding.wrappedValue = value
+    ) -> StateModifierObservation {
+        StateModifierObservation { @MainActor view, builder in
+            let selector = builder.getSelector(for: keyPath, defaultValue: defaultValue)
+            
+            return AnyView(
+                view.onReceive(selector.$value.receive(on: DispatchQueue.main)) { value in
+                    binding.wrappedValue = value
+                }
+            )
         }
     }
     
-    // 複数の状態を一度に監視
-    func observingStates(
-        from builder: StateObservationBuilder,
-        @StateModifierBuilder _ observations: () -> [StateModifierObservation]
-    ) -> some View {
-        var modifiedView: AnyView = AnyView(self)
-        
-        for observation in observations() {
-            modifiedView = AnyView(observation.apply(modifiedView, builder))
+    // Optional値用（デフォルト値はnil）
+    func observe<Value: Equatable>(
+        _ keyPath: KeyPath<GlobalState, Value?>,
+        into binding: Binding<Value?>
+    ) -> StateModifierObservation {
+        StateModifierObservation { @MainActor view, builder in
+            let selector = builder.getSelector(for: keyPath, defaultValue: nil as Value?)
+            
+            return AnyView(
+                view.onReceive(selector.$value.receive(on: DispatchQueue.main)) { value in
+                    binding.wrappedValue = value
+                }
+            )
         }
-        
-        return modifiedView
+    }
+    
+    // アクション実行用（バインディングなし）
+    func observe<Value: Equatable>(
+        _ keyPath: KeyPath<GlobalState, Value>,
+        default defaultValue: Value,
+        perform action: @escaping (Value) -> Void
+    ) -> StateModifierObservation {
+        StateModifierObservation { @MainActor view, builder in
+            let selector = builder.getSelector(for: keyPath, defaultValue: defaultValue)
+            
+            return AnyView(
+                view.onReceive(selector.$value.receive(on: DispatchQueue.main), perform: action)
+            )
+        }
+    }
+    
+    // Optional値でアクション実行用
+    func observe<Value: Equatable>(
+        _ keyPath: KeyPath<GlobalState, Value?>,
+        perform action: @escaping (Value?) -> Void
+    ) -> StateModifierObservation {
+        StateModifierObservation { @MainActor view, builder in
+            let selector = builder.getSelector(for: keyPath, defaultValue: nil as Value?)
+            
+            return AnyView(
+                view.onReceive(selector.$value.receive(on: DispatchQueue.main), perform: action)
+            )
+        }
     }
 }
 
-// MARK: - StateModifierObservation（複数状態監視用のヘルパー）
-struct StateModifierObservation {
-    let apply: (AnyView, StateObservationBuilder) -> AnyView
-}
-
+// MARK: - StateModifierBuilder (Result Builder)
 @resultBuilder
 struct StateModifierBuilder {
     static func buildBlock(_ observations: StateModifierObservation...) -> [StateModifierObservation] {
@@ -150,38 +152,58 @@ struct StateModifierBuilder {
     }
 }
 
-extension StateModifierObservation {
-    static func observe<Value: Equatable>(
-        _ keyPath: KeyPath<GlobalState, Value>,
-        default defaultValue: Value,
-        into binding: Binding<Value>
-    ) -> StateModifierObservation {
-        StateModifierObservation { view, builder in
-            AnyView(
-                view.observeState(keyPath, from: builder, default: defaultValue) { value in
-                    binding.wrappedValue = value
-                }
-            )
+// MARK: - View Extension
+extension View {
+    @MainActor
+    func observingStates(
+        from builder: StateObservationBuilder,
+        @StateModifierBuilder _ observations: (StateObservationBuilder) -> [StateModifierObservation]
+    ) -> some View {
+        var modifiedView: AnyView = AnyView(self)
+        
+        for observation in observations(builder) {
+            modifiedView = observation.apply(modifiedView, builder)
         }
-    }
-    
-    static func observe<Value: Equatable>(
-        _ keyPath: KeyPath<GlobalState, Value?>,
-        into binding: Binding<Value?>
-    ) -> StateModifierObservation {
-        StateModifierObservation { view, builder in
-            AnyView(
-                view.observeOptionalState(keyPath, from: builder) { value in
-                    binding.wrappedValue = value
-                }
-            )
-        }
+        
+        return modifiedView
     }
 }
 
-// MARK: - Convenience Bindings (Pattern 2)
-struct StateModifierBindings {
-    static func binding<Value: Equatable>(to state: Binding<Value>) -> Binding<Value> {
-        state
+/*
+ example:
+ 
+ // root
+ @main
+ struct DemoApp: App {
+     @StateObject private var stateObservationBuilder: StateObservationBuilder
+     
+     init() {
+        _stateObservationBuilder = StateObject(wrappedValue: StateObservationBuilder(store: globalStore))
+     }
+ 
+     var body: some Scene {
+         WindowGroup {
+             AppRootScreen()
+             .environmentObject(stateObservationBuilder)
+         }
+     }
+ }
+
+ struct ContentView: View {
+    @EnvironmentObject var stateObservationBuilder: StateObservationBuilder
+    @State private var userName: String = ""
+    @State private var password: String = ""
+ 
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0.0) {
+            Text(userName)
+            Text(password)
+        }
+        .observingStates(from: stateObservationBuilder) { builder in
+            // Bind the variables you want to monitor from GlobalState
+            builder.observe(\.userName, default: "", into: $userName)
+            builder.observe(\.password, default: "", into: $password)
+        }
     }
-}
+ }
+ */

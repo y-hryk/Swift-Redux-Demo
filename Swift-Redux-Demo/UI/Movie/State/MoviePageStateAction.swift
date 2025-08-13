@@ -8,35 +8,34 @@
 import Foundation
 
 enum MoviePageStateAction: Redux.Action {
-    case didReceiveMovieList(AsyncValue<MovieList>)
-    case didMoreReceiveMovieList(MovieList)
-    case shuffleRateScore
+    case movieListReceived(AsyncValue<MovieList>)
+    case moreMoviesListReceived(MovieList)
 }
 
 struct MoviePageStateActionCreator<State: Redux.State> {
     @Injected(\.movieRepository) private var movieRepository: MovieRepository
     
-    func getMovies() async -> Redux.ThunkAction<State> {
+    func movieListRequested() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
                 let movieList = try await movieRepository.getMovieTopRated(page: nil)
-                return MoviePageStateAction.didReceiveMovieList(.data(value: movieList))
+                return MoviePageStateAction.movieListReceived(.data(value: movieList))
             } catch let error {
-                await store.dispatch(GlobalStateAction.didReceiveError(error))
-                return MoviePageStateAction.didReceiveMovieList(.error(error: error))
+                await store.dispatch(GlobalStateAction.errorReceived(error))
+                return MoviePageStateAction.movieListReceived(.error(error: error))
             }
         }, className: "\(type(of: self))")
     }
     
-    func getMoreMovies(movieList: MovieList) async -> Redux.ThunkAction<State> {
+    func movieListMoreRequested(movieList: MovieList) async -> Redux.ThunkAction<State> {
         return Redux.ThunkAction(function: { store, action in
             if !movieList.shouldLoadData() { return nil }
             do {
                 let nextPage = movieList.nextPage()
                 let movieList = try await movieRepository.getMovieTopRated(page: nextPage)
-                return MoviePageStateAction.didMoreReceiveMovieList(movieList)
+                return MoviePageStateAction.moreMoviesListReceived(movieList)
             } catch let error {
-                return GlobalStateAction.didReceiveError(error)
+                return GlobalStateAction.errorReceived(error)
             }
         }, className: "\(type(of: self))")
     }

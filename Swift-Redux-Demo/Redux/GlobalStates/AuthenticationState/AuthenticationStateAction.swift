@@ -8,26 +8,26 @@
 import UIKit
 
 enum AuthenticationStateAction: Redux.GlobalAction {
-    case changeAuthenticated(isAuthenticated: Bool)
-    case signOutStart
+    case authStateUpdated(Bool)
+    case signOutStarted
 }
 
 struct AuthenticationStateActionCreator<State: Redux.State> {
     @Injected(\.userRepository) private var userRepository: UserRepository
     
-    func isSignIn() async -> Redux.ThunkAction<State> {
+    func verifyAuthentication() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
                 try? await Task.sleep(for: .seconds(3))
                 let isSignIn = try await userRepository.isSignIn()
                 if isSignIn {
-                    return GlobalStateAction.update(startScreen: .signedIn)
+                    return GlobalStateAction.startScreenChanged(startScreen: .signedIn)
                 } else {
-                    return GlobalStateAction.update(startScreen: .signedOut)
+                    return GlobalStateAction.startScreenChanged(startScreen: .signedOut)
                 }
             } catch _ {
-                await store.dispatch(AuthenticationStateAction.changeAuthenticated(isAuthenticated: false))
-                return GlobalStateAction.update(startScreen: .signedOut)
+                await store.dispatch(AuthenticationStateAction.authStateUpdated(false))
+                return GlobalStateAction.startScreenChanged(startScreen: .signedOut)
             }
         }, className: "\(type(of: self))")
     }
@@ -36,10 +36,10 @@ struct AuthenticationStateActionCreator<State: Redux.State> {
         Redux.ThunkAction(function: { store, action in
             do {
                 try await userRepository.signOut()
-                await store.dispatch(AuthenticationStateAction.changeAuthenticated(isAuthenticated: false))
-                return GlobalStateAction.update(startScreen: .splash)
+                await store.dispatch(AuthenticationStateAction.authStateUpdated(false))
+                return GlobalStateAction.startScreenChanged(startScreen: .splash)
             } catch {
-                return GlobalStateAction.update(startScreen: .splash)
+                return GlobalStateAction.startScreenChanged(startScreen: .splash)
             }
         }, className: "\(type(of: self))")
     }

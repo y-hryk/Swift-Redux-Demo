@@ -26,7 +26,7 @@ struct SignInScreen: View {
                         store.state.userName
                     }, set: { value, _ in
                         Task {
-                            await store.dispatch(SignInPageStateAction.updateUserName(value))
+                            await store.dispatch(SignInPageStateAction.userNameUpdated(value))
                         }
                     }))
                     .textFieldStyle(.plain)
@@ -43,7 +43,7 @@ struct SignInScreen: View {
                         store.state.password
                     }, set: { value, _ in
                         Task {
-                            await store.dispatch(SignInPageStateAction.updatePassword(value))
+                            await store.dispatch(SignInPageStateAction.passwordUpdated(value))
                         }
                     }))
                     .textFieldStyle(.plain)
@@ -68,7 +68,7 @@ struct SignInScreen: View {
                 get: { CGFloat(store.state.progress) },
                 set: { value, _ in
                     Task {
-                        await store.dispatch(SignInPageStateAction.updateProgress(Float(value)))
+                        await store.dispatch(SignInPageStateAction.progressUpdated(Float(value)))
                     }
                 }), color: Color(red: 138 / 255, green: 111 / 255, blue: 245 / 255, opacity:1.0))
                 .hidden(!store.state.showProgress)

@@ -18,3 +18,21 @@ extension MoviePageState {
         presentedUserSetting = false
     }
 }
+
+extension MoviePageState {
+    static let reducer: Redux.Reducer<Self> = { state, action in
+        var state = state
+        switch action {
+        case MoviePageStateAction.movieListReceived(let movieList):
+            state.movieList = movieList
+        case MoviePageStateAction.moreMoviesListReceived(let movieList):
+            let current = state.movieList.value?.results ?? []
+            let newer = current + movieList.results
+            state.movieList = .data(value: MovieList(currentPage: movieList.currentPage,
+                                                     totalPages: movieList.totalPages,
+                                                     results: newer))
+        default: break
+        }
+        return state
+    }
+}

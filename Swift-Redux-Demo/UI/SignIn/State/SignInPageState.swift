@@ -27,14 +27,14 @@ extension SignInPageState {
     static let reducer: Redux.Reducer<Self> = { state, action in
         var state = state
         switch action {
-        case SignInPageStateAction.updateProgress(let progress):
+        case SignInPageStateAction.progressUpdated(let progress):
             state.progress = progress
-        case SignInPageStateAction.showProgress(let showProgress):
-            state.showProgress = showProgress
-            if showProgress { state.progress = 0.0 }
-        case SignInPageStateAction.updateUserName(let userName):
+        case SignInPageStateAction.progressShown(let progressShown):
+            state.showProgress = progressShown
+            if progressShown { state.progress = 0.0 }
+        case SignInPageStateAction.userNameUpdated(let userName):
             state.userName = userName
-        case SignInPageStateAction.updatePassword(let password):
+        case SignInPageStateAction.passwordUpdated(let password):
             state.password = password
         default: break
         }

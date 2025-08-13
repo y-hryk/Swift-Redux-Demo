@@ -8,13 +8,13 @@
 import SwiftUI
 
 enum RoutingStateAction: Redux.GlobalAction {
-    case selectTab(tab: Tab)
-    case push(RoutingPath)
-    case pop
-    case updateMovieList([RoutingPath])
-    case updateWatchList([RoutingPath])
-    case showModal(ModalItem)
-    case dismiss
-    case updateModel([ModalItem])
-    case resetAll
+    case tabSelected(tab: Tab)
+    case routePushed(RoutingPath)
+    case routePopped
+    case movieListNavigationsChanged([RoutingPath])
+    case watchListNavigationsChanged([RoutingPath])
+    case modalShown(ModalItem)
+    case modalDismissed
+    case modalNavigationsChanged([ModalItem])
+    case routingStateReset
 }

@@ -28,7 +28,7 @@ struct FilmographyStateActionCreator<State: Redux.State> {
                 let person = try await personRepository.getPerson(personId: personId)
                 return FilmographyStateAction.didReceivePerson(.data(value: person))
             } catch let error {
-                return GlobalStateAction.didReceiveError(error)
+                return GlobalStateAction.errorReceived(error)
             }
         }, className: "\(type(of: self))")
     }
@@ -39,7 +39,7 @@ struct FilmographyStateActionCreator<State: Redux.State> {
                 let filmogry = try await personRepository.getFilmogry(personId: personId, type: filmographyType)
                 return FilmographyStateAction.didReceiveFilmography(.data(value: filmogry))
             } catch let error {
-                return GlobalStateAction.didReceiveError(error)
+                return GlobalStateAction.errorReceived(error)
             }
         }, className: "\(type(of: self))")
     }

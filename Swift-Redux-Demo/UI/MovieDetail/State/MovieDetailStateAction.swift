@@ -8,7 +8,7 @@
 import UIKit
 
 enum MovieDetailStateAction: Redux.Action {
-    case didReceiveMovieDetail(AsyncValue<MovieDetail>)
+    case movieDetailReceived(AsyncValue<MovieDetail>)
     case didReceiveBackdrops(AsyncValue<[Backdrop]>)
     case didReceiveCreditList(AsyncValue<CreditList>)
     case didReceiveReviews(AsyncValue<ReviewList>)
@@ -26,10 +26,10 @@ struct MovieDetailStateActionCreator<State: Redux.State> {
         Redux.ThunkAction(function: { store, action in
             do {
                 let movieDetail = try await movieRepository.getMovieDetail(movieId: movieId)
-                return MovieDetailStateAction.didReceiveMovieDetail(.data(value: movieDetail)
+                return MovieDetailStateAction.movieDetailReceived(.data(value: movieDetail)
                 )
             } catch let error {
-                return GlobalStateAction.didReceiveError(error)
+                return GlobalStateAction.errorReceived(error)
             }
         }, className: "\(type(of: self))")
     }
@@ -40,7 +40,7 @@ struct MovieDetailStateActionCreator<State: Redux.State> {
                 let backDrops = try await movieRepository.getBackdrpos(movieId: movieId)
                 return MovieDetailStateAction.didReceiveBackdrops(.data(value: backDrops))
             } catch let error {
-                return GlobalStateAction.didReceiveError(error)
+                return GlobalStateAction.errorReceived(error)
             }
         }, className: "\(type(of: self))")
     }
@@ -51,7 +51,7 @@ struct MovieDetailStateActionCreator<State: Redux.State> {
                 let credits = try await movieRepository.getCreditList(movieId: movieId)
                 return MovieDetailStateAction.didReceiveCreditList(.data(value: credits))
             } catch let error {
-                return GlobalStateAction.didReceiveError(error)
+                return GlobalStateAction.errorReceived(error)
             }
         }, className: "\(type(of: self))")
     }
@@ -62,7 +62,7 @@ struct MovieDetailStateActionCreator<State: Redux.State> {
                 let reviews = try await movieRepository.getReviews(movieId: movieId)
                 return MovieDetailStateAction.didReceiveReviews(.data(value: reviews))
             } catch let error {
-                return GlobalStateAction.didReceiveError(error)
+                return GlobalStateAction.errorReceived(error)
             }
         }, className: "\(type(of: self))")
     }

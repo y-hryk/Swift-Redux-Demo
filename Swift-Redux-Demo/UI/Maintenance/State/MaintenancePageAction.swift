@@ -11,18 +11,18 @@ import UIKit
 struct MaintenancePageActionCreator<State: Redux.State> {
     @Injected(\.maintenanceRepository) private var maintenanceRepository: MaintenanceRepository
     
-    func signIn() async -> Redux.ThunkAction<State> {
+    func maintenanceCheckRequested() async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             do {
                 let status = try await maintenanceRepository.getStatus()
                 switch status {
                 case .InProgress:
-                    return GlobalStateAction.update(startScreen: .maintenance)
+                    return GlobalStateAction.startScreenChanged(startScreen: .maintenance)
                 case .completion:
-                    return GlobalStateAction.update(startScreen: .splash)
+                    return GlobalStateAction.startScreenChanged(startScreen: .splash)
                 }
             } catch let error {
-                return GlobalStateAction.didReceiveError(error)
+                return GlobalStateAction.errorReceived(error)
             }
         },
         className: "\(type(of: self))")

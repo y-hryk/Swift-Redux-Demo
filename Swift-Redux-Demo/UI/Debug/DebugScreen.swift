@@ -20,7 +20,7 @@ struct DebugScreen: View {
                 List {
                     ListTextButton("Reboot") {
                         Task {
-                            await store.dispatch(GlobalStateAction.update(startScreen: .splash))
+                            await store.dispatch(GlobalStateAction.startScreenChanged(startScreen: .splash))
                         }
                     }
                     ListTextButton("Add async processing") {
@@ -32,12 +32,12 @@ struct DebugScreen: View {
                     }
                     ListTextButton("503 Maintenance") {
                         Task {
-                            await store.dispatch(GlobalStateAction.didReceiveError(NetworkError.serviceUnavailable))
+                            await store.dispatch(GlobalStateAction.errorReceived(NetworkError.serviceUnavailable))
                         }
                     }
                     ListTextButton("401 Unauthorized") {
                         Task {
-                            await store.dispatch(GlobalStateAction.didReceiveError(NetworkError.unauthorized))
+                            await store.dispatch(GlobalStateAction.errorReceived(NetworkError.unauthorized))
                         }
                     }
                     ListTextButton("Show Toast") {
@@ -49,29 +49,29 @@ struct DebugScreen: View {
                     }
                     ListTextButton("Show Modal") {
                         Task {
-                            await store.dispatch(RoutingStateAction.showModal(ModalItem(routingPath: RoutingPath.debugFirstModel, presentationStyle: .fullScreenCover)))
+                            await store.dispatch(RoutingStateAction.modalShown(ModalItem(routingPath: RoutingPath.debugFirstModel, presentationStyle: .fullScreenCover)))
                         }
                     }
                     ListTextButton("Show FullScreen Indicator") {
                         Task {
-                            await store.dispatch(GlobalStateAction.showIndicator(true))
+                            await store.dispatch(GlobalStateAction.indicatorShown(true))
                             try? await Task.sleep(for: .seconds(3))
-                            await store.dispatch(GlobalStateAction.showIndicator(false))
+                            await store.dispatch(GlobalStateAction.indicatorShown(false))
                         }
                     }
                     ListTextButton("DeepLink MovieDetail") {
                         Task {
-                            await store.dispatch(DeepLinkAction.updateDeepLink(DeepLink(to: .movieDetail(MovieId(value: "550")))))
+                            await store.dispatch(DeepLinkAction.deepLinkReceived(DeepLink(to: .movieDetail(MovieId(value: "550")))))
                         }
                     }
                     ListTextButton("DeepLink WatchList") {
                         Task {
-                            await store.dispatch(DeepLinkAction.updateDeepLink(DeepLink(to: .watchList)))
+                            await store.dispatch(DeepLinkAction.deepLinkReceived(DeepLink(to: .watchList)))
                         }
                     }
                     ListTextButton("DeepLink FirstModal") {
                         Task {
-                            await store.dispatch(DeepLinkAction.updateDeepLink(DeepLink(to: .firstModal)))
+                            await store.dispatch(DeepLinkAction.deepLinkReceived(DeepLink(to: .firstModal)))
                         }
                     }
 

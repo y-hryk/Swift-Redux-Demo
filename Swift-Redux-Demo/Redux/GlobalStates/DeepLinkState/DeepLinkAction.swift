@@ -6,27 +6,26 @@
 //
 
 enum DeepLinkAction: Redux.GlobalAction {
-    case updateDeepLink(DeepLink?)
+    case deepLinkReceived(DeepLink?)
 }
 
 struct DeepLinkStateActionCreator<State: Redux.State> {
-    
-    func execute(deepLink: DeepLink?) async -> Redux.ThunkAction<State> {
+    func startDeepLink(deepLink: DeepLink?) async -> Redux.ThunkAction<State> {
         Redux.ThunkAction(function: { store, action in
             guard let to = deepLink?.to else { return nil }
-            await store.dispatch(RoutingStateAction.resetAll)
+            await store.dispatch(RoutingStateAction.routingStateReset)
             switch to {
             case .movieList:
-                await store.dispatch(RoutingStateAction.selectTab(tab: .movie))
+                await store.dispatch(RoutingStateAction.tabSelected(tab: .movie))
             case .watchList:
-                await store.dispatch(RoutingStateAction.selectTab(tab: .watchList))
+                await store.dispatch(RoutingStateAction.tabSelected(tab: .watchList))
             case .movieDetail(let movieId):
-                await store.dispatch(RoutingStateAction.selectTab(tab: .movie))
-                await store.dispatch(RoutingStateAction.push(.movieDetail(movieId: movieId)))
+                await store.dispatch(RoutingStateAction.tabSelected(tab: .movie))
+                await store.dispatch(RoutingStateAction.routePushed(.movieDetail(movieId: movieId)))
             case .firstModal:
-                await store.dispatch(RoutingStateAction.showModal(ModalItem(routingPath: .debugFirstModel)))
+                await store.dispatch(RoutingStateAction.modalShown(ModalItem(routingPath: .debugFirstModel)))
             }
-            return DeepLinkAction.updateDeepLink(nil)
+            return DeepLinkAction.deepLinkReceived(nil)
         }, className: "\(type(of: self))")
     }
 }

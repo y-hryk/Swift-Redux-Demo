@@ -42,7 +42,7 @@ struct Swift_Redux_DemoTests {
                         try await Task.sleep(for: .seconds(time))
                         return GlobalStateAction.show(screen)
                     } catch let error {
-                        return GlobalStateAction.didReceiveError(error)
+                        return GlobalStateAction.errorReceived(error)
                     }
                 }, className: "\(type(of: self))")
             }

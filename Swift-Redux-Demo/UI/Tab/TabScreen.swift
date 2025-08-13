@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct TabScreen: View {
-    @EnvironmentObject var globalStore: Redux.GlobalStore
     @StateObject var store: Redux.LocalStore<TabState>
+    @StateBinding(\.routingState.selecedTab, default: .movie) var selecedTab
     
     var body: some View {
-        SignedInTabView(selecedTab: globalStore.state.routingState.selecedTab) { tab in
+        SignedInTabView(selecedTab: selecedTab) { tab in
             Task {
-                await store.dispatch(RoutingStateAction.selectTab(tab: tab))
+                await store.dispatch(RoutingStateAction.tabSelected(tab: tab))
             }
         }
     }
@@ -41,11 +41,7 @@ struct SignedInTabView: View, Equatable {
         TabView(selection: Binding(
             get: { selecedTab },
             set: { value, _ in
-                if selecedTab == value {
-                    Task {
-//                        await store.dispatch(RoutingStateAction.updateMovieList([]))
-                    }
-                } else {
+                if selecedTab != value {
                     selectedHandler(value)
                 }
             }

@@ -22,15 +22,19 @@ extension FavoriteState {
 extension FavoriteState {
     static let reducer: Redux.Reducer<Self> = { state, action in
         var state = state
+        
+        guard let action = action as? FavoriteStateAction else {
+            return state
+        }
+        
         switch action {
-        case FavoriteStateAction.addFavorite(let movie):
+        case .movieAddedToFavorites(let movie):
             state.favoriteItems.append(movie)
             
-        case FavoriteStateAction.removeFavorite(let movie):
+        case .movieRemovedFromFavorites(let movie):
             state.favoriteItems.removeAll { value in
                 value.id == movie.id
             }
-        default: break
         }
         return state
     }

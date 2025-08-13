@@ -6,6 +6,6 @@
 //
 
 enum FavoriteStateAction: Redux.GlobalAction {
-    case addFavorite(detail: MovieDetail)
-    case removeFavorite(detail: MovieDetail)
+    case movieAddedToFavorites(MovieDetail)
+    case movieRemovedFromFavorites(MovieDetail)
 }

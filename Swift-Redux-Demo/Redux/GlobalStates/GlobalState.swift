@@ -40,7 +40,7 @@ extension GlobalState {
     static let reducer: Redux.Reducer<Self> = { state, action in
         var state = state
         switch action {
-        case GlobalStateAction.update(let startScreen):
+        case GlobalStateAction.startScreenChanged(let startScreen):
             state.startScreen = startScreen
             if startScreen == .splash {
                 return GlobalState(
@@ -53,7 +53,7 @@ extension GlobalState {
                     showIndicator: false
                 )
             }
-        case GlobalStateAction.showIndicator(let isVisible):
+        case GlobalStateAction.indicatorShown(let isVisible):
             state.showIndicator = isVisible
         default: break
         }

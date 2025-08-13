@@ -15,7 +15,7 @@ extension DeepLinkState {
         guard let action = action as? DeepLinkAction else { return state }
         
         switch action {
-        case .updateDeepLink(let deepLink):
+        case .deepLinkReceived(let deepLink):
             state.deepLink = deepLink
         }
         return state

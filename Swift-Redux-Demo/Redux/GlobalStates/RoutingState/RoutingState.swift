@@ -41,10 +41,10 @@ extension RoutingState {
         }
         
         switch action {
-        case RoutingStateAction.selectTab(let tab):
+        case .tabSelected(let tab):
             state.selecedTab = tab
             
-        case RoutingStateAction.push(let navigation):
+        case .routePushed(let navigation):
             switch state.selecedTab {
             case .movie:
                 state.movieListPaths.append(navigation)
@@ -52,7 +52,7 @@ extension RoutingState {
                 state.watchListPaths.append(navigation)
             case .debug: break
             }
-        case RoutingStateAction.pop:
+        case .routePopped:
             switch state.selecedTab {
             case .movie:
                 state.movieListPaths.removeLast()
@@ -61,24 +61,24 @@ extension RoutingState {
             case .debug: break
             }
 
-        case RoutingStateAction.updateMovieList(let paths):
+        case .movieListNavigationsChanged(let paths):
             let difference = state.movieListPaths.filter { !paths.contains($0) }
             state.movieListPaths = paths
             
-        case RoutingStateAction.updateWatchList(let paths):
+        case .watchListNavigationsChanged(let paths):
             let difference = state.watchListPaths.filter { !paths.contains($0) }
             state.watchListPaths = paths
             
-        case RoutingStateAction.showModal(let navigation):
+        case .modalShown(let navigation):
             state.modalPaths.append(navigation)
             
-        case RoutingStateAction.dismiss:
+        case .modalDismissed:
             state.modalPaths.removeLast()
             
-        case RoutingStateAction.updateModel(let paths):
+        case .modalNavigationsChanged(let paths):
             state.modalPaths = paths
             
-        case RoutingStateAction.resetAll:
+        case .routingStateReset:
             state = RoutingState()
         }
         

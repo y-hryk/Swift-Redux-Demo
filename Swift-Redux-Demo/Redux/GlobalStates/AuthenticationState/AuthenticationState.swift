@@ -22,12 +22,14 @@ extension AuthenticationState {
 extension AuthenticationState {
     static let reducer: Redux.Reducer<Self> = { state, action in
         var state = state
+        
+        guard let action = action as? AuthenticationStateAction else { return state }
+        
         switch action {
-        case AuthenticationStateAction.changeAuthenticated(let isAuthenticated):
+        case .authStateUpdated(let isAuthenticated):
             state.isAuthenticated = isAuthenticated
-        case AuthenticationStateAction.signOutStart:
+        case .signOutStarted:
             state.shouldLogoutTriger = true
-        default: break
         }
         return state
     }

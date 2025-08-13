@@ -37,9 +37,9 @@ struct MovieDetailScreen: View {
                 FavoriteButton(isFavorite: globalStore.state.favoriteState.isFavorite(movieId: movieDetail.id)) { isFavorite in
                     Task {
                         if isFavorite {
-                            await store.dispatch(FavoriteStateAction.removeFavorite(detail: movieDetail))
+                            await store.dispatch(FavoriteStateAction.movieRemovedFromFavorites(movieDetail))
                         } else {
-                            await store.dispatch(FavoriteStateAction.addFavorite(detail: movieDetail))
+                            await store.dispatch(FavoriteStateAction.movieAddedToFavorites(movieDetail))
                         }
                     }
                 }
@@ -71,7 +71,7 @@ struct MovieDetailScreen: View {
             Spacer().frame(height: 20)
             CastListView(creditList: store.state.creditList) { personId in
                 Task {
-                    await store.dispatch(RoutingStateAction.push(.filmography(personId: personId, type: .cast)))
+                    await store.dispatch(RoutingStateAction.routePushed(.filmography(personId: personId, type: .cast)))
                 }
             }
             Spacer().frame(height: 20)
@@ -79,7 +79,7 @@ struct MovieDetailScreen: View {
             Spacer().frame(height: 20)
             CreatorListView(creditList: store.state.creditList) { personId in
                 Task {
-                    await store.dispatch(RoutingStateAction.push(.filmography(personId: personId, type: .crew)))
+                    await store.dispatch(RoutingStateAction.routePushed(.filmography(personId: personId, type: .crew)))
                 }
             }
             Spacer().frame(height: 20)

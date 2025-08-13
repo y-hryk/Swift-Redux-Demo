@@ -8,15 +8,16 @@
 import SwiftUI
 
 struct DebugFirstModalScreen: View {
-    @StateObject var store: Redux.LocalStore<EmptyState>
+    @StateObject var store: Redux.LocalStore<EmptyState2>
     
     var body: some View {
+        let _ = print("DebugFirstModalScreen body")
         NavigationStack() {
             VStack {
                 List {
                     ListTextButton("Reboot") {
                         Task {
-                            await store.dispatch(GlobalStateAction.update(startScreen: .splash))
+                            await store.dispatch(GlobalStateAction.startScreenChanged(startScreen: .splash))
                         }
                     }
                     ListTextButton("Show Toast") {
@@ -28,12 +29,12 @@ struct DebugFirstModalScreen: View {
                     }
                     ListTextButton("401 Unauthorized") {
                         Task {
-                            await store.dispatch(GlobalStateAction.didReceiveError(NetworkError.unauthorized))
+                            await store.dispatch(GlobalStateAction.errorReceived(NetworkError.unauthorized))
                         }
                     }
                     ListTextButton("Show Modal") {
                         Task {
-                            await store.dispatch(RoutingStateAction.showModal(ModalItem(routingPath: RoutingPath.debugSecondModal, presentationStyle: .sheet)))
+                            await store.dispatch(RoutingStateAction.modalShown(ModalItem(routingPath: RoutingPath.debugSecondModal, presentationStyle: .sheet)))
                         }
                     }
                 }
@@ -48,7 +49,7 @@ struct DebugFirstModalScreen: View {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
                         Task {
-                            await store.dispatch(RoutingStateAction.dismiss)
+                            await store.dispatch(RoutingStateAction.modalDismissed)
                         }
                     }, label: {
                         Image(systemName: "xmark")

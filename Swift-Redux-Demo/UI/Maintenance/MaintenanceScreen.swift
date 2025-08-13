@@ -26,7 +26,7 @@ struct MaintenanceScreen: View {
             
             PrimaryButton(title: "Update") {
                 Task {
-                    await store.dispatch(maintenanceActionCreator.signIn())
+                    await store.dispatch(maintenanceActionCreator.maintenanceCheckRequested())
                 }
             }
             .padding(.horizontal, 32)

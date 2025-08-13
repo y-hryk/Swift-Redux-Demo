@@ -27,73 +27,66 @@ struct StartScreenView: View {
 struct AppRootScreen: View {
     @EnvironmentObject var globalStore: Redux.GlobalStore
     @StateObject var store: Redux.LocalStore<AppRootState>
-    let authenticationStateActionCreator: AuthenticationStateActionCreator<AppRootState>
     let deepLinkStateActionCreator: DeepLinkStateActionCreator<AppRootState>
+    let authenticationStateActionCreator: AuthenticationStateActionCreator<AppRootState>
+    @StateBinding(\.startScreen, default: StartScreen.splash) var startScreen
+    @StateBinding(\.deepLinkState.deepLink, default: nil) var deepLink
+    @StateBinding(\.authenticationState.shouldLogoutTriger, default: false) var shouldLogoutTriger
+    @StateBinding(\.toastState.toast, default: nil) var toast
+    @StateBinding(\.routingState.modalPaths, default: []) var modalPaths
+    @StateBinding(\.showIndicator, default: false) var showIndicator
+    
     
     var body: some View {
         ZStack {
             VStack {
-                StartScreenView(startScreen: globalStore.state.startScreen)
+                StartScreenView(startScreen: startScreen)
             }
-            .animation(.easeInOut, value: globalStore.state.startScreen)
+            .animation(.easeInOut, value: startScreen)
         }
         .onOpenURL { url in
-            print(url)
             let deepLink = DeepLink.handleDeepLink(url: url, isSignIn: globalStore.state.authenticationState.isAuthenticated)
             Task {
-                await store.dispatch(DeepLinkAction.updateDeepLink(deepLink))
+                await store.dispatch(DeepLinkAction.deepLinkReceived(deepLink))
             }
         }
-        .onAppear() {
+        .onChange(of: deepLink) { _, newValue in
             Task {
-                await store.dispatch(authenticationStateActionCreator.isSignIn())
+                await store.dispatch(deepLinkStateActionCreator.startDeepLink(deepLink: newValue))
             }
         }
-        .onChange(of: globalStore.state.authenticationState.shouldLogoutTriger) { oldValue, newValue in
+        .onChange(of: shouldLogoutTriger) { oldValue, newValue in
             if newValue {
                 Task {
                     await store.dispatch(authenticationStateActionCreator.signOut())
                 }
-            }
-        }
-        .onChange(of: globalStore.state.authenticationState.shouldLogoutTriger) { _, newValue in
-            if newValue {
-                Task {
-                    await store.dispatch(authenticationStateActionCreator.signOut())
-                }
-            }
-        }
-        .onChange(of: globalStore.state.deepLinkState.deepLink) { _, newValue in
-            Task {
-                await store.dispatch(deepLinkStateActionCreator.execute(deepLink: newValue))
             }
         }
         .toastView(toast: Binding(
-            get: { globalStore.state.toastState.toast },
+            get: { toast },
             set: { value, _ in
                 Task {
-                    print("++ show Toast")
                     await store.dispatch(ToastStateAction.didReceiveToast(value))
                 }
             })
         )
         .modalStack(path: Binding(
             get: {
-                globalStore.state.routingState.modalPaths
+                modalPaths
             },
             set: { value in
                 Task {
-                    await store.dispatch(RoutingStateAction.updateModel(value))
+                    await store.dispatch(RoutingStateAction.modalNavigationsChanged(value))
                 }
             }
         ))
         .loadingOverlay(isLoading: Binding(
             get: {
-                globalStore.state.showIndicator
+                showIndicator
             },
             set: { value in
                 Task {
-                    await store.dispatch(GlobalStateAction.showIndicator(value))
+                    await store.dispatch(GlobalStateAction.indicatorShown(value))
                 }
             }
         ))

@@ -9,27 +9,22 @@ import SwiftUI
 
 struct WatchListContentView: View {
     @StateObject var store: Redux.LocalStore<WatchListPageState>
-    @EnvironmentObject var stateObservationBuilder: StateObservationBuilder
-//    @StateBinding(\.routingState.watchListPaths, default: []) var watchListPaths
-//    @StateBinding(\.favoriteState.favoriteItems, default: []) var favoriteItems
-    @State private var watchListPaths: [RoutingPath] = []
-    @State private var favoriteItems: [MovieDetail] = []
+    @StateBinding(\.routingState.watchListPaths, default: []) var watchListPaths
+    @StateBinding(\.favoriteState.favoriteItems, default: []) var favoriteItems
 
-
-    
     var body: some View {
         NavigationStack(path: Binding(
             get: { watchListPaths },
             set: { value,_ in
                 Task {
-                    await store.dispatch(RoutingStateAction.updateWatchList(value))
+                    await store.dispatch(RoutingStateAction.watchListNavigationsChanged(value))
                 }
             }
         )) {
             ZStack {
                 WatchListView(movies: favoriteItems) { movie in
                     Task {
-                        await store.dispatch(RoutingStateAction.push(.movieDetail(movieId: movie.id))
+                        await store.dispatch(RoutingStateAction.routePushed(.movieDetail(movieId: movie.id))
                         )
                     }
                 }
@@ -43,10 +38,6 @@ struct WatchListContentView: View {
             .navigationDestination(for: RoutingPath.self) { path in
                 path.destination()
             }
-        }
-        .observingStates(from: stateObservationBuilder) {
-            StateModifierObservation.observe(\.routingState.watchListPaths, default: [], into: $watchListPaths)
-            StateModifierObservation.observe(\.favoriteState.favoriteItems, default: [], into: $favoriteItems)
         }
     }
 }
