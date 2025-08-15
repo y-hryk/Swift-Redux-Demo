@@ -6,11 +6,21 @@
 //
 
 import SwiftUI
+import UIKit
 
 // MARK: - Modal Presentation Style
 enum ModalPresentationStyle {
     case fullScreenCover
     case sheet
+    
+    var uiModalPresentationStyle: UIModalPresentationStyle {
+        switch self {
+        case .fullScreenCover:
+            return .fullScreen
+        case .sheet:
+            return .pageSheet
+        }
+    }
 }
 
 // MARK: - Modal Item
@@ -43,200 +53,196 @@ struct ModalItem: Identifiable, Hashable {
     }
 }
 
-// MARK: - Modal Stack
-struct ModalStack: ViewModifier {
-    @Binding var path: [ModalItem]
+// MARK: - Custom Hosting Controller
+private class DismissTrackingHostingController<Content: View>: UIHostingController<Content> {
+    var onDismiss: (() -> Void)?
     
-    func body(content: Content) -> some View {
-        content
-            .modifier(ModalPresentationHandler(modalPath: $path))
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if isBeingDismissed || isMovingFromParent {
+            onDismiss?()
+        }
     }
 }
 
-// MARK: - Modal Presentation Handler
-private struct ModalPresentationHandler: ViewModifier {
-    @Binding var modalPath: [ModalItem]
+// MARK: - Modal Window Manager
+class ModalWindowManager: ObservableObject {
+    static let shared = ModalWindowManager()
     
-    func body(content: Content) -> some View {
-        content
-            .fullScreenCover(
-                item: currentFullScreenItem
-            ) { item in
-                ModalStackView(
-                    item: item,
-                    remainingStack: getRemainingStack(after: item.id),
-                    modalPath: $modalPath
-                )
-            }
-            .sheet(
-                item: currentSheetItem
-            ) { item in
-                ModalStackView(
-                    item: item,
-                    remainingStack: getRemainingStack(after: item.id),
-                    modalPath: $modalPath
-                )
-            }
-            .onChange(of: modalPath) { _, _ in
-                handleForcedDismissals()
-            }
-    }
+    // 単一のWindowとルートコントローラーを使用
+    private var modalWindow: UIWindow?
+    private var modalRootController: UIViewController?
     
-    // MARK: - Computed Properties
-    private var currentFullScreenItem: Binding<ModalItem?> {
-        Binding<ModalItem?>(
-            get: { modalPath.first(where: { $0.presentationStyle == .fullScreenCover }) },
-            set: { _ in dismissModal(with: .fullScreenCover) }
-        )
-    }
+    // モーダルコントローラーの管理
+    private var modalControllers: [String: UIViewController] = [:]
+    private var modalStack: [ModalItem] = []
+    private var onModalDismiss: ((String) -> Void)?
     
-    private var currentSheetItem: Binding<ModalItem?> {
-        Binding<ModalItem?>(
-            get: { modalPath.first(where: { $0.presentationStyle == .sheet }) },
-            set: { _ in dismissModal(with: .sheet) }
-        )
-    }
+    private init() {}
     
-    // MARK: - Helper Methods
-    private func getRemainingStack(after itemId: String) -> [ModalItem] {
-        guard let index = modalPath.firstIndex(where: { $0.id == itemId }) else {
-            return []
-        }
-        let nextIndex = index + 1
-        return nextIndex < modalPath.count ? Array(modalPath[nextIndex...]) : []
-    }
-    
-    private func dismissModal(with presentationStyle: ModalPresentationStyle) {
-        guard let index = modalPath.firstIndex(where: { $0.presentationStyle == presentationStyle }) else {
-            return
-        }
-        modalPath.removeSubrange(index...)
-    }
-    
-    private func handleForcedDismissals() {
-        let hasSheet = modalPath.contains { $0.presentationStyle == .sheet }
-        let hasFullScreenCover = modalPath.contains { $0.presentationStyle == .fullScreenCover }
+    func setModalStack(_ stack: [ModalItem], onDismiss: @escaping (String) -> Void) {
+        self.onModalDismiss = onDismiss
+        let oldStack = modalStack
+        modalStack = stack
         
-        // fullScreenCoverがsheetの上に表示される場合、sheetが強制的に閉じられる
-        if hasSheet && hasFullScreenCover {
-            removeConflictingSheets()
-        }
+        // 削除されたモーダルを閉じる
+        dismissRemovedModals(oldStack: oldStack, newStack: stack)
+        
+        // 新しいモーダルを表示
+        presentNewModals(oldStack: oldStack, newStack: stack)
+        
+        // スタックが空になった場合の処理は、最後のモーダルが完全に閉じられた後に行う
+        // （dismissModal内で処理）
     }
     
-    private func removeConflictingSheets() {
-        guard let firstFullScreenIndex = modalPath.firstIndex(where: { $0.presentationStyle == .fullScreenCover }) else {
-            return
+    private func dismissRemovedModals(oldStack: [ModalItem], newStack: [ModalItem]) {
+        let removedItems = oldStack.filter { oldItem in
+            !newStack.contains { $0.id == oldItem.id }
         }
         
-        modalPath.removeAll { item in
-            guard let itemIndex = modalPath.firstIndex(where: { $0.id == item.id }) else {
+        for item in removedItems {
+            dismissModal(with: item.id)
+        }
+    }
+    
+    private func presentNewModals(oldStack: [ModalItem], newStack: [ModalItem]) {
+        let newItems = newStack.filter { newItem in
+            !oldStack.contains { $0.id == newItem.id }
+        }
+        
+        for item in newItems {
+            presentModal(item)
+        }
+    }
+    
+    private func ensureModalWindow() -> Bool {
+        if modalWindow == nil {
+            guard let windowScene = getActiveWindowScene() else {
+                print("WindowScene not found")
                 return false
             }
-            return itemIndex < firstFullScreenIndex && item.presentationStyle == .sheet
+            
+            setupModalWindow(windowScene: windowScene)
         }
-    }
-}
-
-// MARK: - Modal Stack View
-private struct ModalStackView: View {
-    let item: ModalItem
-    let remainingStack: [ModalItem]
-    @Binding var modalPath: [ModalItem]
-    
-    var body: some View {
-        item.destination()
-            .modifier(NestedModalHandler(
-                remainingStack: remainingStack,
-                modalPath: $modalPath,
-                currentItemId: item.id
-            ))
-            .onDisappear {
-                handleUnexpectedDismiss()
-            }
+        return true
     }
     
-    private func handleUnexpectedDismiss() {
-        guard let currentIndex = modalPath.firstIndex(where: { $0.id == item.id }) else {
-            return
-        }
+    private func getActiveWindowScene() -> UIWindowScene? {
+        return UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first { $0.activationState == .foregroundActive }
+    }
+    
+    private func setupModalWindow(windowScene: UIWindowScene) {
+        let window = UIWindow(windowScene: windowScene)
+        window.windowLevel = UIWindow.Level.alert
+        window.backgroundColor = UIColor.clear
+        window.isHidden = false
         
-        DispatchQueue.main.async {
-            if currentIndex < modalPath.count {
-                modalPath.removeSubrange(currentIndex...)
+        let rootController = UIViewController()
+        rootController.view.backgroundColor = UIColor.clear
+        window.rootViewController = rootController
+        
+        modalWindow = window
+        modalRootController = rootController
+    }
+    
+    private func presentModal(_ item: ModalItem) {
+        guard modalControllers[item.id] == nil else { return }
+        guard ensureModalWindow() else { return }
+        
+        let hostingController = createHostingController(for: item)
+        
+        // 現在のトップコントローラーを取得
+        let presenter = getTopPresentedController() ?? modalRootController
+        presenter?.present(hostingController, animated: true)
+        
+        modalControllers[item.id] = hostingController
+    }
+    
+    private func createHostingController(for item: ModalItem) -> DismissTrackingHostingController<some View> {
+        let hostingController = DismissTrackingHostingController(rootView: item.destination())
+        hostingController.modalPresentationStyle = item.presentationStyle.uiModalPresentationStyle
+        hostingController.onDismiss = { [weak self] in
+            self?.handleModalDismiss(itemId: item.id)
+        }
+        return hostingController
+    }
+    
+    private func getTopPresentedController() -> UIViewController? {
+        var topController = modalRootController
+        while let presented = topController?.presentedViewController {
+            topController = presented
+        }
+        return topController
+    }
+    
+    private func dismissModal(with itemId: String) {
+        guard let controller = modalControllers[itemId] else { return }
+        
+        controller.dismiss(animated: true) { [weak self] in
+            self?.modalControllers.removeValue(forKey: itemId)
+            
+            // 全てのモーダルが閉じられた場合にWindowを非表示にする
+            if self?.modalControllers.isEmpty == true && self?.modalStack.isEmpty == true {
+                self?.hideModalWindow()
             }
         }
     }
+    
+    private func handleModalDismiss(itemId: String) {
+        modalControllers.removeValue(forKey: itemId)
+        onModalDismiss?(itemId)
+        
+        // ユーザーによる手動dismiss時も、全てのモーダルが閉じられた場合にWindowを非表示にする
+        if modalControllers.isEmpty && modalStack.isEmpty {
+            hideModalWindow()
+        }
+    }
+    
+    private func hideModalWindow() {
+        modalWindow?.isHidden = true
+        modalWindow = nil
+        modalRootController = nil
+        modalControllers.removeAll()
+    }
+    
+    func dismissAll() {
+        for (itemId, controller) in modalControllers {
+            controller.dismiss(animated: false)
+        }
+        modalControllers.removeAll()
+        hideModalWindow()
+    }
 }
 
-// MARK: - Nested Modal Handler
-private struct NestedModalHandler: ViewModifier {
-    let remainingStack: [ModalItem]
-    @Binding var modalPath: [ModalItem]
-    let currentItemId: String
+// MARK: - Modal Stack ViewModifier
+struct ModalStack: ViewModifier {
+    @Binding var path: [ModalItem]
+    @StateObject private var manager = ModalWindowManager.shared
     
     func body(content: Content) -> some View {
         content
-            .fullScreenCover(
-                item: nextFullScreenItem
-            ) { nextItem in
-                ModalStackView(
-                    item: nextItem,
-                    remainingStack: getRemainingStack(after: nextItem.id),
-                    modalPath: $modalPath
-                )
+            .onChange(of: path) { _, newValue in
+                updateModalStack(newValue)
             }
-            .sheet(
-                item: nextSheetItem
-            ) { nextItem in
-                ModalStackView(
-                    item: nextItem,
-                    remainingStack: getRemainingStack(after: nextItem.id),
-                    modalPath: $modalPath
-                )
+            .onAppear {
+                updateModalStack(path)
             }
     }
     
-    // MARK: - Computed Properties
-    private var nextFullScreenItem: Binding<ModalItem?> {
-        Binding<ModalItem?>(
-            get: { remainingStack.first(where: { $0.presentationStyle == .fullScreenCover }) },
-            set: { _ in dismissNestedModal(with: .fullScreenCover) }
-        )
+    private func updateModalStack(_ newPath: [ModalItem]) {
+        manager.setModalStack(newPath) { dismissedItemId in
+            removeModalFromPath(dismissedItemId)
+        }
     }
     
-    private var nextSheetItem: Binding<ModalItem?> {
-        Binding<ModalItem?>(
-            get: { remainingStack.first(where: { $0.presentationStyle == .sheet }) },
-            set: { _ in dismissNestedModal(with: .sheet) }
-        )
-    }
-    
-    // MARK: - Helper Methods
-    private func getRemainingStack(after itemId: String) -> [ModalItem] {
-        guard let index = remainingStack.firstIndex(where: { $0.id == itemId }) else {
-            return []
+    private func removeModalFromPath(_ dismissedItemId: String) {
+        if let index = path.firstIndex(where: { $0.id == dismissedItemId }) {
+            DispatchQueue.main.async {
+                path.removeSubrange(index...)
+            }
         }
-        let nextIndex = index + 1
-        return nextIndex < remainingStack.count ? Array(remainingStack[nextIndex...]) : []
-    }
-    
-    private func dismissNestedModal(with presentationStyle: ModalPresentationStyle) {
-        guard let currentIndex = modalPath.firstIndex(where: { $0.id == currentItemId }) else {
-            return
-        }
-        
-        let searchStartIndex = currentIndex + 1
-        guard searchStartIndex < modalPath.count else {
-            return
-        }
-        
-        let remainingItems = Array(modalPath[searchStartIndex...])
-        guard let targetIndex = remainingItems.firstIndex(where: { $0.presentationStyle == presentationStyle }) else {
-            return
-        }
-        
-        let actualIndex = searchStartIndex + targetIndex
-        modalPath.removeSubrange(actualIndex...)
     }
 }
 
@@ -244,5 +250,9 @@ private struct NestedModalHandler: ViewModifier {
 extension View {
     func modalStack(path: Binding<[ModalItem]>) -> some View {
         self.modifier(ModalStack(path: path))
+    }
+    
+    func dismissAllModals() {
+        ModalWindowManager.shared.dismissAll()
     }
 }
