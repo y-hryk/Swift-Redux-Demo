@@ -21,4 +21,14 @@ struct Person: Equatable {
     var profileImageAspectRatio: CGFloat {
         780 / 1112
     }
+    
+    static func preview() -> Person {
+        Person(
+            id: PersonId(value: "7467"),
+            biography: "xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx xxxx",
+            birthday: "1962-08-28",
+            name: "David Fincher",
+            profilePath: "/tpEczFclQZeKAiCeKZZ0adRvtfz.jpg"
+        )
+    }
 }

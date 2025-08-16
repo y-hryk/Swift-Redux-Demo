@@ -30,6 +30,15 @@ extension RoutingState {
         watchListPaths = []
         modalPaths = []
     }
+    
+    static func preview() -> RoutingState {
+        RoutingState(
+            selecedTab: .movie,
+            movieListPaths: [],
+            watchListPaths: [],
+            modalPaths: []
+        )
+    }
 }
 
 extension RoutingState {

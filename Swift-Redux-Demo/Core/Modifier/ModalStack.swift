@@ -96,23 +96,13 @@ class ModalWindowManager: ObservableObject {
     }
     
     private func dismissRemovedModals(oldStack: [ModalItem], newStack: [ModalItem]) {
-        let removedItems = oldStack.filter { oldItem in
-            !newStack.contains { $0.id == oldItem.id }
-        }
-        
-        for item in removedItems {
-            dismissModal(with: item.id)
-        }
+        let removedItemIds = Set(oldStack.map(\.id)).subtracting(Set(newStack.map(\.id)))
+        removedItemIds.forEach { dismissModal(with: $0) }
     }
     
     private func presentNewModals(oldStack: [ModalItem], newStack: [ModalItem]) {
-        let newItems = newStack.filter { newItem in
-            !oldStack.contains { $0.id == newItem.id }
-        }
-        
-        for item in newItems {
-            presentModal(item)
-        }
+        let oldItemIds = Set(oldStack.map(\.id))
+        newStack.filter { !oldItemIds.contains($0.id) }.forEach(presentModal)
     }
     
     private func ensureModalWindow() -> Bool {
@@ -128,7 +118,7 @@ class ModalWindowManager: ObservableObject {
     }
     
     private func getActiveWindowScene() -> UIWindowScene? {
-        return UIApplication.shared.connectedScenes
+        UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .first { $0.activationState == .foregroundActive }
     }
@@ -170,31 +160,30 @@ class ModalWindowManager: ObservableObject {
     }
     
     private func getTopPresentedController() -> UIViewController? {
-        var topController = modalRootController
-        while let presented = topController?.presentedViewController {
-            topController = presented
+        var controller = modalRootController
+        while let presented = controller?.presentedViewController {
+            controller = presented
         }
-        return topController
+        return controller
     }
     
     private func dismissModal(with itemId: String) {
         guard let controller = modalControllers[itemId] else { return }
         
         controller.dismiss(animated: true) { [weak self] in
-            self?.modalControllers.removeValue(forKey: itemId)
-            
-            // 全てのモーダルが閉じられた場合にWindowを非表示にする
-            if self?.modalControllers.isEmpty == true && self?.modalStack.isEmpty == true {
-                self?.hideModalWindow()
-            }
+            self?.cleanupModal(itemId: itemId)
         }
     }
     
     private func handleModalDismiss(itemId: String) {
-        modalControllers.removeValue(forKey: itemId)
+        cleanupModal(itemId: itemId)
         onModalDismiss?(itemId)
+    }
+    
+    private func cleanupModal(itemId: String) {
+        modalControllers.removeValue(forKey: itemId)
         
-        // ユーザーによる手動dismiss時も、全てのモーダルが閉じられた場合にWindowを非表示にする
+        // 全てのモーダルが閉じられた場合にWindowを非表示にする
         if modalControllers.isEmpty && modalStack.isEmpty {
             hideModalWindow()
         }
@@ -208,9 +197,7 @@ class ModalWindowManager: ObservableObject {
     }
     
     func dismissAll() {
-        for (itemId, controller) in modalControllers {
-            controller.dismiss(animated: false)
-        }
+        modalControllers.values.forEach { $0.dismiss(animated: false) }
         modalControllers.removeAll()
         hideModalWindow()
     }
@@ -238,10 +225,9 @@ struct ModalStack: ViewModifier {
     }
     
     private func removeModalFromPath(_ dismissedItemId: String) {
-        if let index = path.firstIndex(where: { $0.id == dismissedItemId }) {
-            DispatchQueue.main.async {
-                path.removeSubrange(index...)
-            }
+        guard let index = path.firstIndex(where: { $0.id == dismissedItemId }) else { return }
+        DispatchQueue.main.async {
+            path.removeSubrange(index...)
         }
     }
 }

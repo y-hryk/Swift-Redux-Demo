@@ -7,16 +7,6 @@
 
 import SwiftUI
 
-struct EmptyState2: Redux.State {
-
-}
-
-extension EmptyState2 {
-    static let reducer: Redux.Reducer<Self> = { state, action in
-        return state
-    }
-}
-
 struct EmptyState: Redux.State {
 
 }
@@ -25,6 +15,10 @@ extension EmptyState {
     static let reducer: Redux.Reducer<Self> = { state, action in
         return state
     }
+    
+    static func preview() -> EmptyState {
+        return .init()
+    }
 }
 
 enum EmptyStateAction: Redux.Action {
@@ -32,6 +26,8 @@ enum EmptyStateAction: Redux.Action {
 }
 
 struct LocalStoreBuilder {
+    private init() {}
+    
     static func create<State: Redux.State>(
         initialState: State,
         reducer: @escaping Redux.Reducer<State>,
@@ -53,6 +49,15 @@ struct LocalStoreBuilder {
     static func createEmpty() -> Redux.LocalStore<EmptyState> {
         Redux.LocalStore<EmptyState>(
             initialState: EmptyState(),
+            reducer: { state, action in state },
+            middleware: [],
+            afterMiddleware: nil
+        )
+    }
+    
+    static func stub<State: Redux.State>(state: State) -> Redux.LocalStore<State> {
+        Redux.LocalStore<State>(
+            initialState: state,
             reducer: { state, action in state },
             middleware: [],
             afterMiddleware: nil

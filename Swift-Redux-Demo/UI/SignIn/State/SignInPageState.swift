@@ -21,6 +21,13 @@ extension SignInPageState {
         showProgress = false
         progress = 0.0
     }
+    
+    static func preview() -> SignInPageState {
+        SignInPageState(userName: "",
+                        password: "",
+                        showProgress: false,
+                        progress: 0.0)
+    }
 }
 
 extension SignInPageState {

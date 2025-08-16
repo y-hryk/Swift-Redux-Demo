@@ -6,6 +6,7 @@
 //
 
 struct FavoriteState: Redux.State, Equatable {
+
     var favoriteItems: [MovieDetail]
     
     func isFavorite(movieId: MovieId) -> Bool {
@@ -16,6 +17,24 @@ struct FavoriteState: Redux.State, Equatable {
 extension FavoriteState {
     init() {
         favoriteItems = []
+    }
+    
+    static func preview() -> FavoriteState {
+        FavoriteState(favoriteItems: [
+            MovieDetail(id: MovieId(value: "1891"),
+                        title: "スター・ウォーズ エピソード５／帝国の逆襲",
+                        originalTitle: "originalTitle",
+                        originalLanguage: "en",
+                        overview: "",
+                        rate: UserScore(value: 8.4),
+                        reviewersCount: 17596,
+                        backdropPath: "/kgjvZgs6cV2v5bigzzzWqJ9EMGs.jpg",
+                        posterPath: "/mbLTbU4zqdY1nOQP9OTxj9LeRTL.jpg",
+                        releaseDateAt: "1980-05-20",
+                        genres: [],
+                        tagline: "",
+                        runtime: 120)
+        ])
     }
 }
 

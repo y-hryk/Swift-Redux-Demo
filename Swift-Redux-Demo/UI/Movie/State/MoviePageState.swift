@@ -9,19 +9,26 @@ import UIKit
 
 struct MoviePageState: Redux.State {
     var movieList: AsyncValue<MovieList>
-    var presentedUserSetting: Bool
 }
 
 extension MoviePageState {
     init() {
         movieList = .loading
-        presentedUserSetting = false
+    }
+    
+    static func preview() -> MoviePageState {
+        MoviePageState(movieList: .data(value: MovieList.preview()))
     }
 }
 
 extension MoviePageState {
     static let reducer: Redux.Reducer<Self> = { state, action in
         var state = state
+        
+        guard let action = action as? MoviePageStateAction else {
+            return state
+        }
+        
         switch action {
         case MoviePageStateAction.movieListReceived(let movieList):
             state.movieList = movieList
@@ -31,7 +38,6 @@ extension MoviePageState {
             state.movieList = .data(value: MovieList(currentPage: movieList.currentPage,
                                                      totalPages: movieList.totalPages,
                                                      results: newer))
-        default: break
         }
         return state
     }

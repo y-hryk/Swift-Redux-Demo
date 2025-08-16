@@ -10,6 +10,12 @@ struct ToastState: Redux.State, Equatable {
 }
 
 extension ToastState {
+    static func preview() -> ToastState {
+        ToastState(toast: nil)
+    }
+}
+
+extension ToastState {
     static let reducer: Redux.Reducer<Self> = { state, action in
         var state = state
         switch action {

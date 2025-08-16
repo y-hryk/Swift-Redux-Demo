@@ -10,6 +10,12 @@ struct DeepLinkState: Redux.State {
 }
 
 extension DeepLinkState {
+    static func preview() -> DeepLinkState {
+        .init()
+    }
+}
+
+extension DeepLinkState {
     static let reducer: Redux.Reducer<Self> = { state, action in
         var state = state
         guard let action = action as? DeepLinkAction else { return state }

@@ -25,7 +25,6 @@ struct StartScreenView: View {
 }
 
 struct AppRootScreen: View {
-    @EnvironmentObject var globalStore: Redux.GlobalStore
     @StateObject var store: Redux.LocalStore<AppRootState>
     let deepLinkStateActionCreator: DeepLinkStateActionCreator<AppRootState>
     let authenticationStateActionCreator: AuthenticationStateActionCreator<AppRootState>
@@ -94,12 +93,15 @@ struct AppRootScreen: View {
 }
 
 #Preview {
-//    let store = Redux.LocalStore<AppRootState>(
-//        initialState: AppRootState(),
-//        reducer: { state, action in state },
-//        middleware: [],
-//        afterMiddleware: nil
-//    )
-//    AppRootContentView(store: store)
-//        .environmentObject(globalStore)
+    let store = LocalStoreBuilder.stub(state: AppRootState.preview())
+    let globalStore = Redux.GlobalStore(
+        initialState: GlobalState.preview(),
+        reducer: GlobalState.reducer,
+        afterMiddleware: Redux.traceAfterMiddleware()
+    )
+    AppRootScreen(store: store,
+                  deepLinkStateActionCreator: ActionCreatorAssembler().resolve(),
+                  authenticationStateActionCreator: ActionCreatorAssembler().resolve())
+        .environment(\.globalStore, globalStore)
+
 }

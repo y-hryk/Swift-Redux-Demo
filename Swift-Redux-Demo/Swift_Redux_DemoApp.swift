@@ -29,7 +29,6 @@ struct Swift_Redux_DemoApp: App {
                 deepLinkStateActionCreator: ActionCreatorAssembler().resolve(),
                 authenticationStateActionCreator: ActionCreatorAssembler().resolve()
             )
-            .environmentObject(globalStore)
             .environment(\.globalStore, globalStore)
         }
     }

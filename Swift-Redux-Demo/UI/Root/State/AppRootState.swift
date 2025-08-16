@@ -10,6 +10,12 @@ struct AppRootState: Redux.State {
 }
 
 extension AppRootState {
+    static func preview() -> AppRootState {
+        .init()
+    }
+}
+
+extension AppRootState {
     static let reducer: Redux.Reducer<Self> = { state, action in
         return state
     }

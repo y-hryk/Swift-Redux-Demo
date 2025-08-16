@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DebugFirstModalScreen: View {
-    @StateObject var store: Redux.LocalStore<EmptyState2>
+    @StateObject var store: Redux.LocalStore<EmptyState>
     
     var body: some View {
         let _ = print("DebugFirstModalScreen body")

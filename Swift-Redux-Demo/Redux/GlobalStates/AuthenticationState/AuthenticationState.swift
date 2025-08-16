@@ -17,6 +17,13 @@ extension AuthenticationState {
         isAuthenticated = false
         shouldLogoutTriger = false
     }
+    
+    static func preview() -> AuthenticationState {
+        AuthenticationState(
+            isAuthenticated: false,
+            shouldLogoutTriger: false
+        )
+    }
 }
 
 extension AuthenticationState {

@@ -58,6 +58,13 @@ struct MovieListScreen: View {
 }
 
 #Preview {
-//    MovieListContentView()
-//        .environmentObject(store)
+    let store = LocalStoreBuilder.stub(state: MoviePageState.preview())
+    let globalStore = Redux.GlobalStore(
+        initialState: GlobalState.preview(),
+        reducer: GlobalState.reducer,
+        afterMiddleware: Redux.traceAfterMiddleware()
+    )
+    MovieListScreen(store: store,
+                    actionCreator: ActionCreatorAssembler().resolve())
+        .environment(\.globalStore, globalStore)
 }

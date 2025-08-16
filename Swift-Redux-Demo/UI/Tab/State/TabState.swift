@@ -12,6 +12,12 @@ struct TabState: Redux.State {
 }
 
 extension TabState {
+    static func preview() -> TabState {
+        .init()
+    }
+}
+
+extension TabState {
     static let reducer: Redux.Reducer<Self> = { state, action in
         return state
     }

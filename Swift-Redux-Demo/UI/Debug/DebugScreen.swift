@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct DebugScreen: View {
-    @EnvironmentObject var globalStore: Redux.GlobalStore
     @StateObject var store: Redux.LocalStore<DebugPageState>
     let actionCreator = DebugPageStateActionCreator(with: DebugPageStateActionCreator.Dependency())
     
@@ -88,6 +87,12 @@ struct DebugScreen: View {
 }
 
 #Preview {
-//    DebugPage()
-//        .environmentObject(store)
+    let store = LocalStoreBuilder.stub(state: DebugPageState.preview())
+    let globalStore = Redux.GlobalStore(
+        initialState: GlobalState.preview(),
+        reducer: GlobalState.reducer,
+        afterMiddleware: Redux.traceAfterMiddleware()
+    )
+    DebugScreen(store: store)
+        .environment(\.globalStore, globalStore)
 }

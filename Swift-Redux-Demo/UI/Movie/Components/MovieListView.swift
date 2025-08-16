@@ -19,7 +19,7 @@ struct MovieListView: View {
         case .error:
             CenterProgressView()
         case .loading:
-            contents(moviewList: MovieList.demos(), isLoading: true)
+            contents(moviewList: MovieList.preview(), isLoading: true)
         }
     }
     

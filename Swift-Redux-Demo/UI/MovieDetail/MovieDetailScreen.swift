@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct MovieDetailScreen: View {
-    @EnvironmentObject var globalStore: Redux.GlobalStore
     @StateObject var store: Redux.LocalStore<MovieDetailState>
     @Environment(\.colorScheme) var colorScheme
+    @StateBinding(\.favoriteState, default: FavoriteState()) var favoriteState
     let movieDetailStateActionCreator: MovieDetailStateActionCreator<MovieDetailState>
     
     var body: some View {
@@ -34,7 +34,7 @@ struct MovieDetailScreen: View {
     func detail(movieDetail: MovieDetail) -> some View {
         VStack(alignment: .leading, spacing: 0.0) {
             HStack(alignment: .center, spacing: 16) {
-                FavoriteButton(isFavorite: globalStore.state.favoriteState.isFavorite(movieId: movieDetail.id)) { isFavorite in
+                FavoriteButton(isFavorite: favoriteState.isFavorite(movieId: movieDetail.id)) { isFavorite in
                     Task {
                         if isFavorite {
                             await store.dispatch(FavoriteStateAction.movieRemovedFromFavorites(movieDetail))
@@ -90,6 +90,13 @@ struct MovieDetailScreen: View {
 }
 
 #Preview {
-//    MovieDetailContentView(state: MovieDetailState.preview())
-//        .environmentObject(ReduxStore.preview)
+    let store = LocalStoreBuilder.stub(state: MovieDetailState.preview())
+    let globalStore = Redux.GlobalStore(
+        initialState: GlobalState.preview(),
+        reducer: GlobalState.reducer,
+        afterMiddleware: Redux.traceAfterMiddleware()
+    )
+    MovieDetailScreen(store: store,
+                      movieDetailStateActionCreator: ActionCreatorAssembler().resolve(movieId: MovieId(value: 1)))
+        .environment(\.globalStore, globalStore)
 }

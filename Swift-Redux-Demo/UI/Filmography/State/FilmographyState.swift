@@ -19,17 +19,19 @@ extension FilmographyState {
         className + "_" + personId.value
     }
     
-    init() {
-        self.personId = PersonId(value: 0)
-        self.type = .cast
-        self.person = .loading
-        self.filmography = .loading
-    }
-    
     init(personId: PersonId, type: FilmographyType) {
         self.personId = personId
         self.type = type
         self.person = .loading
         self.filmography = .loading
+    }
+    
+    static func preview() -> FilmographyState {
+        FilmographyState(
+            personId: PersonId(value: 0),
+            type: .crew,
+            person: .data(value: Person.preview()),
+            filmography: .data(value: Filmography.preview())
+        )
     }
 }

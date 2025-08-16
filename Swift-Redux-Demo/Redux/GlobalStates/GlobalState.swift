@@ -34,6 +34,16 @@ extension GlobalState {
         deepLinkState = DeepLinkState()
         showIndicator = false
     }
+    
+    static func preview() -> GlobalState {
+        GlobalState(startScreen: .splash,
+                    authenticationState: AuthenticationState.preview(),
+                    routingState: RoutingState.preview(),
+                    toastState: ToastState.preview(),
+                    favoriteState: FavoriteState.preview(),
+                    deepLinkState: DeepLinkState.preview(),
+                    showIndicator: false)
+    }
 }
 
 extension GlobalState {

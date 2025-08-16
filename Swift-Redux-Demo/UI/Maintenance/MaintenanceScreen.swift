@@ -37,11 +37,13 @@ struct MaintenanceScreen: View {
 }
 
 #Preview {
-    let store = Redux.LocalStore<MaintenancePageState>(
-        initialState: MaintenancePageState(),
-        reducer: { state, action in state },
-        middleware: [],
-        afterMiddleware: nil
+    let store = LocalStoreBuilder.stub(state: MaintenancePageState.preview())
+    let globalStore = Redux.GlobalStore(
+        initialState: GlobalState.preview(),
+        reducer: GlobalState.reducer,
+        afterMiddleware: Redux.traceAfterMiddleware()
     )
-    MaintenanceScreen(store: store, maintenanceActionCreator: ActionCreatorAssembler().resolve())
+    MaintenanceScreen(store: store,
+                      maintenanceActionCreator: ActionCreatorAssembler().resolve())
+        .environment(\.globalStore, globalStore)
 }

@@ -13,6 +13,7 @@ struct Redux {
     // State
     protocol State: Equatable {
         static var reducer: Redux.Reducer<Self> { get }
+        static func preview() -> Self
     }
     
     // Action

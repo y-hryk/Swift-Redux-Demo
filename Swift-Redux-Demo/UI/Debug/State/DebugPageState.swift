@@ -15,4 +15,8 @@ extension DebugPageState {
     init() {
         self.count = 0
     }
+    
+    static func preview() -> DebugPageState {
+        DebugPageState(count: 0)
+    }
 }

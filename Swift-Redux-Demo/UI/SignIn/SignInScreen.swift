@@ -77,6 +77,12 @@ struct SignInScreen: View {
 }
 
 #Preview {
-//    SignInContentView()
-//        .environmentObject(store)
+    let store = LocalStoreBuilder.stub(state: SignInPageState.preview())
+    let globalStore = Redux.GlobalStore(
+        initialState: GlobalState.preview(),
+        reducer: GlobalState.reducer,
+        afterMiddleware: Redux.traceAfterMiddleware()
+    )
+    SignInScreen(store: store, actionCreator: ActionCreatorAssembler().resolve())
+        .environment(\.globalStore, globalStore)
 }

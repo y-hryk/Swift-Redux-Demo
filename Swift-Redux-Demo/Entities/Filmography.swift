@@ -23,4 +23,11 @@ struct Filmography: Equatable {
         case .crew: return crew
         }
     }
+    
+    static func preview() -> Filmography {
+        Filmography(type: .cast,
+                    personId: PersonId(value: "2"),
+                    cast: [Movie.preview()],
+                    crew: [Movie.preview()])
+    }
 }

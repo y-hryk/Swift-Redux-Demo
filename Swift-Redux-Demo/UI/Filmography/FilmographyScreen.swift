@@ -126,7 +126,14 @@ struct FilmographyScreen: View {
     }
 }
 
-//#Preview {
-//    FilmographyContentView(personId: PersonId(value: 287), type: .cast)
-//        .environmentObject(store)
-//}
+#Preview {
+    let store = LocalStoreBuilder.stub(state: FilmographyState.preview())
+    let globalStore = Redux.GlobalStore(
+        initialState: GlobalState.preview(),
+        reducer: GlobalState.reducer,
+        afterMiddleware: Redux.traceAfterMiddleware()
+    )
+    FilmographyScreen(store: store,
+                      actionCreator: ActionCreatorAssembler().resolve(personId: PersonId(value: "5"), type: .cast))
+        .environment(\.globalStore, globalStore)
+}
