@@ -25,7 +25,7 @@ struct Swift_Redux_DemoApp: App {
     var body: some Scene {
         WindowGroup {
             AppRootScreen(
-                store: LocalStoreBuilder.create(initialState: AppRootState(), reducer: AppRootState.reducer),
+                store: LocalStoreBuilder.default(initialState: AppRootState()).build(),
                 deepLinkStateActionCreator: ActionCreatorAssembler().resolve(),
                 authenticationStateActionCreator: ActionCreatorAssembler().resolve()
             )

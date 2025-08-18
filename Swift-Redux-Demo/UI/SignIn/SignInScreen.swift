@@ -77,7 +77,9 @@ struct SignInScreen: View {
 }
 
 #Preview {
-    let store = LocalStoreBuilder.stub(state: SignInPageState.preview())
+    let store = LocalStoreBuilder
+        .stub(state: SignInPageState.preview())
+        .build()
     let globalStore = Redux.GlobalStore(
         initialState: GlobalState.preview(),
         reducer: GlobalState.reducer,

@@ -53,3 +53,45 @@ extension Redux {
         }
     }
 }
+
+extension Redux.LocalStore {
+    static func `default`<S: Redux.State>(
+        initialState: S,
+        reducer: @escaping Redux.Reducer<S>,
+        middleware: [Redux.Middleware<S>] = []
+    ) -> Redux.LocalStore<S> {
+        Redux.LocalStore(
+            initialState: initialState,
+            reducer: reducer,
+            middleware: [
+                Redux.thunkMiddleware(),
+                Redux.errorToastMiddleware(),
+                Redux.webApiErrorHandleMiddleware(),
+                Redux.globalActionMiddleware(globalStore: globalStore)
+            ],
+            afterMiddleware: Redux.traceAfterMiddleware()
+        )
+    }
+    
+    static func create<S: Redux.State>(
+        initialState: S,
+        reducer: @escaping Redux.Reducer<S>,
+        middleware: [Redux.Middleware<S>] = []
+    ) -> Redux.LocalStore<S> {
+        Redux.LocalStore(
+            initialState: initialState,
+            reducer: reducer,
+            middleware: middleware,
+            afterMiddleware: Redux.traceAfterMiddleware()
+        )
+    }
+    
+    static func stub<S: Redux.State>(state: S) -> Redux.LocalStore<S> {
+        Redux.LocalStore<S>(
+            initialState: state,
+            reducer: { state, action in state },
+            middleware: [],
+            afterMiddleware: nil
+        )
+    }
+}

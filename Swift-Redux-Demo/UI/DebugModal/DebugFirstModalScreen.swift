@@ -59,6 +59,5 @@ struct DebugFirstModalScreen: View {
                 }
             }
         }
-
     }
 }

@@ -30,7 +30,9 @@ struct SplashScreen: View {
 //    SplashContentView()
 //        .environmentObject(store)
     
-    let store = LocalStoreBuilder.stub(state: SplashPageState.preview())
+    let store = LocalStoreBuilder
+        .stub(state: SplashPageState.preview())
+        .build()
     let globalStore = Redux.GlobalStore(
         initialState: GlobalState.preview(),
         reducer: GlobalState.reducer,

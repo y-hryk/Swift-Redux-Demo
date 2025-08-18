@@ -7,60 +7,153 @@
 
 import SwiftUI
 
-struct EmptyState: Redux.State {
+//struct LocalStoreBuilder {
+//    private init() {}
+//    
+//    static func create<State: Redux.State>(
+//        initialState: State,
+//        reducer: @escaping Redux.Reducer<State>,
+//        middleware: [Redux.Middleware<State>] = []
+//    ) -> Redux.LocalStore<State> {
+//        Redux.LocalStore(
+//            initialState: initialState,
+//            reducer: reducer,
+//            middleware: [
+//                Redux.thunkMiddleware(),
+//                Redux.errorToastMiddleware(),
+//                Redux.webApiErrorHandleMiddleware(),
+//                Redux.globalActionMiddleware(globalStore: globalStore)
+//            ],
+//            afterMiddleware: Redux.traceAfterMiddleware()
+//        )
+//    }
+//    
+//    static func createEmpty() -> Redux.LocalStore<EmptyState> {
+//        Redux.LocalStore<EmptyState>(
+//            initialState: EmptyState(),
+//            reducer: { state, action in state },
+//            middleware: [],
+//            afterMiddleware: nil
+//        )
+//    }
+//    
+//    static func stub<State: Redux.State>(state: State) -> Redux.LocalStore<State> {
+//        Redux.LocalStore<State>(
+//            initialState: state,
+//            reducer: { state, action in state },
+//            middleware: [],
+//            afterMiddleware: nil
+//        )
+//    }
+//}
 
-}
-
-extension EmptyState {
-    static let reducer: Redux.Reducer<Self> = { state, action in
-        return state
+// MARK: - LocalStoreBuilder with Builder Pattern
+struct LocalStoreBuilder<State: Redux.State> {
+    private let initialState: State
+    private let reducer: Redux.Reducer<State>
+    private var customMiddleware: [Redux.Middleware<State>] = []
+    private var afterMiddleware: Redux.AfterMiddleware<State>? = nil
+    
+    private init(initialState: State, reducer: @escaping Redux.Reducer<State>) {
+        self.initialState = initialState
+        self.reducer = reducer
     }
     
-    static func preview() -> EmptyState {
-        return .init()
-    }
-}
-
-enum EmptyStateAction: Redux.Action {
-    case processingComplete
-}
-
-struct LocalStoreBuilder {
-    private init() {}
-    
-    static func create<State: Redux.State>(
+    // MARK: - Factory Methods
+    static func create(
         initialState: State,
-        reducer: @escaping Redux.Reducer<State>,
-        middleware: [Redux.Middleware<State>] = []
-    ) -> Redux.LocalStore<State> {
+        reducer: @escaping Redux.Reducer<State>
+    ) -> LocalStoreBuilder<State> {
+        return LocalStoreBuilder(initialState: initialState, reducer: reducer)
+    }
+    
+    static func `default`(
+        initialState: State
+    ) -> LocalStoreBuilder<State> {
+        LocalStoreBuilder(
+            initialState: initialState,
+            reducer: State.reducer
+        )
+        .withMiddleware([
+            Redux.thunkMiddleware(),
+            Redux.errorToastMiddleware(),
+            Redux.webApiErrorHandleMiddleware(),
+            Redux.globalActionMiddleware(globalStore: globalStore)
+        ])
+        .withAfterMiddleware(Redux.traceAfterMiddleware())
+    }
+    
+    static func stub(state: State) -> LocalStoreBuilder<State> {
+        LocalStoreBuilder(
+            initialState: state,
+            reducer: { state, action in state }
+        )
+    }
+    
+    // MARK: - Builder Methods
+    func withMiddleware(_ middleware: @escaping Redux.Middleware<State>) -> LocalStoreBuilder<State> {
+        var builder = self
+        builder.customMiddleware.append(middleware)
+        return builder
+    }
+    
+    func withMiddleware(_ middleware: [Redux.Middleware<State>]) -> LocalStoreBuilder<State> {
+        var builder = self
+        builder.customMiddleware.append(contentsOf: middleware)
+        return builder
+    }
+    
+    func withAfterMiddleware(_ afterMiddleware: @escaping Redux.AfterMiddleware<State>) -> LocalStoreBuilder<State> {
+        var builder = self
+        builder.afterMiddleware = afterMiddleware
+        return builder
+    }
+    
+    // MARK: - Build Method
+    func build() -> Redux.LocalStore<State> {
         Redux.LocalStore(
             initialState: initialState,
             reducer: reducer,
-            middleware: [
-                Redux.thunkMiddleware(),
-                Redux.errorToastMiddleware(),
-                Redux.webApiErrorHandleMiddleware(),
-                Redux.globalActionMiddleware(globalStore: globalStore)
-            ],
-            afterMiddleware: Redux.traceAfterMiddleware()
-        )
-    }
-    
-    static func createEmpty() -> Redux.LocalStore<EmptyState> {
-        Redux.LocalStore<EmptyState>(
-            initialState: EmptyState(),
-            reducer: { state, action in state },
-            middleware: [],
-            afterMiddleware: nil
-        )
-    }
-    
-    static func stub<State: Redux.State>(state: State) -> Redux.LocalStore<State> {
-        Redux.LocalStore<State>(
-            initialState: state,
-            reducer: { state, action in state },
-            middleware: [],
-            afterMiddleware: nil
+            middleware: customMiddleware,
+            afterMiddleware: afterMiddleware
         )
     }
 }
+
+// MARK: - Usage Examples
+/*
+// Basic usage with default middleware
+let store = LocalStoreBuilder
+    .create(initialState: AppState(), reducer: appReducer)
+    .build()
+
+// Custom middleware configuration
+let customStore = LocalStoreBuilder
+    .create(initialState: AppState(), reducer: appReducer)
+    .withoutDefaultMiddleware()
+    .withThunk()
+    .withErrorToast()
+    .withMiddleware(customLoggingMiddleware)
+    .withTrace()
+    .build()
+
+// Stub for testing
+let testStore = LocalStoreBuilder
+    .stub(state: AppState.testState)
+    .build()
+
+// Empty store
+let emptyStore = LocalStoreBuilder<EmptyState>
+    .createEmpty()
+    .build()
+
+// Advanced configuration
+let advancedStore = LocalStoreBuilder
+    .create(initialState: FeatureState(), reducer: featureReducer)
+    .withMiddleware([
+        customMiddleware1,
+        customMiddleware2
+    ])
+    .withAfterMiddleware(customAfterMiddleware)
+    .build()
+*/

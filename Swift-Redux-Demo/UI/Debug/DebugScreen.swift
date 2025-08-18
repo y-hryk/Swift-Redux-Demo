@@ -87,7 +87,10 @@ struct DebugScreen: View {
 }
 
 #Preview {
-    let store = LocalStoreBuilder.stub(state: DebugPageState.preview())
+    let store = LocalStoreBuilder
+        .stub(state: DebugPageState.preview())
+        .build()
+    
     let globalStore = Redux.GlobalStore(
         initialState: GlobalState.preview(),
         reducer: GlobalState.reducer,

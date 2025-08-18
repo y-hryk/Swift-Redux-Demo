@@ -27,59 +27,50 @@ enum RoutingPath: Equatable, Hashable {
     func destination() -> some View {
         switch self {
         case .splash:
-            let store = LocalStoreBuilder.create(initialState: SplashPageState(), reducer: SplashPageState.reducer)
+            let store = LocalStoreBuilder.default(initialState: SplashPageState()).build()
             SplashScreen(store: store, actionCreator: ActionCreatorAssembler().resolve())
             
         case .maintenance:
-            let store = LocalStoreBuilder.create(initialState: MaintenancePageState(), reducer: MaintenancePageState.reducer)
+            let store = LocalStoreBuilder.default(initialState: MaintenancePageState()).build()
             MaintenanceScreen(store: store,
                               maintenanceActionCreator: ActionCreatorAssembler().resolve())
             
         case .signedIn:
-            let store = LocalStoreBuilder.create(initialState: TabState(), reducer: TabState.reducer)
+            let store = LocalStoreBuilder.default(initialState: TabState()).build()
             TabScreen(store: store)
 
         case .signedOut:
-            let store = LocalStoreBuilder.create(initialState: SignInPageState(), reducer: SignInPageState.reducer)
+            let store = LocalStoreBuilder.default(initialState: SignInPageState()).build()
             SignInScreen(store: store,
                          actionCreator: ActionCreatorAssembler().resolve())
             
         case .movieList:
-            let store = LocalStoreBuilder.create(initialState: MoviePageState(), reducer: MoviePageState.reducer)
+            let store = LocalStoreBuilder.default(initialState: MoviePageState()).build()
             MovieListScreen(store: store, actionCreator: ActionCreatorAssembler().resolve())
             
         case .watchList:
-            let store = LocalStoreBuilder.create(initialState: WatchListPageState(), reducer: WatchListPageState.reducer)
+            let store = LocalStoreBuilder.default(initialState: WatchListPageState()).build()
             WatchListContentView(store: store)
             
         case .debug:
-            let store = LocalStoreBuilder.create(initialState: DebugPageState(), reducer: DebugPageState.reducer)
+            let store = LocalStoreBuilder.default(initialState: DebugPageState()).build()
             DebugScreen(store: store)
             
         case .filmography(let personId, let type):
-            let store = LocalStoreBuilder.create(initialState: FilmographyState(personId: personId, type: type), reducer: FilmographyState.reducer)
+            let store = LocalStoreBuilder.default(initialState: FilmographyState(personId: personId, type: type)).build()
             FilmographyScreen(store: store,
                               actionCreator: ActionCreatorAssembler().resolve(personId: personId, type: type))
         
         case .movieDetail(let movieId):
-            let store = LocalStoreBuilder.create(
-                initialState: MovieDetailState.fromId(movieId: movieId),
-                reducer: MovieDetailState.reducer
-            )
+            let store = LocalStoreBuilder.default(initialState: MovieDetailState.fromId(movieId: movieId)).build()
             MovieDetailScreen(store: store,
                               movieDetailStateActionCreator: ActionCreatorAssembler().resolve(movieId: movieId))
         case .debugFirstModel:
-            let store = LocalStoreBuilder.create(
-                initialState: EmptyState(),
-                reducer: EmptyState.reducer
-            )
+            let store = LocalStoreBuilder.default(initialState: EmptyState()).build()
             DebugFirstModalScreen(store: store)
             
         case .debugSecondModal:
-            let store = LocalStoreBuilder.create(
-                initialState: EmptyState(),
-                reducer: EmptyState.reducer
-            )
+            let store = LocalStoreBuilder.default(initialState: EmptyState()).build()
             DebugSecondModalScreen(store: store)
         }
     }

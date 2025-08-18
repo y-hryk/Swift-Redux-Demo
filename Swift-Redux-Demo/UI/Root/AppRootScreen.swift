@@ -93,7 +93,10 @@ struct AppRootScreen: View {
 }
 
 #Preview {
-    let store = LocalStoreBuilder.stub(state: AppRootState.preview())
+    let store = LocalStoreBuilder
+        .stub(state: AppRootState.preview())
+        .build()
+    
     let globalStore = Redux.GlobalStore(
         initialState: GlobalState.preview(),
         reducer: GlobalState.reducer,

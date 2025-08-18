@@ -72,7 +72,9 @@ struct SignedInTabView: View, Equatable {
 }
 
 #Preview {
-    let store = LocalStoreBuilder.stub(state: TabState.preview())
+    let store = LocalStoreBuilder
+        .stub(state: TabState.preview())
+        .build()
     let globalStore = Redux.GlobalStore(
         initialState: GlobalState.preview(),
         reducer: GlobalState.reducer,

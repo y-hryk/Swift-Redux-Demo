@@ -43,12 +43,16 @@ struct WatchListContentView: View {
 }
 
 #Preview {
-    let store = LocalStoreBuilder.stub(state: WatchListPageState())
+    let store = LocalStoreBuilder
+        .stub(state: WatchListPageState())
+        .build()
+
     let globalStore = Redux.GlobalStore(
         initialState: GlobalState.preview(),
         reducer: GlobalState.reducer,
         afterMiddleware: Redux.traceAfterMiddleware()
     )
+    
     WatchListContentView(store: store)
         .environment(\.globalStore, globalStore)
 }
