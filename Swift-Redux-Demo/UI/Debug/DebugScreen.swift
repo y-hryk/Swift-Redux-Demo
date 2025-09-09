@@ -93,8 +93,7 @@ struct DebugScreen: View {
     
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
-        reducer: ApplicationState.reducer,
-        afterMiddleware: Redux.traceAfterMiddleware()
+        reducer: ApplicationState.reducer
     )
     DebugScreen(store: store)
         .environment(\.globalStore, globalStore)

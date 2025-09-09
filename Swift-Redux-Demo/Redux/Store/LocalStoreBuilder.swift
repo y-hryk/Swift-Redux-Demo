@@ -12,7 +12,7 @@ struct LocalStoreBuilder<State: Redux.State> {
     private let initialState: State
     private let reducer: Redux.Reducer<State>
     private var customMiddleware: [Redux.Middleware<State>] = []
-    private var afterMiddleware: Redux.AfterMiddleware<State>? = nil
+    private var isTraceEnabled: Bool = false
     
     private init(initialState: State, reducer: @escaping Redux.Reducer<State>) {
         self.initialState = initialState
@@ -40,7 +40,7 @@ struct LocalStoreBuilder<State: Redux.State> {
             Redux.webApiErrorHandleMiddleware(),
             Redux.globalActionMiddleware(globalStore: globalStore)
         ])
-        .withAfterMiddleware(Redux.traceAfterMiddleware())
+        .enableTrace()
     }
     
     static func stub(state: State) -> LocalStoreBuilder<State> {
@@ -62,10 +62,10 @@ struct LocalStoreBuilder<State: Redux.State> {
         builder.customMiddleware.append(contentsOf: middleware)
         return builder
     }
-    
-    func withAfterMiddleware(_ afterMiddleware: @escaping Redux.AfterMiddleware<State>) -> LocalStoreBuilder<State> {
+
+    func enableTrace() -> LocalStoreBuilder<State> {
         var builder = self
-        builder.afterMiddleware = afterMiddleware
+        builder.isTraceEnabled = true
         return builder
     }
     
@@ -75,7 +75,7 @@ struct LocalStoreBuilder<State: Redux.State> {
             initialState: initialState,
             reducer: reducer,
             middleware: customMiddleware,
-            afterMiddleware: afterMiddleware
+            isTraceEnabled: isTraceEnabled
         )
     }
 }

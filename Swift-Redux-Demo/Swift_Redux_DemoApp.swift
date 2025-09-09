@@ -9,7 +9,7 @@ import SwiftUI
 
 let globalStore = Redux.GlobalStore(
     reducer: ApplicationState.reducer,
-    afterMiddleware: Redux.traceAfterMiddleware()
+    isTraceEnabled: true
 )
 
 @main

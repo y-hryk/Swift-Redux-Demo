@@ -132,8 +132,7 @@ struct FilmographyScreen: View {
         .build()
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
-        reducer: ApplicationState.reducer,
-        afterMiddleware: Redux.traceAfterMiddleware()
+        reducer: ApplicationState.reducer
     )
     FilmographyScreen(store: store,
                       actionCreator: ActionCreatorAssembler().resolve(personId: PersonId(value: "5"), type: .cast))

@@ -63,8 +63,7 @@ struct MovieListScreen: View {
         .build()
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
-        reducer: ApplicationState.reducer,
-        afterMiddleware: Redux.traceAfterMiddleware()
+        reducer: ApplicationState.reducer
     )
     MovieListScreen(store: store,
                     actionCreator: ActionCreatorAssembler().resolve())

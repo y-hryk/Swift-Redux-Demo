@@ -11,23 +11,25 @@ extension Redux {
     actor GlobalStore: ObservableObject {
         @MainActor @Published private(set) var state: ApplicationState
         nonisolated private let reducer: Redux.Reducer<ApplicationState>
-        nonisolated private let afterMiddleware: Redux.AfterMiddleware<ApplicationState>?
+        private let isTraceEnabled: Bool
         
         init(
             initialState: ApplicationState = ApplicationState(),
             reducer: @escaping Redux.Reducer<ApplicationState>,
-            afterMiddleware: Redux.AfterMiddleware<ApplicationState>?
+            isTraceEnabled: Bool = false
         ) {
             self._state = Published(wrappedValue: initialState)
             self.reducer = reducer
-            self.afterMiddleware = afterMiddleware
+            self.isTraceEnabled = isTraceEnabled
         }
         
         func dispatch(_ action: Redux.GlobalAction) async {
             await MainActor.run {
                 let currentState = state
                 let newState = reducer(currentState, action)
-                afterMiddleware?(currentState, newState, action, action)
+                if isTraceEnabled {
+                    ActionTracer.trace(before: currentState, after: newState, action: action, newAction: action)
+                }
                 state = newState
             }
         }

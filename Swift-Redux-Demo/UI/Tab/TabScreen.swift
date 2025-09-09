@@ -77,8 +77,7 @@ struct SignedInTabView: View, Equatable {
         .build()
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
-        reducer: ApplicationState.reducer,
-        afterMiddleware: Redux.traceAfterMiddleware()
+        reducer: ApplicationState.reducer
     )
     TabScreen(store: store)
         .environment(\.globalStore, globalStore)

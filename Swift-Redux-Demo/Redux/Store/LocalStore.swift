@@ -12,7 +12,7 @@ extension Redux {
         @MainActor @Published private(set) var state: State
         nonisolated private let reducer: Redux.Reducer<State>
         private let middleware: [Redux.Middleware<State>]
-        nonisolated private let afterMiddleware: Redux.AfterMiddleware<State>?
+        private let isTraceEnabled: Bool
 
 //        deinit {
 //            print("\(type(of: state)) deinit")
@@ -22,20 +22,20 @@ extension Redux {
             initialState: State,
             reducer: @escaping Redux.Reducer<State>,
             middleware: [Redux.Middleware<State>],
-            afterMiddleware: Redux.AfterMiddleware<State>?
+            isTraceEnabled: Bool = false
         ) {
             self.reducer = reducer
             self.middleware = middleware
-            self.afterMiddleware = afterMiddleware
+            self.isTraceEnabled = isTraceEnabled
             self._state = Published(wrappedValue: initialState)
-            print("\(type(of: initialState)) init")
+//            print("\(type(of: initialState)) init")
         }
         
         func dispatch(_ action: Redux.Action) async {
             var currentAction: Redux.Action? = action
-            for m in middleware {
+            for middlewareFunction in middleware {
                 if let action = currentAction {
-                    currentAction = await m(self, action)
+                    currentAction = await middlewareFunction(self, action)
                 }
             }
             
@@ -44,54 +44,11 @@ extension Redux {
             await MainActor.run {
                 let currentState = state
                 let newState = reducer(currentState, newAction)
-                afterMiddleware?(currentState,
-                                 newState,
-                                 action,
-                                 newAction)
+                if isTraceEnabled {
+                    ActionTracer.trace(before: currentState, after: newState, action: action, newAction: newAction)
+                }
                 state = newState
             }
         }
-    }
-}
-
-extension Redux.LocalStore {
-    static func `default`<S: Redux.State>(
-        initialState: S,
-        reducer: @escaping Redux.Reducer<S>,
-        middleware: [Redux.Middleware<S>] = []
-    ) -> Redux.LocalStore<S> {
-        Redux.LocalStore(
-            initialState: initialState,
-            reducer: reducer,
-            middleware: [
-                Redux.thunkMiddleware(),
-                Redux.errorToastMiddleware(),
-                Redux.webApiErrorHandleMiddleware(),
-                Redux.globalActionMiddleware(globalStore: globalStore)
-            ],
-            afterMiddleware: Redux.traceAfterMiddleware()
-        )
-    }
-    
-    static func create<S: Redux.State>(
-        initialState: S,
-        reducer: @escaping Redux.Reducer<S>,
-        middleware: [Redux.Middleware<S>] = []
-    ) -> Redux.LocalStore<S> {
-        Redux.LocalStore(
-            initialState: initialState,
-            reducer: reducer,
-            middleware: middleware,
-            afterMiddleware: Redux.traceAfterMiddleware()
-        )
-    }
-    
-    static func stub<S: Redux.State>(state: S) -> Redux.LocalStore<S> {
-        Redux.LocalStore<S>(
-            initialState: state,
-            reducer: { state, action in state },
-            middleware: [],
-            afterMiddleware: nil
-        )
     }
 }

@@ -42,8 +42,7 @@ struct MaintenanceScreen: View {
         .build()
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
-        reducer: ApplicationState.reducer,
-        afterMiddleware: Redux.traceAfterMiddleware()
+        reducer: ApplicationState.reducer
     )
     MaintenanceScreen(store: store,
                       maintenanceActionCreator: ActionCreatorAssembler().resolve())
