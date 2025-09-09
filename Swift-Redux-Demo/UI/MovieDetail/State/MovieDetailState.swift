@@ -21,7 +21,7 @@ extension MovieDetailState {
     }
     
     init() {
-        self.movieId = MovieId(value: 0)
+        self.movieId = MovieId(value: "0")
         self.movie = .loading
         self.backdrops = .loading
         self.creditList = .loading

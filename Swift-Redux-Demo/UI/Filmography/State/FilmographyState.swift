@@ -28,7 +28,7 @@ extension FilmographyState {
     
     static func preview() -> FilmographyState {
         FilmographyState(
-            personId: PersonId(value: 0),
+            personId: PersonId(value: "0"),
             type: .crew,
             person: .data(value: Person.preview()),
             filmography: .data(value: Filmography.preview())

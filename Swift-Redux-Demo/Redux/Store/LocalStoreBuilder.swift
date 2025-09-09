@@ -7,46 +7,6 @@
 
 import SwiftUI
 
-//struct LocalStoreBuilder {
-//    private init() {}
-//    
-//    static func create<State: Redux.State>(
-//        initialState: State,
-//        reducer: @escaping Redux.Reducer<State>,
-//        middleware: [Redux.Middleware<State>] = []
-//    ) -> Redux.LocalStore<State> {
-//        Redux.LocalStore(
-//            initialState: initialState,
-//            reducer: reducer,
-//            middleware: [
-//                Redux.thunkMiddleware(),
-//                Redux.errorToastMiddleware(),
-//                Redux.webApiErrorHandleMiddleware(),
-//                Redux.globalActionMiddleware(globalStore: globalStore)
-//            ],
-//            afterMiddleware: Redux.traceAfterMiddleware()
-//        )
-//    }
-//    
-//    static func createEmpty() -> Redux.LocalStore<EmptyState> {
-//        Redux.LocalStore<EmptyState>(
-//            initialState: EmptyState(),
-//            reducer: { state, action in state },
-//            middleware: [],
-//            afterMiddleware: nil
-//        )
-//    }
-//    
-//    static func stub<State: Redux.State>(state: State) -> Redux.LocalStore<State> {
-//        Redux.LocalStore<State>(
-//            initialState: state,
-//            reducer: { state, action in state },
-//            middleware: [],
-//            afterMiddleware: nil
-//        )
-//    }
-//}
-
 // MARK: - LocalStoreBuilder with Builder Pattern
 struct LocalStoreBuilder<State: Redux.State> {
     private let initialState: State

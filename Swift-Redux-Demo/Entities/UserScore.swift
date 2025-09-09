@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct UserScore: Hashable {
+struct UserScore: Equatable {
     let value: Float
     
     var score: CGFloat {

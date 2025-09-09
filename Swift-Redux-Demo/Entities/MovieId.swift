@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MovieId: ID, Hashable {
+struct MovieId: ID {
     var value: String
 }
 

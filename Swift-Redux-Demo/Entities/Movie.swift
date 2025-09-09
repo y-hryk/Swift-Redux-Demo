@@ -1,7 +1,7 @@
 import Foundation
 import SwiftUI
 
-struct Movie: Identifiable, Hashable {
+struct Movie: Identifiable, Equatable {
     let id: MovieId
     let title: String
     let overview: String
@@ -24,7 +24,7 @@ struct Movie: Identifiable, Hashable {
     }
     
     static func preview() -> Movie {
-        Movie(id: MovieId(value: 1),
+        Movie(id: MovieId(value: "1"),
               title: "Deadpool & Wolverine",
               overview: " listless Wade Wilson toils away in civilian life with his days as the morally flexible mercenary, Deadpool, behind him. But when his homeworld faces an existential threat, Wade must reluctantly suit-up again with an even more reluctant Wolverine.",
               rate: UserScore(value: 0),
@@ -35,8 +35,8 @@ struct Movie: Identifiable, Hashable {
     }
 }
 
-extension Movie: Equatable {
-    static func == (lhs: Movie, rhs: Movie) -> Bool {
-        lhs.id.value == rhs.id.value
-    }
-}
+//extension Movie: Equatable {
+//    static func == (lhs: Movie, rhs: Movie) -> Bool {
+//        lhs.id.value == rhs.id.value
+//    }
+//}

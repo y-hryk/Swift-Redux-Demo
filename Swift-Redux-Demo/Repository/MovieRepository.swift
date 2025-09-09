@@ -31,7 +31,7 @@ struct MovieRepositoryImpl: MovieRepository, Injectable {
             totalPages: response.totalPages,
             results: response.results.map {
                 Movie(
-                    id: MovieId(value: $0.id),
+                    id: MovieId(value: "\($0.id)"),
                     title: $0.title,
                     overview: $0.overview,
                     rate: UserScore(value: $0.rate),
@@ -46,7 +46,7 @@ struct MovieRepositoryImpl: MovieRepository, Injectable {
     func getMovieDetail(movieId: MovieId) async throws -> MovieDetail {
         let response = try await TheMoviebdAPIClient.send(TheMoviebd.MovieAPIs.GetMovieDetail(movieId: movieId.value))
         return MovieDetail(
-            id: MovieId(value: response.id),
+            id: MovieId(value: "\(response.id)"),
             title: response.title,
             originalTitle: response.originalTitle,
             originalLanguage: response.originalLanguage,
@@ -57,7 +57,7 @@ struct MovieRepositoryImpl: MovieRepository, Injectable {
             posterPath: response.posterPath,
             releaseDateAt: response.releaseDateAt,
             genres: response.genres.map {
-                Genre(id: GenreId(value: $0.id), name: $0.name)
+                Genre(id: GenreId(value: "\($0.id)"), name: $0.name)
             },
             tagline: response.tagline,
             runtime: response.runtime
@@ -83,7 +83,7 @@ struct MovieRepositoryImpl: MovieRepository, Injectable {
                 guard let creator = value.first,
                       let profilePath = creator.profilePath else { return nil }
                 
-                let newCreator = Creator(personId: PersonId(value: id),
+                let newCreator = Creator(personId: PersonId(value: "\(id)"),
                                          name: creator.name,
                                          job: value.map { $0.job }.joined(separator: ", "),
                                          profilePath: profilePath)
@@ -106,7 +106,7 @@ struct MovieRepositoryImpl: MovieRepository, Injectable {
                     guard let characterName = actor.characterName else { return nil }
                     guard let profilePath = actor.profilePath else { return nil }
                     return Actor(
-                        id: PersonId(value: actor.id),
+                        id: PersonId(value: "\(actor.id)"),
                         castId: castId,
                         name: actor.name,
                         characterName: characterName,

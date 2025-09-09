@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Actor: Identifiable, Equatable {
+struct Actor: Equatable, Identifiable {
     let id: PersonId
     let castId: Int
     let name: String
@@ -25,7 +25,7 @@ struct Actor: Identifiable, Equatable {
     static func demos() -> [Actor] {
         [
             Actor(
-                id: PersonId(value: 1),
+                id: PersonId(value: "1"),
                 castId: 123,
                 name: "name",
                 characterName: "characterName",

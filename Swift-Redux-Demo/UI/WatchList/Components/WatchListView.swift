@@ -20,7 +20,7 @@ struct WatchListView: View {
     
     func contents(movies: [MovieDetail]) -> some View {
         List {
-            ForEach(movies, id: \.self) { movie in
+            ForEach(movies) { movie in
                 Button {
                     completionHandler(movie)
                 } label: {

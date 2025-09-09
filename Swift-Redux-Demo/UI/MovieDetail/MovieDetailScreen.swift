@@ -99,6 +99,6 @@ struct MovieDetailScreen: View {
         afterMiddleware: Redux.traceAfterMiddleware()
     )
     MovieDetailScreen(store: store,
-                      movieDetailStateActionCreator: ActionCreatorAssembler().resolve(movieId: MovieId(value: 1)))
+                      movieDetailStateActionCreator: ActionCreatorAssembler().resolve(movieId: MovieId(value: "1")))
         .environment(\.globalStore, globalStore)
 }

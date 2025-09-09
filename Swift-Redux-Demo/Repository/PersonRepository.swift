@@ -23,7 +23,7 @@ struct PersonRepositoryImpl: PersonRepository, Injectable {
     
     func getPerson(personId: PersonId) async throws -> Person {
         let response = try await TheMoviebdAPIClient.send(TheMoviebd.PersonAPIs.GetPerson(personId: personId.value))
-        return Person(id: PersonId(value: response.id),
+        return Person(id: PersonId(value: "\(response.id)"),
                       biography: response.biography,
                       birthday: response.birthday ?? "Unidentified",
                       name: response.name,
@@ -35,7 +35,7 @@ struct PersonRepositoryImpl: PersonRepository, Injectable {
 
         return Filmography(
             type: type, 
-            personId: PersonId(value: response.id),
+            personId: PersonId(value: "\(response.id))"),
             cast: uniqueMovies(movies: response.cast)
                 .sorted(by: { $0.rate.value > $1.rate.value }),
             crew: uniqueMovies(movies: response.crew)
@@ -50,7 +50,7 @@ struct PersonRepositoryImpl: PersonRepository, Injectable {
                       let backdropPath = movie.backdropPath,
                       let posterPath = movie.posterPath else { return nil }
             
-                return Movie(id: MovieId(value: movie.id),
+                return Movie(id: MovieId(value: "\(movie.id)"),
                              title: movie.title,
                              overview: movie.overview,
                              rate: UserScore(value: movie.rate),

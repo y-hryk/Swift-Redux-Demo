@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct MovieDetail: Identifiable, Hashable, Equatable {
+struct MovieDetail: Identifiable, Equatable {
     let id: MovieId
     let title: String
     let originalTitle: String
