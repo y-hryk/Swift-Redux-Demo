@@ -85,7 +85,7 @@ struct AppRootScreen: View {
             },
             set: { value in
                 Task {
-                    await store.dispatch(GlobalStateAction.indicatorShown(value))
+                    await store.dispatch(ApplicationAction.indicatorShown(value))
                 }
             }
         ))
@@ -98,8 +98,8 @@ struct AppRootScreen: View {
         .build()
     
     let globalStore = Redux.GlobalStore(
-        initialState: GlobalState.preview(),
-        reducer: GlobalState.reducer,
+        initialState: ApplicationState.preview(),
+        reducer: ApplicationState.reducer,
         afterMiddleware: Redux.traceAfterMiddleware()
     )
     AppRootScreen(store: store,

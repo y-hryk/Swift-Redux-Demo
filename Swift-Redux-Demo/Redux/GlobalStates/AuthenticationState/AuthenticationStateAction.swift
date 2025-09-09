@@ -21,13 +21,13 @@ struct AuthenticationStateActionCreator<State: Redux.State> {
                 try? await Task.sleep(for: .seconds(3))
                 let isSignIn = try await userRepository.isSignIn()
                 if isSignIn {
-                    return GlobalStateAction.startScreenChanged(startScreen: .signedIn)
+                    return ApplicationAction.startScreenChanged(startScreen: .signedIn)
                 } else {
-                    return GlobalStateAction.startScreenChanged(startScreen: .signedOut)
+                    return ApplicationAction.startScreenChanged(startScreen: .signedOut)
                 }
             } catch _ {
                 await store.dispatch(AuthenticationStateAction.authStateUpdated(false))
-                return GlobalStateAction.startScreenChanged(startScreen: .signedOut)
+                return ApplicationAction.startScreenChanged(startScreen: .signedOut)
             }
         }, className: "\(type(of: self))")
     }
@@ -37,9 +37,9 @@ struct AuthenticationStateActionCreator<State: Redux.State> {
             do {
                 try await userRepository.signOut()
                 await store.dispatch(AuthenticationStateAction.authStateUpdated(false))
-                return GlobalStateAction.startScreenChanged(startScreen: .splash)
+                return ApplicationAction.startScreenChanged(startScreen: .splash)
             } catch {
-                return GlobalStateAction.startScreenChanged(startScreen: .splash)
+                return ApplicationAction.startScreenChanged(startScreen: .splash)
             }
         }, className: "\(type(of: self))")
     }

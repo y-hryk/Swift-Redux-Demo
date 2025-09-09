@@ -19,7 +19,7 @@ struct DebugScreen: View {
                 List {
                     ListTextButton("Reboot") {
                         Task {
-                            await store.dispatch(GlobalStateAction.startScreenChanged(startScreen: .splash))
+                            await store.dispatch(ApplicationAction.startScreenChanged(startScreen: .splash))
                         }
                     }
                     ListTextButton("Add async processing") {
@@ -31,12 +31,12 @@ struct DebugScreen: View {
                     }
                     ListTextButton("503 Maintenance") {
                         Task {
-                            await store.dispatch(GlobalStateAction.errorReceived(NetworkError.serviceUnavailable))
+                            await store.dispatch(ApplicationAction.errorReceived(NetworkError.serviceUnavailable))
                         }
                     }
                     ListTextButton("401 Unauthorized") {
                         Task {
-                            await store.dispatch(GlobalStateAction.errorReceived(NetworkError.unauthorized))
+                            await store.dispatch(ApplicationAction.errorReceived(NetworkError.unauthorized))
                         }
                     }
                     ListTextButton("Show Toast") {
@@ -53,9 +53,9 @@ struct DebugScreen: View {
                     }
                     ListTextButton("Show FullScreen Indicator") {
                         Task {
-                            await store.dispatch(GlobalStateAction.indicatorShown(true))
+                            await store.dispatch(ApplicationAction.indicatorShown(true))
                             try? await Task.sleep(for: .seconds(3))
-                            await store.dispatch(GlobalStateAction.indicatorShown(false))
+                            await store.dispatch(ApplicationAction.indicatorShown(false))
                         }
                     }
                     ListTextButton("DeepLink MovieDetail") {
@@ -92,8 +92,8 @@ struct DebugScreen: View {
         .build()
     
     let globalStore = Redux.GlobalStore(
-        initialState: GlobalState.preview(),
-        reducer: GlobalState.reducer,
+        initialState: ApplicationState.preview(),
+        reducer: ApplicationState.reducer,
         afterMiddleware: Redux.traceAfterMiddleware()
     )
     DebugScreen(store: store)

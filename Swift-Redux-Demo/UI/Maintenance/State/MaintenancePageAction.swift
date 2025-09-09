@@ -17,12 +17,12 @@ struct MaintenancePageActionCreator<State: Redux.State> {
                 let status = try await maintenanceRepository.getStatus()
                 switch status {
                 case .InProgress:
-                    return GlobalStateAction.startScreenChanged(startScreen: .maintenance)
+                    return ApplicationAction.startScreenChanged(startScreen: .maintenance)
                 case .completion:
-                    return GlobalStateAction.startScreenChanged(startScreen: .splash)
+                    return ApplicationAction.startScreenChanged(startScreen: .splash)
                 }
             } catch let error {
-                return GlobalStateAction.errorReceived(error)
+                return ApplicationAction.errorReceived(error)
             }
         },
         className: "\(type(of: self))")

@@ -48,8 +48,8 @@ struct WatchListContentView: View {
         .build()
 
     let globalStore = Redux.GlobalStore(
-        initialState: GlobalState.preview(),
-        reducer: GlobalState.reducer,
+        initialState: ApplicationState.preview(),
+        reducer: ApplicationState.reducer,
         afterMiddleware: Redux.traceAfterMiddleware()
     )
     

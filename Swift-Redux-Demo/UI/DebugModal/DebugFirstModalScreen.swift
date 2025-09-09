@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DebugFirstModalScreen: View {
-    @StateObject var store: Redux.LocalStore<EmptyState>
+    @StateObject var store: Redux.LocalStore<DebugModalState>
     
     var body: some View {
         let _ = print("DebugFirstModalScreen body")
@@ -17,7 +17,7 @@ struct DebugFirstModalScreen: View {
                 List {
                     ListTextButton("Reboot") {
                         Task {
-                            await store.dispatch(GlobalStateAction.startScreenChanged(startScreen: .splash))
+                            await store.dispatch(ApplicationAction.startScreenChanged(startScreen: .splash))
                         }
                     }
                     ListTextButton("Show Toast") {
@@ -29,7 +29,7 @@ struct DebugFirstModalScreen: View {
                     }
                     ListTextButton("401 Unauthorized") {
                         Task {
-                            await store.dispatch(GlobalStateAction.errorReceived(NetworkError.unauthorized))
+                            await store.dispatch(ApplicationAction.errorReceived(NetworkError.unauthorized))
                         }
                     }
                     ListTextButton("Show Modal") {

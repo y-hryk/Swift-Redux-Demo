@@ -94,8 +94,8 @@ struct MovieDetailScreen: View {
         .stub(state: MovieDetailState.preview())
         .build()
     let globalStore = Redux.GlobalStore(
-        initialState: GlobalState.preview(),
-        reducer: GlobalState.reducer,
+        initialState: ApplicationState.preview(),
+        reducer: ApplicationState.reducer,
         afterMiddleware: Redux.traceAfterMiddleware()
     )
     MovieDetailScreen(store: store,

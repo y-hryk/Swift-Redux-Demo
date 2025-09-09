@@ -18,7 +18,7 @@ class ModifierStateSelector<Value: Equatable>: ObservableObject {
         self.value = defaultValue
     }
     
-    func connectIfNeeded(to store: Redux.GlobalStore, keyPath: KeyPath<GlobalState, Value>) {
+    func connectIfNeeded(to store: Redux.GlobalStore, keyPath: KeyPath<ApplicationState, Value>) {
         guard !isConnected else { return }
         isConnected = true
         
@@ -63,7 +63,7 @@ class StateObservationBuilder: ObservableObject {
     }
     
     private func getSelector<Value: Equatable>(
-        for keyPath: KeyPath<GlobalState, Value>,
+        for keyPath: KeyPath<ApplicationState, Value>,
         defaultValue: Value
     ) -> ModifierStateSelector<Value> {
         let key = String(describing: keyPath)
@@ -83,7 +83,7 @@ class StateObservationBuilder: ObservableObject {
     
     // 通常の値用
     func observe<Value: Equatable>(
-        _ keyPath: KeyPath<GlobalState, Value>,
+        _ keyPath: KeyPath<ApplicationState, Value>,
         default defaultValue: Value,
         into binding: Binding<Value>
     ) -> StateModifierObservation {
@@ -100,7 +100,7 @@ class StateObservationBuilder: ObservableObject {
     
     // Optional値用（デフォルト値はnil）
     func observe<Value: Equatable>(
-        _ keyPath: KeyPath<GlobalState, Value?>,
+        _ keyPath: KeyPath<ApplicationState, Value?>,
         into binding: Binding<Value?>
     ) -> StateModifierObservation {
         StateModifierObservation { @MainActor view, builder in
@@ -116,7 +116,7 @@ class StateObservationBuilder: ObservableObject {
     
     // アクション実行用（バインディングなし）
     func observe<Value: Equatable>(
-        _ keyPath: KeyPath<GlobalState, Value>,
+        _ keyPath: KeyPath<ApplicationState, Value>,
         default defaultValue: Value,
         perform action: @escaping (Value) -> Void
     ) -> StateModifierObservation {
@@ -131,7 +131,7 @@ class StateObservationBuilder: ObservableObject {
     
     // Optional値でアクション実行用
     func observe<Value: Equatable>(
-        _ keyPath: KeyPath<GlobalState, Value?>,
+        _ keyPath: KeyPath<ApplicationState, Value?>,
         perform action: @escaping (Value?) -> Void
     ) -> StateModifierObservation {
         StateModifierObservation { @MainActor view, builder in
@@ -200,7 +200,7 @@ extension View {
             Text(password)
         }
         .observingStates(from: stateObservationBuilder) { builder in
-            // Bind the variables you want to monitor from GlobalState
+            // Bind the variables you want to monitor from ApplicationState
             builder.observe(\.userName, default: "", into: $userName)
             builder.observe(\.password, default: "", into: $password)
         }

@@ -34,8 +34,8 @@ struct SplashScreen: View {
         .stub(state: SplashPageState.preview())
         .build()
     let globalStore = Redux.GlobalStore(
-        initialState: GlobalState.preview(),
-        reducer: GlobalState.reducer,
+        initialState: ApplicationState.preview(),
+        reducer: ApplicationState.reducer,
         afterMiddleware: Redux.traceAfterMiddleware()
     )
     SplashScreen(store: store,

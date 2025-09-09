@@ -131,8 +131,8 @@ struct FilmographyScreen: View {
         .stub(state: FilmographyState.preview())
         .build()
     let globalStore = Redux.GlobalStore(
-        initialState: GlobalState.preview(),
-        reducer: GlobalState.reducer,
+        initialState: ApplicationState.preview(),
+        reducer: ApplicationState.reducer,
         afterMiddleware: Redux.traceAfterMiddleware()
     )
     FilmographyScreen(store: store,

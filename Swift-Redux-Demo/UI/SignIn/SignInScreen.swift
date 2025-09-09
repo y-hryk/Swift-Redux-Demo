@@ -81,8 +81,8 @@ struct SignInScreen: View {
         .stub(state: SignInPageState.preview())
         .build()
     let globalStore = Redux.GlobalStore(
-        initialState: GlobalState.preview(),
-        reducer: GlobalState.reducer,
+        initialState: ApplicationState.preview(),
+        reducer: ApplicationState.reducer,
         afterMiddleware: Redux.traceAfterMiddleware()
     )
     SignInScreen(store: store, actionCreator: ActionCreatorAssembler().resolve())

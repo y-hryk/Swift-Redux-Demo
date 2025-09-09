@@ -66,11 +66,11 @@ enum RoutingPath: Equatable, Hashable {
             MovieDetailScreen(store: store,
                               movieDetailStateActionCreator: ActionCreatorAssembler().resolve(movieId: movieId))
         case .debugFirstModel:
-            let store = LocalStoreBuilder.default(initialState: EmptyState()).build()
+            let store = LocalStoreBuilder.default(initialState: DebugModalState()).build()
             DebugFirstModalScreen(store: store)
             
         case .debugSecondModal:
-            let store = LocalStoreBuilder.default(initialState: EmptyState()).build()
+            let store = LocalStoreBuilder.default(initialState: DebugModalState()).build()
             DebugSecondModalScreen(store: store)
         }
     }

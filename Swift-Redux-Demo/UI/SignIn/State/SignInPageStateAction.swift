@@ -35,10 +35,10 @@ struct SignInPageStateActionCreator<State: Redux.State> {
                     Toast(style: .success, message: "Login successful")
                 ))
                 await store.dispatch(SignInPageStateAction.progressShown(false))
-                return GlobalStateAction.startScreenChanged(startScreen: .splash)
+                return ApplicationAction.startScreenChanged(startScreen: .splash)
             } catch let error {
                 await store.dispatch(SignInPageStateAction.progressShown(false))
-                return GlobalStateAction.errorReceived(error)
+                return ApplicationAction.errorReceived(error)
             }
         }, className: "\(type(of: self))")
     }

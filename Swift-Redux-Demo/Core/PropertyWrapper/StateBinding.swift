@@ -20,7 +20,7 @@ class BindingStateSelector<Value: Equatable>: ObservableObject {
         self.value = defaultValue
     }
     
-    func connectIfNeeded(to store: Redux.GlobalStore, keyPath: KeyPath<GlobalState, Value>) {
+    func connectIfNeeded(to store: Redux.GlobalStore, keyPath: KeyPath<ApplicationState, Value>) {
         guard !isConnected else { return }
         isConnected = true
         self.store = store
@@ -67,9 +67,9 @@ extension EnvironmentValues {
 struct StateBinding<Value: Equatable>: DynamicProperty {
     @StateObject private var selector: BindingStateSelector<Value>
     @Environment(\.globalStore) private var globalStore
-    private let keyPath: KeyPath<GlobalState, Value>
+    private let keyPath: KeyPath<ApplicationState, Value>
     
-    init(_ keyPath: KeyPath<GlobalState, Value>, default defaultValue: Value) {
+    init(_ keyPath: KeyPath<ApplicationState, Value>, default defaultValue: Value) {
         self.keyPath = keyPath
         self._selector = StateObject(wrappedValue: BindingStateSelector(defaultValue: defaultValue))
     }
@@ -96,9 +96,9 @@ struct StateBinding<Value: Equatable>: DynamicProperty {
 struct OptionalStateBinding<Value: Equatable>: DynamicProperty {
     @StateObject private var selector: BindingStateSelector<Value?>
     @Environment(\.globalStore) private var globalStore
-    private let keyPath: KeyPath<GlobalState, Value?>
+    private let keyPath: KeyPath<ApplicationState, Value?>
     
-    init(_ keyPath: KeyPath<GlobalState, Value?>) {
+    init(_ keyPath: KeyPath<ApplicationState, Value?>) {
         self.keyPath = keyPath
         self._selector = StateObject(wrappedValue: BindingStateSelector(defaultValue: nil))
     }
@@ -123,8 +123,8 @@ struct OptionalStateBinding<Value: Equatable>: DynamicProperty {
 // MARK: - Convenience Extensions
 extension StateBinding {
     // 非Optional値をOptionalとして扱う場合
-    init<T>(_ keyPath: KeyPath<GlobalState, T>, default defaultValue: T?) where Value == T? {
-        self.keyPath = keyPath as! KeyPath<GlobalState, Value>
+    init<T>(_ keyPath: KeyPath<ApplicationState, T>, default defaultValue: T?) where Value == T? {
+        self.keyPath = keyPath as! KeyPath<ApplicationState, Value>
         self._selector = StateObject(wrappedValue: BindingStateSelector(defaultValue: defaultValue))
     }
 }

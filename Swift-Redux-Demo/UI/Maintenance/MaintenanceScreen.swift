@@ -41,8 +41,8 @@ struct MaintenanceScreen: View {
         .stub(state: MaintenancePageState.preview())
         .build()
     let globalStore = Redux.GlobalStore(
-        initialState: GlobalState.preview(),
-        reducer: GlobalState.reducer,
+        initialState: ApplicationState.preview(),
+        reducer: ApplicationState.reducer,
         afterMiddleware: Redux.traceAfterMiddleware()
     )
     MaintenanceScreen(store: store,

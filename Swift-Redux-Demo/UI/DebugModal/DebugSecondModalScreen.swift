@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DebugSecondModalScreen: View {
-    @StateObject var store: Redux.LocalStore<EmptyState>
+    @StateObject var store: Redux.LocalStore<DebugModalState>
     
     var body: some View {
         Text("DebugSecondModalPage")

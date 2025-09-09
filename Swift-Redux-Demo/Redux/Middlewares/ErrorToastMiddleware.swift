@@ -11,7 +11,7 @@ extension Redux {
     static func errorToastMiddleware<S: Redux.State>() -> Redux.Middleware<S> {
         return { store, action in
             switch action {
-            case GlobalStateAction.errorReceived(let error):
+            case ApplicationAction.errorReceived(let error):
                 if let error = error as? ApplicationError {
                     await store.dispatch(ToastStateAction.didReceiveToast(
                         Toast(style: .error, title: error.title, message: error.message)

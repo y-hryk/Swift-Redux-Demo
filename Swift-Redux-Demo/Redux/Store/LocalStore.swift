@@ -14,9 +14,9 @@ extension Redux {
         private let middleware: [Redux.Middleware<State>]
         nonisolated private let afterMiddleware: Redux.AfterMiddleware<State>?
 
-        deinit {
-            print("\(type(of: state)) deinit")
-        }
+//        deinit {
+//            print("\(type(of: state)) deinit")
+//        }
         
         init(
             initialState: State,

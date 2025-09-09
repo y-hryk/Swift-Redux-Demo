@@ -21,7 +21,7 @@ struct MoviePageStateActionCreator<State: Redux.State> {
                 let movieList = try await movieRepository.getMovieTopRated(page: nil)
                 return MoviePageStateAction.movieListReceived(.data(value: movieList))
             } catch let error {
-                await store.dispatch(GlobalStateAction.errorReceived(error))
+                await store.dispatch(ApplicationAction.errorReceived(error))
                 return MoviePageStateAction.movieListReceived(.error(error: error))
             }
         }, className: "\(type(of: self))")
@@ -35,7 +35,7 @@ struct MoviePageStateActionCreator<State: Redux.State> {
                 let movieList = try await movieRepository.getMovieTopRated(page: nextPage)
                 return MoviePageStateAction.moreMoviesListReceived(movieList)
             } catch let error {
-                return GlobalStateAction.errorReceived(error)
+                return ApplicationAction.errorReceived(error)
             }
         }, className: "\(type(of: self))")
     }
