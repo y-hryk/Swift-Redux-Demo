@@ -10,8 +10,6 @@ extension TheMoviebdAPIRequestProtocol {
 }
 
 struct TheMoviebdAPIClient {
-    static let apiKey = "0a06fbb707cb2165dffcd8d27fd04365"
-    
     // MARK: Variables
     private static let decoder: JSONDecoder = {
         let jsonDecoder = JSONDecoder()
@@ -22,10 +20,14 @@ struct TheMoviebdAPIClient {
     // APIの呼び出し
     static func send<T, V>(_ request: T) async throws -> V where T: APIRequestProtocol, V: Codable, T.ResponseType == V {
         
+        guard let apiKey = AppConfiguration.shared.apiKey else {
+            throw AppConfigurationError.invalidConfigurationFile
+        }
+        
         let url = request.baseURL.appendingPathComponent(request.path)
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         components.queryItems = [
-            URLQueryItem(name: "api_key", value: TheMoviebdAPIClient.apiKey)
+            URLQueryItem(name: "api_key", value: apiKey)
         ]
         if let parameters = request.parameters {
             for (_, value) in parameters.enumerated() {
