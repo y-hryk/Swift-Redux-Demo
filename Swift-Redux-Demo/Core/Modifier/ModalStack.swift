@@ -9,7 +9,7 @@ import SwiftUI
 import UIKit
 
 // MARK: - Modal Presentation Style
-enum ModalPresentationStyle {
+enum ModalPresentationStyle: Sendable {
     case fullScreenCover
     case sheet
     
@@ -24,7 +24,7 @@ enum ModalPresentationStyle {
 }
 
 // MARK: - Modal Item
-struct ModalItem: Identifiable, Hashable {
+struct ModalItem: Identifiable, Hashable, Sendable {
     let id: String
     let routingPath: RoutingPath
     let presentationStyle: ModalPresentationStyle
@@ -39,7 +39,7 @@ struct ModalItem: Identifiable, Hashable {
         self.presentationStyle = presentationStyle
     }
     
-    @ViewBuilder
+    @MainActor @ViewBuilder
     func destination() -> some View {
         routingPath.destination()
     }
@@ -54,8 +54,9 @@ struct ModalItem: Identifiable, Hashable {
 }
 
 // MARK: - Custom Hosting Controller
+@MainActor
 private class DismissTrackingHostingController<Content: View>: UIHostingController<Content> {
-    var onDismiss: (() -> Void)?
+    var onDismiss: (@MainActor @Sendable () -> Void)?
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
@@ -66,7 +67,8 @@ private class DismissTrackingHostingController<Content: View>: UIHostingControll
 }
 
 // MARK: - Modal Window Manager
-class ModalWindowManager: ObservableObject {
+@MainActor
+class ModalWindowManager: ObservableObject, @unchecked Sendable {
     static let shared = ModalWindowManager()
     
     // 単一のWindowとルートコントローラーを使用
@@ -76,11 +78,11 @@ class ModalWindowManager: ObservableObject {
     // モーダルコントローラーの管理
     private var modalControllers: [String: UIViewController] = [:]
     private var modalStack: [ModalItem] = []
-    private var onModalDismiss: ((String) -> Void)?
+    private var onModalDismiss: (@MainActor @Sendable (String) -> Void)?
     
     private init() {}
     
-    func setModalStack(_ stack: [ModalItem], onDismiss: @escaping (String) -> Void) {
+    func setModalStack(_ stack: [ModalItem], onDismiss: @escaping @MainActor @Sendable (String) -> Void) {
         self.onModalDismiss = onDismiss
         let oldStack = modalStack
         modalStack = stack
@@ -89,7 +91,7 @@ class ModalWindowManager: ObservableObject {
         dismissRemovedModals(oldStack: oldStack, newStack: stack)
         
         // 新しいモーダルを表示
-        presentNewModals(oldStack: oldStack, newStack: stack)
+        try? presentNewModals(oldStack: oldStack, newStack: stack)
         
         // スタックが空になった場合の処理は、最後のモーダルが完全に閉じられた後に行う
         // （dismissModal内で処理）
@@ -100,30 +102,30 @@ class ModalWindowManager: ObservableObject {
         removedItemIds.forEach { dismissModal(with: $0) }
     }
     
-    private func presentNewModals(oldStack: [ModalItem], newStack: [ModalItem]) {
+    private func presentNewModals(oldStack: [ModalItem], newStack: [ModalItem]) throws {
         let oldItemIds = Set(oldStack.map(\.id))
         newStack.filter { !oldItemIds.contains($0.id) }.forEach(presentModal)
     }
     
-    private func ensureModalWindow() -> Bool {
+    private func ensureModalWindow() async -> Bool {
         if modalWindow == nil {
-            guard let windowScene = getActiveWindowScene() else {
+            guard let windowScene = await getActiveWindowScene() else {
                 print("WindowScene not found")
                 return false
             }
             
-            setupModalWindow(windowScene: windowScene)
+            await setupModalWindow(windowScene: windowScene)
         }
         return true
     }
     
-    private func getActiveWindowScene() -> UIWindowScene? {
-        UIApplication.shared.connectedScenes
+    private func getActiveWindowScene() async -> UIWindowScene? {
+        return UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .first { $0.activationState == .foregroundActive }
     }
     
-    private func setupModalWindow(windowScene: UIWindowScene) {
+    private func setupModalWindow(windowScene: UIWindowScene) async {
         let window = UIWindow(windowScene: windowScene)
         window.windowLevel = UIWindow.Level.alert
         window.backgroundColor = UIColor.clear
@@ -139,21 +141,24 @@ class ModalWindowManager: ObservableObject {
     
     private func presentModal(_ item: ModalItem) {
         guard modalControllers[item.id] == nil else { return }
-        guard ensureModalWindow() else { return }
         
-        let hostingController = createHostingController(for: item)
-        
-        // 現在のトップコントローラーを取得
-        let presenter = getTopPresentedController() ?? modalRootController
-        presenter?.present(hostingController, animated: true)
-        
-        modalControllers[item.id] = hostingController
+        Task { @MainActor in
+            guard await ensureModalWindow() else { return }
+            
+            let hostingController = await createHostingController(for: item)
+            
+            // 現在のトップコントローラーを取得
+            let presenter = getTopPresentedController() ?? modalRootController
+            presenter?.present(hostingController, animated: true)
+            
+            modalControllers[item.id] = hostingController
+        }
     }
     
-    private func createHostingController(for item: ModalItem) -> DismissTrackingHostingController<some View> {
+    private func createHostingController(for item: ModalItem) async -> DismissTrackingHostingController<some View> {
         let hostingController = DismissTrackingHostingController(rootView: item.destination())
         hostingController.modalPresentationStyle = item.presentationStyle.uiModalPresentationStyle
-        hostingController.onDismiss = { [weak self] in
+        hostingController.onDismiss = { @MainActor [weak self] in
             self?.handleModalDismiss(itemId: item.id)
         }
         return hostingController
@@ -170,7 +175,7 @@ class ModalWindowManager: ObservableObject {
     private func dismissModal(with itemId: String) {
         guard let controller = modalControllers[itemId] else { return }
         
-        controller.dismiss(animated: true) { [weak self] in
+        controller.dismiss(animated: true) { @MainActor [weak self] in
             self?.cleanupModal(itemId: itemId)
         }
     }
@@ -219,14 +224,14 @@ struct ModalStack: ViewModifier {
     }
     
     private func updateModalStack(_ newPath: [ModalItem]) {
-        manager.setModalStack(newPath) { dismissedItemId in
+        manager.setModalStack(newPath) { @MainActor dismissedItemId in
             removeModalFromPath(dismissedItemId)
         }
     }
     
     private func removeModalFromPath(_ dismissedItemId: String) {
         guard let index = path.firstIndex(where: { $0.id == dismissedItemId }) else { return }
-        DispatchQueue.main.async {
+        Task { @MainActor in
             path.removeSubrange(index...)
         }
     }
@@ -239,6 +244,8 @@ extension View {
     }
     
     func dismissAllModals() {
-        ModalWindowManager.shared.dismissAll()
+        Task { @MainActor in
+            ModalWindowManager.shared.dismissAll()
+        }
     }
 }

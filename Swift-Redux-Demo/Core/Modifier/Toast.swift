@@ -151,7 +151,8 @@ class ToastWindow: UIWindow {
     }
 }
 
-// トースト管理クラス
+// トースト管理クラス - @MainActorでマーク
+@MainActor
 class ToastManager: ObservableObject {
     static let shared = ToastManager()
     
@@ -165,11 +166,9 @@ class ToastManager: ObservableObject {
     private init() {}
     
     func showToast(_ toast: Toast) {
-        DispatchQueue.main.async {
-            // トーストをキューに追加
-            self.toastQueue.append(toast)
-            self.processNextToast()
-        }
+        // @MainActorによりメインアクターで実行されることが保証される
+        toastQueue.append(toast)
+        processNextToast()
     }
     
     private func processNextToast() {
@@ -186,8 +185,9 @@ class ToastManager: ObservableObject {
             currentToast = nil
             
             // 少し待ってから新しいトーストを表示
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.displayToast(nextToast)
+            Task {
+                try await Task.sleep(nanoseconds: 100_000_000) // 0.1秒
+                displayToast(nextToast)
             }
         } else {
             // 既存のトーストがない場合はすぐに表示
@@ -200,7 +200,8 @@ class ToastManager: ObservableObject {
         self.setupToastWindow()
         
         // 少し遅延してからアニメーションで表示
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+        Task {
+            try await Task.sleep(nanoseconds: 50_000_000) // 0.05秒
             withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
                 self.isVisible = true
             }
@@ -222,7 +223,9 @@ class ToastManager: ObservableObject {
         // HostingControllerを更新
         let hostingController = UIHostingController(
             rootView: ToastWindowView(onDismiss: {
-                self.dismissToast()
+                Task { @MainActor in
+                    self.dismissToast()
+                }
             })
             .environmentObject(self)
         )
@@ -240,35 +243,44 @@ class ToastManager: ObservableObject {
         
         workItem?.cancel()
         
-        let task = DispatchWorkItem {
-            self.dismissToast()
+        // Taskを使用してタイマーを実装
+        Task {
+            try await Task.sleep(nanoseconds: UInt64(toast.duration * 1_000_000_000))
+            dismissToast()
         }
         
-        workItem = task
-        DispatchQueue.main.asyncAfter(deadline: .now() + toast.duration, execute: task)
+        // workItemの代わりにTaskを保持するプロパティを別途用意するか、
+        // ここではシンプルにDispatchWorkItemを維持
+        let dispatchTask = DispatchWorkItem {
+            Task { @MainActor in
+                self.dismissToast()
+            }
+        }
+        
+        workItem = dispatchTask
+        DispatchQueue.main.asyncAfter(deadline: .now() + toast.duration, execute: dispatchTask)
     }
     
     func dismissToast() {
-        DispatchQueue.main.async {
-            // 既に非表示の場合は何もしない
-            guard self.isVisible else {
-                self.finishDismissAndProcessNext()
-                return
-            }
-            
-            withAnimation(.easeOut(duration: 0.3)) {
-                self.isVisible = false
-            }
-            
-            // アニメーション完了後にクリーンアップ
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-                self.currentToast = nil
-                self.finishDismissAndProcessNext()
-            }
-            
-            self.workItem?.cancel()
-            self.workItem = nil
+        // 既に非表示の場合は何もしない
+        guard isVisible else {
+            finishDismissAndProcessNext()
+            return
         }
+        
+        withAnimation(.easeOut(duration: 0.3)) {
+            self.isVisible = false
+        }
+        
+        // アニメーション完了後にクリーンアップ
+        Task {
+            try await Task.sleep(nanoseconds: 350_000_000) // 0.35秒
+            self.currentToast = nil
+            self.finishDismissAndProcessNext()
+        }
+        
+        workItem?.cancel()
+        workItem = nil
     }
     
     private func finishDismissAndProcessNext() {
@@ -276,12 +288,14 @@ class ToastManager: ObservableObject {
         
         // キューに次のトーストがある場合は処理
         if !toastQueue.isEmpty {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                self.processNextToast()
+            Task {
+                try await Task.sleep(nanoseconds: 100_000_000) // 0.1秒
+                processNextToast()
             }
         } else {
             // キューが空の場合はウィンドウをクリーンアップ
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            Task {
+                try await Task.sleep(nanoseconds: 200_000_000) // 0.2秒
                 if self.toastQueue.isEmpty && !self.isVisible {
                     self.cleanupWindow()
                 }
@@ -296,24 +310,23 @@ class ToastManager: ObservableObject {
     
     // キューを全てクリア
     func clearAllToasts() {
-        DispatchQueue.main.async {
-            self.toastQueue.removeAll()
-            self.workItem?.cancel()
-            self.workItem = nil
-            
-            if self.isVisible {
-                withAnimation(.easeOut(duration: 0.2)) {
-                    self.isVisible = false
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                    self.currentToast = nil
-                    self.isProcessing = false
-                    self.cleanupWindow()
-                }
-            } else {
+        toastQueue.removeAll()
+        workItem?.cancel()
+        workItem = nil
+        
+        if isVisible {
+            withAnimation(.easeOut(duration: 0.2)) {
+                self.isVisible = false
+            }
+            Task {
+                try await Task.sleep(nanoseconds: 250_000_000) // 0.25秒
+                self.currentToast = nil
                 self.isProcessing = false
                 self.cleanupWindow()
             }
+        } else {
+            isProcessing = false
+            cleanupWindow()
         }
     }
 }
@@ -363,9 +376,9 @@ struct ToastModifier: ViewModifier {
         content
             .onChange(of: toast) { oldValue, newValue in
                 if let newToast = newValue {
-                    ToastManager.shared.showToast(newToast)
-                    // バインディングをクリア
-                    DispatchQueue.main.async {
+                    Task { @MainActor in
+                        ToastManager.shared.showToast(newToast)
+                        // バインディングをクリア
                         toast = nil
                     }
                 }
@@ -382,7 +395,9 @@ extension View {
 // より簡単に使用できる拡張メソッド
 extension View {
     func showToast(_ toast: Toast) {
-        ToastManager.shared.showToast(toast)
+        Task { @MainActor in
+            ToastManager.shared.showToast(toast)
+        }
     }
 }
 

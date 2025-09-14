@@ -48,7 +48,7 @@ struct MovieDetailScrollView<Content: View>: View {
     
     func content(movieDetail: MovieDetail, safeAreaInsetsTop: CGFloat, isLoading: Bool = false) -> some View {
         OffsetReadableScrollView(onChangeOffset: { offset in
-            let height = (UIScreen.main.bounds.width * 1112) / 780
+            let height = UIScreen.main.bounds.width / movieDetail.posterImageAspectRatio
             self.imageOverlayOpacity = -offset.y / height
             self.imageOffset = min(-offset.y / 3.0, -offset.y)
             self.navigationBarOpacity = min(CGFloat(-offset.y / (height - safeAreaInsetsTop)), 1.0)

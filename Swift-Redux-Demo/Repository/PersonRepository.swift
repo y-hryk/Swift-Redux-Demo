@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol PersonRepository {
+protocol PersonRepository: Sendable {
     func getPerson(personId: PersonId) async throws -> Person
     func getFilmogry(personId: PersonId, type: FilmographyType) async throws -> Filmography
 }

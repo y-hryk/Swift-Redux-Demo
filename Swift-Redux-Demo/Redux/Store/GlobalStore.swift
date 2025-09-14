@@ -7,6 +7,23 @@
 
 import SwiftUI
 
+let globalStore = Redux.GlobalStore(
+    reducer: ApplicationState.reducer,
+    isTraceEnabled: true
+)
+
+// MARK: - Custom Environment Key
+struct GlobalStoreKey: EnvironmentKey {
+    static let defaultValue: Redux.GlobalStore? = nil
+}
+
+extension EnvironmentValues {
+    var globalStore: Redux.GlobalStore? {
+        get { self[GlobalStoreKey.self] }
+        set { self[GlobalStoreKey.self] = newValue }
+    }
+}
+
 extension Redux {
     actor GlobalStore: ObservableObject {
         @MainActor @Published private(set) var state: ApplicationState

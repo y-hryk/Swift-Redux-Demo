@@ -23,55 +23,92 @@ enum RoutingPath: Equatable, Hashable {
     case debugFirstModel
     case debugSecondModal
     
-    @ViewBuilder
+    @MainActor @ViewBuilder
     func destination() -> some View {
         switch self {
         case .splash:
-            let store = LocalStoreBuilder.default(initialState: SplashPageState()).build()
-            SplashScreen(store: store, actionCreator: ActionCreatorAssembler().resolve())
-            
+            let store = LocalStoreBuilder
+                .default(initialState: SplashPageState())
+                .build()
+            SplashScreen(
+                store: store,
+                actionCreator: ActionCreatorAssembler().resolve()
+            )
         case .maintenance:
-            let store = LocalStoreBuilder.default(initialState: MaintenancePageState()).build()
-            MaintenanceScreen(store: store,
-                              maintenanceActionCreator: ActionCreatorAssembler().resolve())
-            
+            let store = LocalStoreBuilder
+                .default(initialState: MaintenancePageState())
+                .build()
+            MaintenanceScreen(
+                store: store,
+                maintenanceActionCreator: ActionCreatorAssembler().resolve()
+            )
         case .signedIn:
-            let store = LocalStoreBuilder.default(initialState: TabState()).build()
-            TabScreen(store: store)
-
+            let store = LocalStoreBuilder
+                .default(initialState: TabState())
+                .build()
+            TabScreen(
+                store: store
+            )
         case .signedOut:
-            let store = LocalStoreBuilder.default(initialState: SignInPageState()).build()
-            SignInScreen(store: store,
-                         actionCreator: ActionCreatorAssembler().resolve())
-            
+            let store = LocalStoreBuilder
+                .default(initialState: SignInPageState())
+                .build()
+            SignInScreen(
+                store: store,
+                actionCreator: ActionCreatorAssembler().resolve()
+            )
         case .movieList:
-            let store = LocalStoreBuilder.default(initialState: MoviePageState()).build()
-            MovieListScreen(store: store, actionCreator: ActionCreatorAssembler().resolve())
-            
+            let store = LocalStoreBuilder
+                .default(initialState: MoviePageState())
+                .build()
+            MovieListScreen(
+                store: store,
+                actionCreator: ActionCreatorAssembler().resolve()
+            )
         case .watchList:
-            let store = LocalStoreBuilder.default(initialState: WatchListPageState()).build()
-            WatchListContentView(store: store)
-            
+            let store = LocalStoreBuilder
+                .default(initialState: WatchListPageState())
+                .build()
+            WatchListScreen(
+                store: store
+            )
         case .debug:
-            let store = LocalStoreBuilder.default(initialState: DebugPageState()).build()
-            DebugScreen(store: store)
-            
+            let store = LocalStoreBuilder
+                .default(initialState: DebugPageState())
+                .build()
+            DebugScreen(
+                store: store
+            )
         case .filmography(let personId, let type):
-            let store = LocalStoreBuilder.default(initialState: FilmographyState(personId: personId, type: type)).build()
-            FilmographyScreen(store: store,
-                              actionCreator: ActionCreatorAssembler().resolve(personId: personId, type: type))
-        
+            let store = LocalStoreBuilder
+                .default(initialState: FilmographyState(personId: personId, type: type))
+                .build()
+            FilmographyScreen(
+                store: store,
+                actionCreator: ActionCreatorAssembler().resolve(personId: personId, type: type)
+            )
         case .movieDetail(let movieId):
-            let store = LocalStoreBuilder.default(initialState: MovieDetailState.fromId(movieId: movieId)).build()
-            MovieDetailScreen(store: store,
-                              movieDetailStateActionCreator: ActionCreatorAssembler().resolve(movieId: movieId))
+            let store = LocalStoreBuilder
+                .default(initialState: MovieDetailState.fromId(movieId: movieId))
+                .build()
+            MovieDetailScreen(
+                store: store,
+                movieDetailStateActionCreator: ActionCreatorAssembler().resolve(movieId: movieId)
+            )
         case .debugFirstModel:
-            let store = LocalStoreBuilder.default(initialState: DebugModalState()).build()
-            DebugFirstModalScreen(store: store)
-            
+            let store = LocalStoreBuilder
+                .default(initialState: DebugModalState())
+                .build()
+            DebugFirstModalScreen(
+                store: store
+            )
         case .debugSecondModal:
-            let store = LocalStoreBuilder.default(initialState: DebugModalState()).build()
-            DebugSecondModalScreen(store: store)
+            let store = LocalStoreBuilder
+                .default(initialState: DebugModalState())
+                .build()
+            DebugSecondModalScreen(
+                store: store
+            )
         }
     }
 }

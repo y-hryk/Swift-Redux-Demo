@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol MaintenanceRepository {
+protocol MaintenanceRepository: Sendable {
     func getStatus() async throws -> MaintenanceStatus
 }
 

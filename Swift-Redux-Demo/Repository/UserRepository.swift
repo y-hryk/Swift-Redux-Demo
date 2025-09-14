@@ -7,12 +7,11 @@
 
 import Foundation
 
-protocol UserRepository {
+protocol UserRepository: Sendable {
     func isSignIn() async throws -> Bool
     func signIn() async throws -> Void
     func getUsers() async throws -> User
     func signOut() async throws -> Void
-    mutating func update(user: User) async throws -> User
 }
 
 struct UserRepositoryImpl: UserRepository, Injectable {
@@ -25,23 +24,18 @@ struct UserRepositoryImpl: UserRepository, Injectable {
     }
     
     func isSignIn() async throws -> Bool {
-        UserMemoryCache.shared.user.isSignIn
+        await UserMemoryCache.shared.getUser().isSignIn
     }
     
     func signIn() async throws -> Void {
-        UserMemoryCache.shared.user.isSignIn = true
+        await UserMemoryCache.shared.signIn()
     }
     
     func signOut() async throws -> Void {
-        UserMemoryCache.shared.user.isSignIn = false
+        await UserMemoryCache.shared.signout()
     }
     
     func getUsers() async throws -> User {
-        UserMemoryCache.shared.user
-    }
-    
-    mutating func update(user: User) async throws -> User {
-        UserMemoryCache.shared.user = user
-        return user
+        await UserMemoryCache.shared.getUser()
     }
 }

@@ -31,7 +31,7 @@ extension TheMoviebd {
             var path: String { "/movie/\(movieId)/images" }
             var parameters: [String : String]? {
 //                ["language": NSLocale.localeString()]
-                nil
+                [:]
             }
             let movieId: String
         }
@@ -51,7 +51,7 @@ extension TheMoviebd {
             var method: HTTPMethod { .get }
             var path: String { "/movie/\(movieId)/reviews" }
             var parameters: [String : String]? {
-                nil
+                [:]
             }
             let movieId: String
         }

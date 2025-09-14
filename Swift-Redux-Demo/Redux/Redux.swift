@@ -6,26 +6,25 @@
 //
 
 struct Redux {
-    typealias Reducer<State: Redux.State> = (State, Redux.Action) -> State
-    typealias Middleware<State: Redux.State> = (Redux.LocalStore<State>, Redux.Action) async -> Redux.Action?
-    typealias AfterMiddleware<State: Redux.State> = (State, State, Redux.Action, Redux.Action) -> Void
+    typealias Reducer<State: Redux.State> = @Sendable (State, Redux.Action) -> State
+    typealias Middleware<State: Redux.State> = @Sendable (Redux.LocalStore<State>, Redux.Action) async -> Redux.Action?
     
     // State
-    protocol State: Equatable {
+    protocol State: Equatable, Sendable {
         static var reducer: Redux.Reducer<Self> { get }
         static func preview() -> Self
     }
     
     // Action
-    protocol Action {}
+    protocol Action: Sendable {}
     protocol GlobalAction: Redux.Action {}
     
     struct ThunkAction<S: Redux.State>: Action {
-        let function: (Redux.LocalStore<S>, Action) async -> Action?
+        let function: @Sendable (Redux.LocalStore<S>, Action) async -> Action?
         let className: String
         let functionName: String
         
-        init(function: @escaping (Redux.LocalStore<S>, Action) async -> Action?,
+        init(function: @Sendable @escaping (Redux.LocalStore<S>, Action) async -> Action?,
              className: String,
              functionName: String = #function) {
             self.function = function

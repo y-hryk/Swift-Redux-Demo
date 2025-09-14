@@ -8,7 +8,7 @@
 import Foundation
 
 class AppConfiguration {
-    static let shared = AppConfiguration()
+    nonisolated(unsafe) static let shared = AppConfiguration()
     
     private var config: [String: Any] = [:]
     var isLoaded = false

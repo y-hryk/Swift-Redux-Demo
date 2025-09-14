@@ -1,6 +1,6 @@
 import Foundation
 
-enum AsyncValue<Element: Equatable> {
+enum AsyncValue<Element: Equatable & Sendable> {
     case data(value: Element)
     case loading
     case error(error: Error)

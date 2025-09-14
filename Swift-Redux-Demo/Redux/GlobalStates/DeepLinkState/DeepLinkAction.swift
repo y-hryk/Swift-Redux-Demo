@@ -23,14 +23,15 @@ struct DeepLinkStateActionCreator<State: Redux.State> {
                 await store.dispatch(RoutingStateAction.movieListNavigationsChanged([
                     .movieDetail(movieId: movieId)
                 ]))
-            case .firstModal:
+            case .modal:
+                await store.dispatch(RoutingStateAction.modalShown(ModalItem(routingPath: .debugFirstModel)))
+            case .modalNested:
                 await store.dispatch(
                     RoutingStateAction.modalNavigationsChanged([
                         ModalItem(routingPath: .debugFirstModel),
                         ModalItem(routingPath: .debugFirstModel)
                     ])
                 )
-//                await store.dispatch(RoutingStateAction.modalShown(ModalItem(routingPath: .debugFirstModel)))
             }
             return DeepLinkAction.deepLinkReceived(nil)
         }, className: "\(type(of: self))")

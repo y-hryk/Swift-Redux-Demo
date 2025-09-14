@@ -21,7 +21,7 @@ struct FilmographyScreen: View {
                 }
             case .loading:
                 ProgressView()
-            case .error(let _):
+            case .error(_):
                 ProgressView()
             }
         }
@@ -119,7 +119,7 @@ struct FilmographyScreen: View {
                 }
             case .loading:
                 ProgressView()
-            case .error(let error):
+            case .error:
                 ProgressView()
             }
         }

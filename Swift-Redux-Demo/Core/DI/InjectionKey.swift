@@ -5,27 +5,60 @@
 //  Created by h.yamaguchi on 2025/08/02.
 //
 
+import Foundation
+
+// MARK: - InjectionKey Protocol
 public protocol InjectionKey {
-    associatedtype Value
+    associatedtype Value: Sendable
     static var currentValue: Self.Value { get set }
 }
 
-struct InjectedValues {
-    private static var current = InjectedValues()
+// MARK: - Thread-Safe Storage
+final class InjectionStorage: @unchecked Sendable {
+    static let shared = InjectionStorage()
+    let lock = NSLock()
+    var values: [String: any Sendable] = [:]
     
-    static subscript<K>(key: K.Type) -> K.Value where K : InjectionKey {
-        get { key.currentValue }
-        set { key.currentValue = newValue }
+    private init() {}
+    
+    func getValue<K: InjectionKey>(for keyType: K.Type) -> K.Value {
+        lock.lock()
+        defer { lock.unlock() }
+        
+        let key = String(describing: keyType)
+        if let value = values[key] as? K.Value {
+            return value
+        }
+        return keyType.currentValue
     }
     
-    static subscript<T>(_ keyPath: WritableKeyPath<InjectedValues, T>) -> T {
+    func setValue<K: InjectionKey>(_ value: K.Value, for keyType: K.Type) {
+        lock.lock()
+        defer { lock.unlock() }
+        
+        let key = String(describing: keyType)
+        values[key] = value
+    }
+}
+
+// MARK: - InjectedValues
+struct InjectedValues: Sendable {
+    nonisolated(unsafe) private static var current = InjectedValues()
+    
+    static subscript<K: InjectionKey>(key: K.Type) -> K.Value {
+        get { InjectionStorage.shared.getValue(for: key) }
+        set { InjectionStorage.shared.setValue(newValue, for: key) }
+    }
+    
+    static subscript<T: Sendable>(_ keyPath: WritableKeyPath<InjectedValues, T>) -> T {
         get { current[keyPath: keyPath] }
         set { current[keyPath: keyPath] = newValue }
     }
 }
 
+// MARK: - Injected Property Wrapper
 @propertyWrapper
-struct Injected<T> {
+struct Injected<T: Sendable>: @unchecked Sendable {
     private let keyPath: WritableKeyPath<InjectedValues, T>
     
     var wrappedValue: T {

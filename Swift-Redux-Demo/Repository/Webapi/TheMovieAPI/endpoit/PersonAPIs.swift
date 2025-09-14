@@ -29,6 +29,7 @@ extension TheMoviebd {
             var parameters: [String : String]? {
                 [
                     "language": NSLocale.localeString()
+//                    :
                 ]
             }
             let personId: String

@@ -13,7 +13,7 @@ struct MovieList {
     let results: [Movie]
     
     func shouldLoadData() -> Bool {
-        currentPage <= totalPages
+        !results.isEmpty && currentPage <= totalPages
     }
     
     func nextPage() -> Int {

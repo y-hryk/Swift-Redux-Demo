@@ -7,10 +7,7 @@
 
 import SwiftUI
 
-struct FavoriteButton: View, Equatable {
-    static func == (lhs: FavoriteButton, rhs: FavoriteButton) -> Bool {
-        return lhs.isFavorite == rhs.isFavorite
-    }
+struct FavoriteButton: View {
     
     let isFavorite: Bool
     let completionHandler: ((Bool) -> Void)
@@ -24,6 +21,12 @@ struct FavoriteButton: View, Equatable {
         PrimaryButton(title: isFavorite ? "Remove Watch List" : "Add Watch List") {
             completionHandler(isFavorite)
         }
+    }
+}
+
+extension FavoriteButton: Equatable {
+    nonisolated static func == (lhs: FavoriteButton, rhs: FavoriteButton) -> Bool {
+        return lhs.isFavorite == rhs.isFavorite
     }
 }
 

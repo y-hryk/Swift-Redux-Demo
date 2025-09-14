@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct OffsetReadableScrollViewPreferenceKey: PreferenceKey {
-    static var defaultValue: CGPoint = .zero
+    nonisolated(unsafe) static var defaultValue: CGPoint = .zero
     static func reduce(value: inout CGPoint, nextValue: () -> CGPoint) {
     }
 }
@@ -41,7 +41,9 @@ struct OffsetReadableScrollView<Content: View>: View {
             }
         }
         .onPreferenceChange(OffsetReadableScrollViewPreferenceKey.self) { offset in
-            onChangeOffset(offset)
+            Task { @MainActor in
+                onChangeOffset(offset)
+            }
         }
     }
 }

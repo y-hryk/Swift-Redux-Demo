@@ -5,11 +5,13 @@
 //  Created by h.yamaguchi on 2025/02/08.
 //
 
-//func debugDelayRequestMiddleware<S: ApplicationState>() -> Middleware<S> {
-//    return { store, state, actionContainer in
-//        if let _: ThunkAction<S> = actionContainer.thunkAction() {
-//            try? await Task.sleep(for: .seconds(1))
-//        }
-//        return actionContainer.baseAction
-//    }
-//}
+extension Redux {
+    static func debugDelayRequestMiddleware<S: Redux.State>() -> Middleware<S> {
+        return { store, action in
+            if let _ = action as? Redux.ThunkAction<S> {
+                try? await Task.sleep(for: .seconds(1))
+            }
+            return action
+        }
+    }
+}

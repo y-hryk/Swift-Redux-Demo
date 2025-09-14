@@ -68,9 +68,15 @@ struct DebugScreen: View {
                             await store.dispatch(DeepLinkAction.deepLinkReceived(DeepLink(to: .watchList)))
                         }
                     }
-                    ListTextButton("DeepLink FirstModal") {
+                    ListTextButton("DeepLink Modal") {
                         Task {
-                            await store.dispatch(DeepLinkAction.deepLinkReceived(DeepLink(to: .firstModal)))
+                            await store.dispatch(DeepLinkAction.deepLinkReceived(DeepLink(to: .modal)))
+                        }
+                    }
+                    
+                    ListTextButton("DeepLink Modal(Nested)") {
+                        Task {
+                            await store.dispatch(DeepLinkAction.deepLinkReceived(DeepLink(to: .modalNested)))
                         }
                     }
 

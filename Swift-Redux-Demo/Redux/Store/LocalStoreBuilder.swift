@@ -13,6 +13,7 @@ struct LocalStoreBuilder<State: Redux.State> {
     private let reducer: Redux.Reducer<State>
     private var customMiddleware: [Redux.Middleware<State>] = []
     private var isTraceEnabled: Bool = false
+    private var isDelayRequestEnabled: Bool = false
     
     private init(initialState: State, reducer: @escaping Redux.Reducer<State>) {
         self.initialState = initialState
@@ -69,12 +70,18 @@ struct LocalStoreBuilder<State: Redux.State> {
         return builder
     }
     
+    func enableDelayRequest() -> LocalStoreBuilder<State> {
+        var builder = self
+        builder.isDelayRequestEnabled = true
+        return builder
+    }
+    
     // MARK: - Build Method
     func build() -> Redux.LocalStore<State> {
         Redux.LocalStore(
             initialState: initialState,
             reducer: reducer,
-            middleware: customMiddleware,
+            middleware: isDelayRequestEnabled ? [Redux.debugDelayRequestMiddleware()] + customMiddleware : customMiddleware,
             isTraceEnabled: isTraceEnabled
         )
     }

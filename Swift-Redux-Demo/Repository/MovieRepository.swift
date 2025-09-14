@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol MovieRepository {
+protocol MovieRepository: Sendable {
     func getMovieTopRated(page: Int?) async throws -> MovieList
     func getMovieDetail(movieId: MovieId) async throws -> MovieDetail
     func getBackdrpos(movieId: MovieId) async throws -> [Backdrop]

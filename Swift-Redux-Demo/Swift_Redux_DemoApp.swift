@@ -7,20 +7,17 @@
 
 import SwiftUI
 
-let globalStore = Redux.GlobalStore(
-    reducer: ApplicationState.reducer,
-    isTraceEnabled: true
-)
-
 @main
 struct Swift_Redux_DemoApp: App {
-
+    @StateObject private var stateObservationBuilder: StateObservationBuilder
+    
     init() {
         let appearance: UITabBarAppearance = UITabBarAppearance()
         appearance.backgroundColor = Color.Background.main.toUIColor()
         UITabBar.appearance().scrollEdgeAppearance = appearance
         UITabBar.appearance().standardAppearance = appearance
         let _ = AppConfiguration.shared
+        _stateObservationBuilder = StateObject(wrappedValue: StateObservationBuilder(store: globalStore))
     }
     
     var body: some Scene {
@@ -32,6 +29,9 @@ struct Swift_Redux_DemoApp: App {
                     authenticationStateActionCreator: ActionCreatorAssembler().resolve()
                 )
                 .environment(\.globalStore, globalStore)
+                .environmentObject(stateObservationBuilder)
+//                .environmentObject(globalStore)
+//                .withGlobalStore(globalStore_)
             } else {
                 VStack(alignment: .leading, spacing: 10) {
                     Text("💡 Please copy it to Config.plist and update with your values.")

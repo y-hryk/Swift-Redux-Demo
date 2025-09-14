@@ -1,5 +1,5 @@
 //
-//  WatchListContentView.swift
+//  WatchListScreen.swift
 //  MovieAppDemo
 //
 //  Created by h.yamaguchi on 2024/10/06.
@@ -7,12 +7,17 @@
 
 import SwiftUI
 
-struct WatchListContentView: View {
+struct WatchListScreen: View {
     @StateObject var store: Redux.LocalStore<WatchListPageState>
+//    @EnvironmentObject var stateObservationBuilder: StateObservationBuilder
+
     @StateBinding(\.routingState.watchListPaths, default: []) var watchListPaths
     @StateBinding(\.favoriteState.favoriteItems, default: []) var favoriteItems
+//    @State private var watchListPaths: [RoutingPath] = []
+//    @State private var favoriteItems: [MovieDetail] = []
 
     var body: some View {
+        let _ = print("WatchListScreen body")
         NavigationStack(path: Binding(
             get: { watchListPaths },
             set: { value,_ in
@@ -39,6 +44,10 @@ struct WatchListContentView: View {
                 path.destination()
             }
         }
+//        .observingStates(from: stateObservationBuilder) { builder in
+//            builder.observe(\.routingState.watchListPaths, default: [], into: $watchListPaths)
+//            builder.observe(\.favoriteState.favoriteItems, default: [], into: $favoriteItems)
+//        }
     }
 }
 
@@ -52,6 +61,6 @@ struct WatchListContentView: View {
         reducer: ApplicationState.reducer
     )
     
-    WatchListContentView(store: store)
+    WatchListScreen(store: store)
         .environment(\.globalStore, globalStore)
 }

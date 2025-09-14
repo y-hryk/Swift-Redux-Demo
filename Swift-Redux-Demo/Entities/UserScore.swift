@@ -15,7 +15,7 @@ struct UserScore: Equatable {
     }
     var toString: String {
         if score >= 10.0 { return "10" }
-        return score <= 0.0 ? "NR" : String(format: "%.1f%", score)
+        return score <= 0.0 ? "NR" : String(format: "%.1f", score)
     }
     
     var unitText: String {

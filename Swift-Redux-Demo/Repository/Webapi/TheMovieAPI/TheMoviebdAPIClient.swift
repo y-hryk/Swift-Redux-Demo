@@ -43,14 +43,14 @@ struct TheMoviebdAPIClient {
 //        print("\n🚀 WebApi Log")
 //        print("\(request.method.rawValue.uppercased()) \(request.baseURL)\(request.path)")
 //        print("Params: \(String(describing: request.parameters))")
-        if let statusCode = (result.1 as? HTTPURLResponse)?.statusCode {
-            print("StatusCode: \(statusCode)")
-        }
+//        if let statusCode = (result.1 as? HTTPURLResponse)?.statusCode {
+//            print("StatusCode: \(statusCode)")
+//        }
         do {
             let data = try validateCode(data: result.0, response: result.1)
-            if let response = try? JSONSerialization.jsonObject(with: data) {
+//            if let response = try? JSONSerialization.jsonObject(with: data) {
 //                print("Response: \(response)")
-            }
+//            }
             return try decoder.decode(V.self, from: data)
         } catch let error {
             if error is NetworkError {

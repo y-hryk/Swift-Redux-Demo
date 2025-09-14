@@ -18,11 +18,15 @@ class ModifierStateSelector<Value: Equatable>: ObservableObject {
         self.value = defaultValue
     }
     
+    @MainActor
     func connectIfNeeded(to store: Redux.GlobalStore, keyPath: KeyPath<ApplicationState, Value>) {
         guard !isConnected else { return }
         isConnected = true
         
-        // ObservableObjectPublisherを直接監視
+        // 初期値を設定
+        self.value = store.state[keyPath: keyPath]
+        
+        // ObservableObjectPublisherを監視
         cancellable = store.objectWillChange
             .receive(on: DispatchQueue.main)
             .sink { [weak self, weak store] _ in
@@ -35,11 +39,6 @@ class ModifierStateSelector<Value: Equatable>: ObservableObject {
                     }
                 }
             }
-        
-        // 初期値を設定
-        Task { @MainActor in
-            self.value = store.state[keyPath: keyPath]
-        }
     }
     
     deinit {

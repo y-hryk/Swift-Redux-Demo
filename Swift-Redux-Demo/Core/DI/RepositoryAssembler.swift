@@ -9,7 +9,7 @@ import Foundation
 
 // MovieRepository
 private struct MovieRepositoryKey: InjectionKey {
-    static var currentValue: MovieRepository = MovieRepositoryImpl(with: MovieRepositoryImpl.Dependency())
+    nonisolated(unsafe) static var currentValue: MovieRepository = MovieRepositoryImpl(with: MovieRepositoryImpl.Dependency())
 }
 
 extension InjectedValues {
@@ -21,7 +21,7 @@ extension InjectedValues {
 
 // UserRepository
 private struct UserRepositoryKey: InjectionKey {
-    static var currentValue: UserRepository = UserRepositoryImpl(with: UserRepositoryImpl.Dependency())
+    nonisolated(unsafe) static var currentValue: UserRepository = UserRepositoryImpl(with: UserRepositoryImpl.Dependency())
 }
 
 extension InjectedValues {
@@ -33,7 +33,7 @@ extension InjectedValues {
 
 // MaintenanceRepository
 private struct MaintenanceRepositoryKey: InjectionKey {
-    static var currentValue: MaintenanceRepository = MaintenanceRepositoryImpl()
+    nonisolated(unsafe) static var currentValue: MaintenanceRepository = MaintenanceRepositoryImpl()
 }
 
 extension InjectedValues {
@@ -45,7 +45,7 @@ extension InjectedValues {
 
 // PersonRepository
 private struct PersonRepositoryKey: InjectionKey {
-    static var currentValue: PersonRepository = PersonRepositoryImpl(with: PersonRepositoryImpl.Dependency())
+    nonisolated(unsafe) static var currentValue: PersonRepository = PersonRepositoryImpl(with: PersonRepositoryImpl.Dependency())
 }
 
 extension InjectedValues {
@@ -53,5 +53,4 @@ extension InjectedValues {
         get { Self[PersonRepositoryKey.self] }
         set { Self[PersonRepositoryKey.self] = newValue }
     }
-
 }

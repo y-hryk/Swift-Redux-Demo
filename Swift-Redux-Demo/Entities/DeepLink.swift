@@ -12,7 +12,8 @@ struct DeepLink: Equatable {
         case movieList
         case watchList
         case movieDetail(MovieId)
-        case firstModal
+        case modal
+        case modalNested
     }
     let to: DeepLink.To
     
@@ -27,9 +28,11 @@ struct DeepLink: Equatable {
             }
             return DeepLink(to: DeepLink.To.movieList)
         case "watchList":
-            return DeepLink.init(to: DeepLink.To.watchList)
-        case "firstModal":
-            return DeepLink.init(to: DeepLink.To.firstModal)
+            return DeepLink(to: DeepLink.To.watchList)
+        case "modal":
+            return DeepLink(to: DeepLink.To.modal)
+        case "modal_nested":
+            return DeepLink(to: DeepLink.To.modalNested)
         default:
             return nil
         }

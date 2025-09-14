@@ -28,7 +28,6 @@ extension Redux {
             self.middleware = middleware
             self.isTraceEnabled = isTraceEnabled
             self._state = Published(wrappedValue: initialState)
-//            print("\(type(of: initialState)) init")
         }
         
         func dispatch(_ action: Redux.Action) async {

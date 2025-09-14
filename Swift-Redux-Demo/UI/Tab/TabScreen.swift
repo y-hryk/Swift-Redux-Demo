@@ -66,7 +66,7 @@ struct SignedInTabView: View, Equatable {
     }
     
     // Equatableの実装: selectedTabのみを比較
-    static func == (lhs: SignedInTabView, rhs: SignedInTabView) -> Bool {
+    nonisolated static func == (lhs: SignedInTabView, rhs: SignedInTabView) -> Bool {
         return lhs.selecedTab == rhs.selecedTab
     }
 }

@@ -9,6 +9,7 @@ import CustomDump
 
 struct ActionTracer {
     static func trace<State: Redux.State>(before: State, after: State, action: Redux.Action, newAction: Redux.Action) {
+#if DEBUG
         var log = ""
         
         if let action = action as? Redux.ThunkAction<State> {
@@ -26,5 +27,6 @@ struct ActionTracer {
             log += "\n✅ State change \nNo difference"
         }
         print(log)
+#endif
     }
 }

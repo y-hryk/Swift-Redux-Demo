@@ -8,24 +8,65 @@
 import SwiftUI
 import Combine
 
-// MARK: - BindingStateSelector (Pattern 1用)
+@propertyWrapper
 @MainActor
-class BindingStateSelector<Value: Equatable>: ObservableObject {
+struct StateBinding<Value: Equatable>: @preconcurrency DynamicProperty {
+    @StateObject private var selector: StateSelector<Value>
+    @Environment(\.globalStore) private var globalStore
+    
+    private let keyPath: KeyPath<ApplicationState, Value>
+    private let defaultValue: Value
+    
+    init(_ keyPath: KeyPath<ApplicationState, Value>, default defaultValue: Value) {
+        self.keyPath = keyPath
+        self.defaultValue = defaultValue
+        self._selector = StateObject(wrappedValue: StateSelector(defaultValue: defaultValue))
+    }
+    
+    var wrappedValue: Value {
+        selector.value
+    }
+    
+    var projectedValue: Binding<Value> {
+        Binding(
+            get: {
+                selector.value
+            },
+            set: { newValue in
+                Task { @MainActor in
+                    selector.value = newValue
+                }
+            }
+        )
+    }
+    
+    func update() {
+        guard let store = globalStore else { return }
+        Task { @MainActor in
+            selector.connectIfNeeded(to: store, keyPath: keyPath)
+        }
+    }
+}
+
+// MARK: - ModifierStateSelector (内部実装)
+class StateSelector<Value: Equatable>: ObservableObject {
     @Published var value: Value
     private var cancellable: AnyCancellable?
     private var isConnected = false
-    private weak var store: Redux.GlobalStore?
     
     init(defaultValue: Value) {
         self.value = defaultValue
     }
     
+    @MainActor
     func connectIfNeeded(to store: Redux.GlobalStore, keyPath: KeyPath<ApplicationState, Value>) {
         guard !isConnected else { return }
         isConnected = true
-        self.store = store
         
-        // ObservableObjectPublisherを直接監視
+        // 初期値を設定
+        self.value = store.state[keyPath: keyPath]
+        
+        // ObservableObjectPublisherを監視
         cancellable = store.objectWillChange
             .receive(on: DispatchQueue.main)
             .sink { [weak self, weak store] _ in
@@ -38,93 +79,9 @@ class BindingStateSelector<Value: Equatable>: ObservableObject {
                     }
                 }
             }
-        
-        // 初期値を設定
-        Task { @MainActor in
-            self.value = store.state[keyPath: keyPath]
-        }
     }
     
     deinit {
         cancellable?.cancel()
-    }
-}
-
-// MARK: - Custom Environment Key
-struct GlobalStoreKey: EnvironmentKey {
-    static let defaultValue: Redux.GlobalStore? = nil
-}
-
-extension EnvironmentValues {
-    var globalStore: Redux.GlobalStore? {
-        get { self[GlobalStoreKey.self] }
-        set { self[GlobalStoreKey.self] = newValue }
-    }
-}
-
-// MARK: - StateBinding Property Wrapper (Pattern 1)
-@propertyWrapper
-struct StateBinding<Value: Equatable>: DynamicProperty {
-    @StateObject private var selector: BindingStateSelector<Value>
-    @Environment(\.globalStore) private var globalStore
-    private let keyPath: KeyPath<ApplicationState, Value>
-    
-    init(_ keyPath: KeyPath<ApplicationState, Value>, default defaultValue: Value) {
-        self.keyPath = keyPath
-        self._selector = StateObject(wrappedValue: BindingStateSelector(defaultValue: defaultValue))
-    }
-    
-    var wrappedValue: Value {
-        selector.value
-    }
-    
-    var projectedValue: Binding<Value> {
-        Binding(
-            get: { selector.value },
-            set: { _ in } // 読み取り専用
-        )
-    }
-    
-    func update() {
-        guard let store = globalStore else { return }
-        selector.connectIfNeeded(to: store, keyPath: keyPath)
-    }
-}
-
-// MARK: - OptionalStateBinding (Pattern 1)
-@propertyWrapper
-struct OptionalStateBinding<Value: Equatable>: DynamicProperty {
-    @StateObject private var selector: BindingStateSelector<Value?>
-    @Environment(\.globalStore) private var globalStore
-    private let keyPath: KeyPath<ApplicationState, Value?>
-    
-    init(_ keyPath: KeyPath<ApplicationState, Value?>) {
-        self.keyPath = keyPath
-        self._selector = StateObject(wrappedValue: BindingStateSelector(defaultValue: nil))
-    }
-    
-    var wrappedValue: Value? {
-        selector.value
-    }
-    
-    var projectedValue: Binding<Value?> {
-        Binding(
-            get: { selector.value },
-            set: { _ in } // 読み取り専用
-        )
-    }
-    
-    func update() {
-        guard let store = globalStore else { return }
-        selector.connectIfNeeded(to: store, keyPath: keyPath)
-    }
-}
-
-// MARK: - Convenience Extensions
-extension StateBinding {
-    // 非Optional値をOptionalとして扱う場合
-    init<T>(_ keyPath: KeyPath<ApplicationState, T>, default defaultValue: T?) where Value == T? {
-        self.keyPath = keyPath as! KeyPath<ApplicationState, Value>
-        self._selector = StateObject(wrappedValue: BindingStateSelector(defaultValue: defaultValue))
     }
 }
