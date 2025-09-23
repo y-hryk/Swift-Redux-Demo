@@ -41,6 +41,7 @@ struct SignedInTabView: View, Equatable {
         TabView(selection: Binding(
             get: { selecedTab },
             set: { value, _ in
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 if selecedTab != value {
                     selectedHandler(value)
                 }
