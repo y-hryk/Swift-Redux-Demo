@@ -14,12 +14,12 @@ Uses the [TMDB](https://www.themoviedb.org/) web API.
 - Swift 6
 - Xcode 26
 
-## Get Started
+## Setup
 1. Register with [TMDB](https://www.themoviedb.org/) and obtain an API token
 2. Copy `Config-Template.plist`
 3. Rename `Config-Template.plist` to `Config.plist`
 4. Enter the API Key in `Config.plist`
-
+<img src="screenshots/screenshots04.png" alt=""/>
 
 ## Flow
 ```mermaid
@@ -105,12 +105,12 @@ let store = LocalStoreBuilder
     .enableTrace()
     .build()
 
-let view = MovieListScreen(store: store, actionCreator: ActionCreatorAssembler().resolve())
+let view = MovieListScreen(store: store)
 ```
 
 #### Log sample
 
-<img src="screenshots/screenshots04.png" alt=""/>
+<img src="screenshots/screenshots05.png" alt=""/>
 
 ### Delaying network communication processing
 Delays network communication by suspending it for one second during communication. This makes it easier to implement loading etc.
@@ -120,5 +120,5 @@ let store = LocalStoreBuilder
     .enableDelayRequest()
     .build()
 
-let view = MovieListScreen(store: store, actionCreator: ActionCreatorAssembler().resolve())
+let view = MovieListScreen(store: store)
 ```
