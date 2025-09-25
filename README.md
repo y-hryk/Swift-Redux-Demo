@@ -2,13 +2,12 @@
 A Redux-like architecture with multiple stores.  
 Uses the [TMDB](https://www.themoviedb.org/) web API.
 
-<table cellspacing="0" cellpadding="0" style="border: none;">
-    <tr>
-        <td><img src="screenshots/screenshots01.png" alt=""/></td>
-        <td><img src="screenshots/screenshots02.png" alt=""/></td>
-        <td><img src="screenshots/screenshots03.png" alt=""/></td>
-    </tr>
-</table>
+<div style="display:flex;gap:10px">
+    <div style="flex:1"><img src="screenshots/recording.gif" style="width:100%"></div>
+    <div style="flex:1"><img src="screenshots/screenshots02.png" style="width:100%"></div>
+    <div style="flex:1"><img src="screenshots/screenshots03.png" style="width:100%"></div>
+</div>
+
 
 ## Environment
 - Swift 6
