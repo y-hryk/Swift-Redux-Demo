@@ -1,5 +1,31 @@
 # Swift-Redux-Demo
+A Redux-like architecture with multiple stores.  
+Uses the [TMDB](https://www.themoviedb.org/) web API.
 
+
+<table cellspacing="0" cellpadding="0" style="border: none;">
+    <tr>
+        <td><img src="screenshots/screenshots01.png" alt=""/></td>
+        <td><img src="screenshots/screenshots02.png" alt=""/></td>
+        <td><img src="screenshots/screenshots03.png" alt=""/></td>
+    </tr>
+</table>
+
+<img src="screenshots/screenshots04.png" alt=""/>
+
+
+## Environment
+- Swift 6
+- Xcode 26
+
+## Get Started
+1. [TMDB](https://www.themoviedb.org/)に登録してAPIトークンを取得する
+2. Config-Template.plistをコピー
+3. Config-Template.plistをConfig.plistにリネーム
+4. Config.plistにAPIKeyを入力
+
+
+## Flow
 ```mermaid
 ---
 config:
@@ -61,3 +87,15 @@ graph TD
     class Action,ThunkAction,ActionCreator actionClass
     class m1,r1,s1,r2,s2 storeClass
 ```
+
+
+## Application Features
+- Splash
+- Sign in
+- Sign out
+- Movie List
+- Movie Detail
+- Filmography
+- Watch List
+- Maintenance Screen
+- Deep Link
