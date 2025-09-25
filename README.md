@@ -2,11 +2,7 @@
 A Redux-like architecture with multiple stores.  
 Uses the [TMDB](https://www.themoviedb.org/) web API.
 
-<div style="display:flex;gap:10px">
-    <div style="flex:1"><img src="screenshots/recording.gif" style="width:100%"></div>
-    <div style="flex:1"><img src="screenshots/screenshots02.png" style="width:100%"></div>
-    <div style="flex:1"><img src="screenshots/screenshots03.png" style="width:100%"></div>
-</div>
+<img src="screenshots/recording.gif" alt=""/>
 
 
 ## Environment
