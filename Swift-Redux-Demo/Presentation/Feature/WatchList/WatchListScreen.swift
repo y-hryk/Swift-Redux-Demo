@@ -9,12 +9,8 @@ import SwiftUI
 
 struct WatchListScreen: View {
     @StateObject var store: Redux.LocalStore<WatchListState>
-//    @EnvironmentObject var stateObservationBuilder: StateObservationBuilder
-
     @StateBinding(\.routingState.watchListPaths, default: []) var watchListPaths
     @StateBinding(\.favoriteState.favoriteItems, default: []) var favoriteItems
-//    @State private var watchListPaths: [RoutingPath] = []
-//    @State private var favoriteItems: [MovieDetail] = []
 
     var body: some View {
         NavigationStack(path: Binding(
@@ -35,13 +31,12 @@ struct WatchListScreen: View {
             }
             .navigationTitle("Watch List")
             .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(for: RoutingPath.self) { path in
+                path.destination()
+            }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.Background.main)
         }
-//        .observingStates(from: stateObservationBuilder) { builder in
-//            builder.observe(\.routingState.watchListPaths, default: [], into: $watchListPaths)
-//            builder.observe(\.favoriteState.favoriteItems, default: [], into: $favoriteItems)
-//        }
     }
 }
 

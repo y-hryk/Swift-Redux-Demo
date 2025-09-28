@@ -15,6 +15,10 @@ extension Font {
     public static func title50()-> Font {
         .custom("Futura", size: 26).bold()
     }
+    
+    public static func title75()-> Font {
+        .custom("Futura", size: 36).bold()
+    }
 
     public static func body40()-> Font {
         .custom("Futura", size: 12)

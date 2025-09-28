@@ -16,7 +16,7 @@ struct SignInScreen: View {
             VStack(spacing: 0.0) {
                 Text("Demo App")
                     .fontWeight(.bold)
-                    .font(.title50())
+                    .font(.title75())
                 
                 VStack(alignment: .leading) {
                     Text("Username")
