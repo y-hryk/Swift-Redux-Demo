@@ -13,6 +13,7 @@ struct WatchListView: View {
     var body: some View {
         if movies.isEmpty {
             Text("No contents")
+                .font(.body50())
         } else {
             contents(movies: movies)
         }
@@ -55,9 +56,6 @@ struct WatchListView: View {
                 .listRowSeparator(.hidden)
                 .padding(10)
                 .background(Color.Background.main)
-            }
-            .onDelete { indexPath in
-                
             }
         }
         .listStyle(.inset)

@@ -17,7 +17,6 @@ struct WatchListScreen: View {
 //    @State private var favoriteItems: [MovieDetail] = []
 
     var body: some View {
-        let _ = print("WatchListScreen body")
         NavigationStack(path: Binding(
             get: { watchListPaths },
             set: { value,_ in
