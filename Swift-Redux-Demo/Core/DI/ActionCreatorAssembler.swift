@@ -12,16 +12,16 @@ struct ActionCreatorAssembler {
         AuthenticationStateActionCreator<State>()
     }
     
-    func resolve<State: Redux.State>() -> SignInPageStateActionCreator<State> {
-        SignInPageStateActionCreator<State>()
+    func resolve<State: Redux.State>() -> SignInStateActionCreator<State> {
+        SignInStateActionCreator<State>()
     }
     
-    func resolve<State: Redux.State>() -> MaintenancePageActionCreator<State> {
-        MaintenancePageActionCreator<State>()
+    func resolve<State: Redux.State>() -> MaintenanceActionCreator<State> {
+        MaintenanceActionCreator<State>()
     }
     
-    func resolve<State: Redux.State>() -> MoviePageStateActionCreator<State> {
-        MoviePageStateActionCreator<State>()
+    func resolve<State: Redux.State>() -> MovieListStateActionCreator<State> {
+        MovieListStateActionCreator<State>()
     }
     
     func resolve<State: Redux.State>(movieId: MovieId) -> MovieDetailStateActionCreator<State> {

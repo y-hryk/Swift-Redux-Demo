@@ -16,7 +16,7 @@ Uses the [TMDB](https://www.themoviedb.org/) web API.
 4. Enter the API Key in `Config.plist`
 <img src="screenshots/screenshots04.png" alt=""/>
 
-## Flow
+## Redux Flow
 ```mermaid
 ---
 config:
