@@ -73,12 +73,10 @@ struct FilmographyScreen: View {
         ZStack(alignment: .top) {
             switch filmography {
             case .data(let filmography):
-                VStack(alignment: .leading, spacing: 0.0) {
-                    Spacer().frame(height: 10)
+                VStack(alignment: .leading, spacing: 10.0) {
                     Text("Filmography")
                         .font(.title25())
                         .padding(.horizontal, 10)
-                    Spacer().frame(height: 10)
                     LazyVStack(alignment: .leading, spacing: 0.0) {
                         ForEach(filmography.movies) { movie in
                             Button {
@@ -93,12 +91,11 @@ struct FilmographyScreen: View {
                                         size: CGSize(width: 80, height: 80)
                                     )
                                     .cornerRadius(8.0)
-                                    VStack(alignment: .leading, spacing: 0.0) {
+                                    VStack(alignment: .leading, spacing: 20.0) {
                                         Text(movie.title)
                                             .foregroundStyle(Color.Text.body)
                                             .font(.title25())
                                             .multilineTextAlignment(.leading)
-                                        Spacer().frame(height: 20)
                                         Text("\(movie.reviewersCount)")
                                             .foregroundStyle(Color.Text.body)
                                             .font(.bodyB50())

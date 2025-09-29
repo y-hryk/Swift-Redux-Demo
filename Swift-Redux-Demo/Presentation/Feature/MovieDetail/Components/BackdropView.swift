@@ -21,10 +21,9 @@ struct BackdropView: View {
     }
     
     private func contents(backdrops: [Backdrop], isLoading: Bool = false) -> some View {
-        VStack(alignment: .leading, spacing: 0.0) {
+        VStack(alignment: .leading, spacing: 10.0) {
             Text("Backdrops")
                 .font(.title25())
-            Spacer().frame(height: 10)
             ScrollView(.horizontal) {
                 LazyHStack {
                     ForEach(backdrops) {

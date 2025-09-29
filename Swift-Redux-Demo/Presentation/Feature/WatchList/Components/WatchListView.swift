@@ -32,11 +32,10 @@ struct WatchListView: View {
                             size: CGSize(width: 80, height: 80)
                         )
                         .cornerRadius(8.0)
-                        VStack(alignment: .leading, spacing: 0.0) {
+                        VStack(alignment: .leading, spacing: 20) {
                             Text(movie.title)
                                 .foregroundStyle(Color.Text.body)
                                 .font(.title25())
-                            Spacer().frame(height: 20)
                             Text("\(movie.reviewersCount)")
                                 .foregroundStyle(Color.Text.body)
                                 .font(.bodyB50())

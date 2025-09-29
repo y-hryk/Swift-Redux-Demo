@@ -32,7 +32,7 @@ struct MovieDetailScreen: View {
     }
     
     func detail(movieDetail: MovieDetail) -> some View {
-        VStack(alignment: .leading, spacing: 0.0) {
+        VStack(alignment: .leading, spacing: 20) {
             HStack(alignment: .center, spacing: 16) {
                 FavoriteButton(isFavorite: favoriteState.isFavorite(movieId: movieDetail.id)) { isFavorite in
                     Task {
@@ -52,38 +52,34 @@ struct MovieDetailScreen: View {
                 ScoreView(score: movieDetail.rate)
                     .frame(width: 60, height: 60)
             }
-            Spacer().frame(height: 20)
-            Text(movieDetail.title)
-                .font(.title50())
-            + Text(" (\(movieDetail.year))")
-                .font(.title25())
-            Text(movieDetail.screeningTime)
-                .font(.body45())
-            Spacer().frame(height: 20)
-            if !movieDetail.overview.isEmpty {
-                Text("Stories")
+            VStack(alignment: .leading, spacing: 5.0) {
+                Text(movieDetail.title)
+                    .font(.title50())
+                + Text(" (\(movieDetail.year))")
                     .font(.title25())
-                Spacer().frame(height: 20)
-                Text(movieDetail.overview)
-                    .font(.body50())
-                Spacer().frame(height: 20)
+                Text(movieDetail.screeningTime)
+                    .font(.body45())
+            }
+            if !movieDetail.overview.isEmpty {
+                VStack(alignment: .leading, spacing: 10.0) {
+                    Text("Stories")
+                        .font(.title25())
+                    Text(movieDetail.overview)
+                        .font(.body50())
+                }
             }
             BackdropView(backdrops: store.state.backdrops)
-            Spacer().frame(height: 20)
             CastListView(creditList: store.state.creditList) { personId in
                 Task {
                     await store.dispatch(RoutingStateAction.routePushed(.filmography(personId: personId, type: .cast)))
                 }
             }
-            Spacer().frame(height: 20)
             AboutFilmView(movieDetail: movieDetail, creditList: store.state.creditList)
-            Spacer().frame(height: 20)
             CreatorListView(creditList: store.state.creditList) { personId in
                 Task {
                     await store.dispatch(RoutingStateAction.routePushed(.filmography(personId: personId, type: .crew)))
                 }
             }
-            Spacer().frame(height: 20)
             ReviewView(reviews: store.state.reviews)
         }
         .padding()

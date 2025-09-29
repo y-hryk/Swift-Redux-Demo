@@ -38,7 +38,9 @@ struct MovieDetailScrollView<Content: View>: View {
                     case .error(_):
                         CenterProgressView()
                     }
-                    navigationBar(height: geometory.safeAreaInsets.top)
+                    if #unavailable(iOS 26) {
+                        navigationBar(height: geometory.safeAreaInsets.top)
+                    }
                 }
             }
             .toolbarBackground(.hidden, for: .navigationBar)

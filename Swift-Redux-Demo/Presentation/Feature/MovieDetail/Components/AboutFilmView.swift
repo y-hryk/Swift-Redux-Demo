@@ -11,10 +11,9 @@ struct AboutFilmView: View {
     let movieDetail: MovieDetail
     let creditList: AsyncValue<CreditList>
     var body: some View {
-        VStack(alignment: .leading, spacing: 0.0) {
+        VStack(alignment: .leading, spacing: 20.0) {
             Text("About")
                 .font(.title25())
-            Spacer().frame(height: 20)
             VStack(alignment: .leading, spacing: 10.0) {
                 about(title: "Original Title", detail: movieDetail.originalTitle)
                 about(title: "Original Language", detail: movieDetail.originalLanguage)
