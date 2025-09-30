@@ -27,13 +27,12 @@ struct Swift_Redux_DemoApp: App {
         navigationAppearance.configureWithOpaqueBackground()
         navigationAppearance.backgroundColor = UIColor(Color.Background.main)
         navigationAppearance.shadowColor = .clear
-
         
         navigationAppearance.titleTextAttributes = [
             .font: UIFont(name: "Futura", size: 20) ?? UIFont.systemFont(ofSize: 20, weight: .bold),
         ]
         navigationAppearance.largeTitleTextAttributes = [
-            .font: UIFont.systemFont(ofSize: 24, weight: .heavy), // サイズを大きくして変化を確認
+            .font: UIFont.systemFont(ofSize: 24, weight: .heavy),
         ]
         UINavigationBar.appearance().standardAppearance = navigationAppearance
         UINavigationBar.appearance().compactAppearance = navigationAppearance

@@ -49,9 +49,6 @@ struct MovieListScreen: View {
                 await store.dispatch(actionCreator.movieListRequested())
             }
         }
-        .onAppear {
-            print("viewwill Appear")
-        }
     }
 }
 

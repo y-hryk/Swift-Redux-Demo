@@ -40,6 +40,16 @@ struct DebugScreen: View {
                             await store.dispatch(ApplicationAction.errorReceived(NetworkError.unauthorized))
                         }
                     }
+                    ListTextButton("400 Error") {
+                        Task {
+                            await store.dispatch(
+                                ApplicationAction.errorReceived(NetworkError.badRequest(
+                                    code: 400,
+                                    message: "sample error")
+                                )
+                            )
+                        }
+                    }
                     ListTextButton("Show Toast") {
                         Task {
                             await store.dispatch(ToastStateAction.didReceiveToast(
@@ -80,7 +90,6 @@ struct DebugScreen: View {
                             await store.dispatch(DeepLinkAction.deepLinkReceived(DeepLink(to: .modalNested)))
                         }
                     }
-
                 }
                 .listStyle(.grouped)
                 .scrollContentBackground(.hidden)
