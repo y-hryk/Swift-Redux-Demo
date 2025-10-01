@@ -21,7 +21,7 @@ struct MovieListView: View {
         case .data(let moviewList):
             contents(moviewList: moviewList)
         case .error:
-            CenterProgressView()
+            contents(moviewList: MovieList.preview(), isLoading: true)
         case .loading:
             contents(moviewList: MovieList.preview(), isLoading: true)
         }

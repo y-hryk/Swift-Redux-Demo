@@ -21,8 +21,26 @@ struct MovieListScreen: View {
                 }
             }
         )) {
+            content(movieList: store.state.movieList)
+            .navigationTitle("Top Rates")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(for: RoutingPath.self) { path in
+                path.destination()
+            }
+        }
+        .onDidLoad() {
+            Task {
+                await store.dispatch(actionCreator.movieListRequested())
+            }
+        }
+    }
+    
+    @ViewBuilder
+    func content(movieList: AsyncValue<MovieList>) -> some View {
+        switch movieList {
+        case .data, .loading:
             MovieListView(
-                movieList: store.state.movieList,
+                movieList: movieList,
                 onPressed: { movieId in
                     Task {
                         await store.dispatch(RoutingStateAction.routePushed(.movieDetail(movieId: movieId))
@@ -38,15 +56,11 @@ struct MovieListScreen: View {
                     }
                 }
             )
-            .navigationTitle("Top Rates")
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationDestination(for: RoutingPath.self) { path in
-                path.destination()
-            }
-        }
-        .onDidLoad() {
-            Task {
-                await store.dispatch(actionCreator.movieListRequested())
+        case .error:
+            ErrorView() {
+                Task {
+                    await store.dispatch(actionCreator.movieListRequested())
+                }
             }
         }
     }

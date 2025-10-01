@@ -14,21 +14,36 @@ struct MovieDetailScreen: View {
     let movieDetailStateActionCreator: MovieDetailStateActionCreator<MovieDetailState>
     
     var body: some View {
-        MovieDetailScrollView(
-            state: store.state,
-            colorScheme: colorScheme) { movieDetail in
-                detail(movieDetail: movieDetail)
-            }
-            .toolbarBackground(.hidden, for: .navigationBar)
+        content(movieDetail: store.state.movie)
             .background(Color.Background.main)
             .onDidLoad {
                 Task {
                     await store.dispatch(movieDetailStateActionCreator.getMovieDetail())
+                }
+            }
+    }
+    
+    @ViewBuilder
+    func content(movieDetail: AsyncValue<MovieDetail>) -> some View {
+        switch movieDetail {
+        case .data, .loading:
+            MovieDetailScrollView(movieDetail: movieDetail, colorScheme: colorScheme) { movieDetail in
+                detail(movieDetail: movieDetail)
+            }
+            .onDidLoad {
+                Task {
                     await store.dispatch(movieDetailStateActionCreator.getImages())
                     await store.dispatch(movieDetailStateActionCreator.getCreditList())
                     await store.dispatch(movieDetailStateActionCreator.getReviews())
                 }
             }
+        case .error:
+            ErrorView() {
+                Task {
+                    await store.dispatch(movieDetailStateActionCreator.getMovieDetail())
+                }
+            }
+        }
     }
     
     func detail(movieDetail: MovieDetail) -> some View {

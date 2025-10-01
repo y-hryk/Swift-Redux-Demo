@@ -40,9 +40,9 @@ struct TheMoviebdAPIClient {
         urlRequest.timeoutInterval = TimeInterval(30)
         
         let result = try await URLSession.shared.data(for: urlRequest)
-//        print("\n🚀 WebApi Log")
-//        print("\(request.method.rawValue.uppercased()) \(request.baseURL)\(request.path)")
-//        print("Params: \(String(describing: request.parameters))")
+        print("\n🚀 WebApi Log")
+        print("\(request.method.rawValue.uppercased()) \(request.baseURL)\(request.path)")
+        print("Params: \(String(describing: request.parameters))")
 //        if let statusCode = (result.1 as? HTTPURLResponse)?.statusCode {
 //            print("StatusCode: \(statusCode)")
 //        }
@@ -67,11 +67,13 @@ struct TheMoviebdAPIClient {
     static func validateCode(data: Data, response: URLResponse) throws -> Data {
         switch (response as? HTTPURLResponse)?.statusCode {
         case .some(let code) where code == 401:
-            throw NetworkError.badRequest(code: code, message: "Unauthorized")
+            throw NetworkError.unauthorized
         case .some(let code) where code == 404:
             throw NetworkError.badRequest(code: code, message: "Not Found")
         case .some(let code) where (400..<500).contains(code):
             throw NetworkError.badRequest(code: code, message: "bad request")
+        case .some(let code) where code == 503:
+            throw NetworkError.serviceUnavailable
         case .some(let code) where (200..<300).contains(code):
             return data
         case .some(let code):

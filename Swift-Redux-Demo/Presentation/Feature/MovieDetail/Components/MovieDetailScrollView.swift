@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MovieDetailScrollView<Content: View>: View {
-    let state: MovieDetailState
+    let movieDetail: AsyncValue<MovieDetail>
     let colorScheme: ColorScheme
     let content: (_ movieDetail: MovieDetail) -> Content
     
@@ -17,11 +17,11 @@ struct MovieDetailScrollView<Content: View>: View {
     @State var navigationBarOpacity: CGFloat = 0
     
     public init(
-        state: MovieDetailState,
+        movieDetail: AsyncValue<MovieDetail>,
         colorScheme: ColorScheme,
         @ViewBuilder content: @escaping (_ movieDetail: MovieDetail) -> Content
     ) {
-        self.state = state
+        self.movieDetail = movieDetail
         self.colorScheme = colorScheme
         self.content = content
     }
@@ -30,13 +30,13 @@ struct MovieDetailScrollView<Content: View>: View {
         GeometryReader { geometory in
             ZStack(alignment: .top) {
                 ZStack(alignment: .top) {
-                    switch state.movie {
+                    switch movieDetail {
                     case .data(let movieDetail):
                         content(movieDetail: movieDetail, safeAreaInsetsTop: geometory.safeAreaInsets.top)
                     case .loading:
                         content(movieDetail: MovieDetail.loading(), safeAreaInsetsTop: geometory.safeAreaInsets.top, isLoading: true)
                     case .error(_):
-                        CenterProgressView()
+                        content(movieDetail: MovieDetail.loading(), safeAreaInsetsTop: geometory.safeAreaInsets.top, isLoading: true)
                     }
                     if #unavailable(iOS 26) {
                         navigationBar(height: geometory.safeAreaInsets.top)
@@ -86,7 +86,7 @@ struct MovieDetailScrollView<Content: View>: View {
     func navigationBar(height: CGFloat) -> some View {
         ZStack {
             Rectangle()
-                .fill(.ultraThinMaterial.opacity(navigationBarOpacity + 0.4))
+                .fill(Color.Background.main.opacity(navigationBarOpacity + 0.4))
                 .frame(height: height)
         }
         .ignoresSafeArea()
