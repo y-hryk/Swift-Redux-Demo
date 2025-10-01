@@ -29,18 +29,16 @@ struct MovieDetailScrollView<Content: View>: View {
     var body: some View {
         GeometryReader { geometory in
             ZStack(alignment: .top) {
-                ZStack(alignment: .top) {
-                    switch movieDetail {
-                    case .data(let movieDetail):
-                        content(movieDetail: movieDetail, safeAreaInsetsTop: geometory.safeAreaInsets.top)
-                    case .loading:
-                        content(movieDetail: MovieDetail.loading(), safeAreaInsetsTop: geometory.safeAreaInsets.top, isLoading: true)
-                    case .error(_):
-                        content(movieDetail: MovieDetail.loading(), safeAreaInsetsTop: geometory.safeAreaInsets.top, isLoading: true)
-                    }
-                    if #unavailable(iOS 26) {
-                        navigationBar(height: geometory.safeAreaInsets.top)
-                    }
+                switch movieDetail {
+                case .data(let movieDetail):
+                    content(movieDetail: movieDetail, safeAreaInsetsTop: geometory.safeAreaInsets.top)
+                case .loading:
+                    content(movieDetail: MovieDetail.loading(), safeAreaInsetsTop: geometory.safeAreaInsets.top, isLoading: true)
+                case .error(_):
+                    content(movieDetail: MovieDetail.loading(), safeAreaInsetsTop: geometory.safeAreaInsets.top, isLoading: true)
+                }
+                if #unavailable(iOS 26) {
+                    navigationBar(height: geometory.safeAreaInsets.top)
                 }
             }
             .toolbarBackground(.hidden, for: .navigationBar)
@@ -81,6 +79,7 @@ struct MovieDetailScrollView<Content: View>: View {
                     .opacity(colorScheme == .dark ? (imageOverlayOpacity + 0.4) : imageOverlayOpacity))
                 .offset(y: imageOffset)
         }
+        .redacted(reason: isLoading ? .placeholder : [])
     }
     
     func navigationBar(height: CGFloat) -> some View {
