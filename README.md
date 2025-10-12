@@ -110,10 +110,8 @@ let view = MovieListScreen(store: store)
 ### Delaying network communication processing
 Delays network communication by suspending it for one second during communication. This makes it easier to implement loading etc.
 ```swift
-let store = LocalStoreBuilder
+LocalStoreBuilder
     .default(initialState: MoviePageState())
     .enableDelayRequest()
     .build()
-
-let view = MovieListScreen(store: store)
 ```
