@@ -95,12 +95,10 @@ graph TD
 ### State changelog
 You can keep track of state changes.
 ```swift
-let store = LocalStoreBuilder
+LocalStoreBuilder
     .default(initialState: MoviePageState())
     .enableTrace()
     .build()
-
-let view = MovieListScreen(store: store)
 ```
 
 #### Log sample
