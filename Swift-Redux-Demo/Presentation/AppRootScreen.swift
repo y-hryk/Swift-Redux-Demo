@@ -35,6 +35,17 @@ struct AppRootScreen: View {
     @StateBinding(\.routingState.modalPaths, default: []) var modalPaths
     @StateBinding(\.showIndicator, default: false) var showIndicator
     
+    init(state: AppRootState,
+         deepLinkStateActionCreator: DeepLinkStateActionCreator<AppRootState>,
+         authenticationStateActionCreator: AuthenticationStateActionCreator<AppRootState>,
+         type: Redux.LocalStoreType = .normal) {
+        _store = StateObject(wrappedValue: LocalStoreBuilder
+            .create(initialState: state, type: type)
+            .build()
+        )
+        self.deepLinkStateActionCreator = deepLinkStateActionCreator
+        self.authenticationStateActionCreator = authenticationStateActionCreator
+    }
     
     var body: some View {
         ZStack {
@@ -93,17 +104,13 @@ struct AppRootScreen: View {
 }
 
 #Preview {
-    let store = LocalStoreBuilder
-        .stub(state: AppRootState.preview())
-        .build()
-    
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
         reducer: ApplicationState.reducer
     )
-    AppRootScreen(store: store,
-                  deepLinkStateActionCreator: ActionCreatorAssembler().resolve(),
-                  authenticationStateActionCreator: ActionCreatorAssembler().resolve())
+    AppRootScreen(state: AppRootState.preview(),
+                  deepLinkStateActionCreator: DeepLinkStateActionCreator(),
+                  authenticationStateActionCreator: AuthenticationStateActionCreator())
         .environment(\.globalStore, globalStore)
 
 }

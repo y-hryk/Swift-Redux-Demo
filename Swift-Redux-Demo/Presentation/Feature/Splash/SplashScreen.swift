@@ -11,6 +11,16 @@ struct SplashScreen: View {
     @StateObject var store: Redux.LocalStore<SplashState>
     let actionCreator: AuthenticationStateActionCreator<SplashState>
 
+    init(state: SplashState,
+         actionCreator: AuthenticationStateActionCreator<SplashState>,
+         type: Redux.LocalStoreType = .normal
+    ) {
+        _store = StateObject(wrappedValue: LocalStoreBuilder.create(initialState: state, type: type)
+            .build()
+        )
+        self.actionCreator = actionCreator
+    }
+    
     var body: some View {
         VStack(alignment: .center) {
             Text("SplashView")
@@ -27,14 +37,12 @@ struct SplashScreen: View {
 }
 
 #Preview {
-    let store = LocalStoreBuilder
-        .stub(state: SplashState.preview())
-        .build()
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
         reducer: ApplicationState.reducer
     )
-    SplashScreen(store: store,
-                 actionCreator: ActionCreatorAssembler().resolve())
+    SplashScreen(state: SplashState.preview(),
+                 actionCreator: AuthenticationStateActionCreator(),
+                 type: .stub)
         .environment(\.globalStore, globalStore)
 }

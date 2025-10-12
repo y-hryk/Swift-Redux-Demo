@@ -11,6 +11,13 @@ struct TabScreen: View {
     @StateObject var store: Redux.LocalStore<TabState>
     @StateBinding(\.routingState.selecedTab, default: .movie) var selecedTab
     
+    init(state: TabState,
+         type: Redux.LocalStoreType = .normal) {
+        _store = StateObject(wrappedValue: LocalStoreBuilder.create(initialState: state, type: type)
+            .build()
+        )
+    }
+    
     var body: some View {
         SignedInTabView(selecedTab: selecedTab) { tab in
             Task {
@@ -73,13 +80,11 @@ struct SignedInTabView: View, Equatable {
 }
 
 #Preview {
-    let store = LocalStoreBuilder
-        .stub(state: TabState.preview())
-        .build()
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
         reducer: ApplicationState.reducer
     )
-    TabScreen(store: store)
+    TabScreen(state: TabState.preview(),
+              type: .stub)
         .environment(\.globalStore, globalStore)
 }

@@ -9,7 +9,17 @@ import SwiftUI
 
 struct DebugScreen: View {
     @StateObject var store: Redux.LocalStore<DebugState>
-    let actionCreator = DebugStateActionCreator(with: DebugStateActionCreator.Dependency())
+    let actionCreator: DebugStateActionCreator<DebugState>
+    
+    init(state: DebugState,
+         actionCreator: DebugStateActionCreator<DebugState>,
+         type: Redux.LocalStoreType = .normal) {
+        _store = StateObject(wrappedValue: LocalStoreBuilder
+            .create(initialState: state, type: type)
+            .build()
+        )
+        self.actionCreator = actionCreator
+    }
     
     var body: some View {
         NavigationStack() {
@@ -103,14 +113,12 @@ struct DebugScreen: View {
 }
 
 #Preview {
-    let store = LocalStoreBuilder
-        .stub(state: DebugState.preview())
-        .build()
-    
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
         reducer: ApplicationState.reducer
     )
-    DebugScreen(store: store)
+    DebugScreen(state: DebugState.preview(),
+                actionCreator: DebugStateActionCreator(),
+                type: .stub)
         .environment(\.globalStore, globalStore)
 }

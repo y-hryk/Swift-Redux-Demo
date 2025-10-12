@@ -12,17 +12,11 @@ enum DebugStateAction: Redux.Action {
     case increment
 }
 
-struct DebugStateActionCreator: Injectable {
-    struct Dependency {
-    }
-    private let dependency: Dependency
-    
-    init(with dependency: Dependency) {
-        self.dependency = dependency
-    }
-    
-    func counterIncrementCounter(number: Int, delay: Int) async -> Redux.Action {
-        try? await Task.sleep(for: .seconds(delay))
-        return DebugStateAction.task(number: number, delay: delay)
+struct DebugStateActionCreator<State: Redux.State> {
+    func counterIncrementCounter_(number: Int, delay: Int) async -> Redux.ThunkAction<State> {
+        Redux.ThunkAction(function: { store, action in
+            try? await Task.sleep(for: .seconds(delay))
+            return DebugStateAction.task(number: number, delay: delay)
+        }, className: "\(type(of: self))")
     }
 }

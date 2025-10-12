@@ -11,6 +11,15 @@ struct WatchListScreen: View {
     @StateObject var store: Redux.LocalStore<WatchListState>
     @StateBinding(\.routingState.watchListPaths, default: []) var watchListPaths
     @StateBinding(\.favoriteState.favoriteItems, default: []) var favoriteItems
+    
+    init(state: WatchListState,
+         type: Redux.LocalStoreType = .normal) {
+        _store = StateObject(wrappedValue: LocalStoreBuilder.create(
+            initialState: state,
+            type: type)
+            .build()
+        )
+    }
 
     var body: some View {
         NavigationStack(path: Binding(
@@ -50,6 +59,7 @@ struct WatchListScreen: View {
         reducer: ApplicationState.reducer
     )
     
-    WatchListScreen(store: store)
+    WatchListScreen(state: WatchListState(),
+                    type: .stub)
         .environment(\.globalStore, globalStore)
 }

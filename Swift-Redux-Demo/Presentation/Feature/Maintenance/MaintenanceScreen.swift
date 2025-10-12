@@ -10,6 +10,16 @@ import SwiftUI
 struct MaintenanceScreen: View {
     @StateObject var store: Redux.LocalStore<MaintenanceState>
     let maintenanceActionCreator: MaintenanceActionCreator<MaintenanceState>
+    
+    init(state: MaintenanceState,
+         actionCreator: MaintenanceActionCreator<MaintenanceState>,
+         type: Redux.LocalStoreType = .normal) {
+        _store = StateObject(wrappedValue: LocalStoreBuilder.create(initialState: state, type: type)
+            .build()
+        )
+        self.maintenanceActionCreator = actionCreator
+    }
+    
     var body: some View {
         VStack {
             Text("Under maintenance")
@@ -37,14 +47,12 @@ struct MaintenanceScreen: View {
 }
 
 #Preview {
-    let store = LocalStoreBuilder
-        .stub(state: MaintenanceState.preview())
-        .build()
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
         reducer: ApplicationState.reducer
     )
-    MaintenanceScreen(store: store,
-                      maintenanceActionCreator: ActionCreatorAssembler().resolve())
+    MaintenanceScreen(state: MaintenanceState.preview(),
+                      actionCreator: MaintenanceActionCreator(),
+                      type: .stub)
         .environment(\.globalStore, globalStore)
 }

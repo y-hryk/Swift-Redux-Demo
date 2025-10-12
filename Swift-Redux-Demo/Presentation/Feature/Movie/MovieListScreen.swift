@@ -12,6 +12,15 @@ struct MovieListScreen: View {
     @StateObject var store: Redux.LocalStore<MovieListState>
     let actionCreator: MovieListStateActionCreator<MovieListState>
     
+    init(state: MovieListState,
+         actionCreator: MovieListStateActionCreator<MovieListState>,
+         type: Redux.LocalStoreType = .normal) {
+        _store = StateObject(wrappedValue: LocalStoreBuilder.create(initialState: state, type: type)
+            .build()
+        )
+        self.actionCreator = actionCreator
+    }
+    
     var body: some View {
         NavigationStack(path: Binding(
             get: { movieListPaths },
@@ -67,15 +76,40 @@ struct MovieListScreen: View {
 }
 
 #Preview {
+    let globalStore = Redux.GlobalStore(
+        initialState: ApplicationState.preview(),
+        reducer: ApplicationState.reducer
+    )
+    MovieListScreen(state: MovieListState.preview(),
+                    actionCreator: MovieListStateActionCreator(),
+                    type: .stub)
+        .environment(\.globalStore, globalStore)
+}
+
+#Preview("loading") {
+    let state = MovieListState(movieList: .loading)
     let store = LocalStoreBuilder
-        .stub(state: MovieListState.preview())
+        .stub(state: state)
         .build()
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
         reducer: ApplicationState.reducer
     )
-    MovieListScreen(store: store,
-                    actionCreator: ActionCreatorAssembler().resolve())
+    MovieListScreen(state: MovieListState(movieList: .loading),
+                    actionCreator: MovieListStateActionCreator(),
+                    type: .stub)
+        .environment(\.globalStore, globalStore)
+}
+
+#Preview("error") {
+    let state = MovieListState(movieList: .error(error: NetworkError.badRequest(code: 400, message: "")))
+    let globalStore = Redux.GlobalStore(
+        initialState: ApplicationState.preview(),
+        reducer: ApplicationState.reducer
+    )
+    MovieListScreen(state: state,
+                    actionCreator: MovieListStateActionCreator(),
+                    type: .stub)
         .environment(\.globalStore, globalStore)
 }
 

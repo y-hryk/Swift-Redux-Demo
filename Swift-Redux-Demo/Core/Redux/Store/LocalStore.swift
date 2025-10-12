@@ -8,6 +8,10 @@
 import SwiftUI
 
 extension Redux {
+    enum LocalStoreType {
+        case normal
+        case stub
+    }
     actor LocalStore<State: Redux.State>: ObservableObject {
         @MainActor @Published private(set) var state: State
         nonisolated private let reducer: Redux.Reducer<State>

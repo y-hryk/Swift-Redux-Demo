@@ -13,6 +13,17 @@ struct MovieDetailScreen: View {
     @StateBinding(\.favoriteState, default: FavoriteState()) var favoriteState
     let movieDetailStateActionCreator: MovieDetailStateActionCreator<MovieDetailState>
     
+    init(state: MovieDetailState,
+         actionCreator: MovieDetailStateActionCreator<MovieDetailState>,
+         type: Redux.LocalStoreType = .normal) {
+        
+        _store = StateObject(wrappedValue: LocalStoreBuilder
+            .create(initialState: state, type: type)
+            .build()
+        )
+        self.movieDetailStateActionCreator = actionCreator
+    }
+    
     var body: some View {
         content(movieDetail: store.state.movie)
             .background(Color.Background.main)
@@ -109,7 +120,10 @@ struct MovieDetailScreen: View {
         initialState: ApplicationState.preview(),
         reducer: ApplicationState.reducer
     )
-    MovieDetailScreen(store: store,
-                      movieDetailStateActionCreator: ActionCreatorAssembler().resolve(movieId: MovieId(value: "1")))
+    
+    MovieDetailScreen(
+        state: MovieDetailState.preview(),
+        actionCreator: MovieDetailStateActionCreator(movieId: MovieId(value: "1")),
+        type: .stub)
         .environment(\.globalStore, globalStore)
 }

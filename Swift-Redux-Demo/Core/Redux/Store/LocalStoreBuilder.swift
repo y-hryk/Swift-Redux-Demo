@@ -23,9 +23,14 @@ struct LocalStoreBuilder<State: Redux.State> {
     // MARK: - Factory Methods
     static func create(
         initialState: State,
-        reducer: @escaping Redux.Reducer<State>
+        type: Redux.LocalStoreType
     ) -> LocalStoreBuilder<State> {
-        return LocalStoreBuilder(initialState: initialState, reducer: reducer)
+        switch type {
+        case .normal:
+            return .default(initialState: initialState)
+        case .stub:
+            return .stub(state: initialState)
+        }
     }
     
     static func `default`(

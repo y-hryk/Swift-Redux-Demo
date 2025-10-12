@@ -43,9 +43,9 @@ struct Swift_Redux_DemoApp: App {
         WindowGroup {
             if AppConfiguration.shared.isLoaded {
                 AppRootScreen(
-                    store: LocalStoreBuilder.default(initialState: AppRootState()).build(),
-                    deepLinkStateActionCreator: ActionCreatorAssembler().resolve(),
-                    authenticationStateActionCreator: ActionCreatorAssembler().resolve()
+                    state: AppRootState(),
+                    deepLinkStateActionCreator: DeepLinkStateActionCreator(),
+                    authenticationStateActionCreator: AuthenticationStateActionCreator()
                 )
                 .environment(\.globalStore, globalStore)
                 .environmentObject(stateObservationBuilder)

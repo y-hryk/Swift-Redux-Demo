@@ -11,6 +11,15 @@ struct SignInScreen: View {
     @StateObject var store: Redux.LocalStore<SignInState>
     let actionCreator: SignInStateActionCreator<SignInState>
     
+    init(state: SignInState,
+         actionCreator: SignInStateActionCreator<SignInState>,
+         type: Redux.LocalStoreType = .normal) {
+        _store = StateObject(wrappedValue: LocalStoreBuilder.create(initialState: state, type: type)
+            .build()
+        )
+        self.actionCreator = actionCreator
+    }
+    
     var body: some View {
         ZStack() {
             VStack(spacing: 0.0) {
@@ -86,13 +95,12 @@ struct SignInScreen: View {
 }
 
 #Preview {
-    let store = LocalStoreBuilder
-        .stub(state: SignInState.preview())
-        .build()
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
         reducer: ApplicationState.reducer
     )
-    SignInScreen(store: store, actionCreator: ActionCreatorAssembler().resolve())
+    SignInScreen(state: SignInState.preview(),
+                 actionCreator: SignInStateActionCreator(),
+                 type: .stub)
         .environment(\.globalStore, globalStore)
 }

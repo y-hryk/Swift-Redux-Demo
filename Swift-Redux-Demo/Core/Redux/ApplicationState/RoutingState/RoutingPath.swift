@@ -27,87 +27,55 @@ enum RoutingPath: Equatable, Hashable {
     func destination() -> some View {
         switch self {
         case .splash:
-            let store = LocalStoreBuilder
-                .default(initialState: SplashState())
-                .build()
             SplashScreen(
-                store: store,
-                actionCreator: ActionCreatorAssembler().resolve()
+                state: SplashState(),
+                actionCreator: AuthenticationStateActionCreator()
             )
         case .maintenance:
-            let store = LocalStoreBuilder
-                .default(initialState: MaintenanceState())
-                .build()
             MaintenanceScreen(
-                store: store,
-                maintenanceActionCreator: ActionCreatorAssembler().resolve()
+                state: MaintenanceState(),
+                actionCreator: MaintenanceActionCreator()
             )
         case .signedIn:
-            let store = LocalStoreBuilder
-                .default(initialState: TabState())
-                .build()
             TabScreen(
-                store: store
+                state: TabState()
             )
         case .signedOut:
-            let store = LocalStoreBuilder
-                .default(initialState: SignInState())
-                .build()
             SignInScreen(
-                store: store,
-                actionCreator: ActionCreatorAssembler().resolve()
+                state: SignInState(),
+                actionCreator: SignInStateActionCreator()
             )
         case .movieList:
-            let store = LocalStoreBuilder
-                .default(initialState: MovieListState())
-                .build()
             MovieListScreen(
-                store: store,
-                actionCreator: ActionCreatorAssembler().resolve()
+                state:  MovieListState(),
+                actionCreator: MovieListStateActionCreator()
             )
         case .watchList:
-            let store = LocalStoreBuilder
-                .default(initialState: WatchListState())
-                .build()
             WatchListScreen(
-                store: store
+                state: WatchListState()
             )
         case .debug:
-            let store = LocalStoreBuilder
-                .default(initialState: DebugState())
-                .build()
             DebugScreen(
-                store: store
+                state: DebugState(),
+                actionCreator: DebugStateActionCreator()
             )
         case .filmography(let personId, let type):
-            let store = LocalStoreBuilder
-                .default(initialState: FilmographyState(personId: personId, type: type))
-                .build()
             FilmographyScreen(
-                store: store,
-                actionCreator: ActionCreatorAssembler().resolve(personId: personId, type: type)
+                state: FilmographyState(personId: personId, type: type),
+                actionCreator: FilmographyStateActionCreator(personId: personId, filmographyType: type)
             )
         case .movieDetail(let movieId):
-            let store = LocalStoreBuilder
-                .default(initialState: MovieDetailState.fromId(movieId: movieId))
-                .build()
             MovieDetailScreen(
-                store: store,
-                movieDetailStateActionCreator: ActionCreatorAssembler().resolve(movieId: movieId)
+                state: MovieDetailState.fromId(movieId: movieId),
+                actionCreator: MovieDetailStateActionCreator(movieId: movieId)
             )
         case .debugFirstModel:
-            let store = LocalStoreBuilder
-                .default(initialState: DebugModalState())
-                .build()
             DebugFirstModalScreen(
-                store: store
+                state: DebugModalState()
             )
         case .debugSecondModal:
-            let store = LocalStoreBuilder
-                .default(initialState: DebugModalState())
-                .build()
             DebugSecondModalScreen(
-                store: store
+                state: DebugModalState()
             )
         }
     }

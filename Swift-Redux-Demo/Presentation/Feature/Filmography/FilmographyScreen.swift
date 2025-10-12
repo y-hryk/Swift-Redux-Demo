@@ -11,6 +11,16 @@ struct FilmographyScreen: View {
     @StateObject var store: Redux.LocalStore<FilmographyState>
     let actionCreator: FilmographyStateActionCreator<FilmographyState>
     
+    init(state: FilmographyState,
+         actionCreator: FilmographyStateActionCreator<FilmographyState>,
+         type: Redux.LocalStoreType = .normal) {
+        _store = StateObject(wrappedValue: LocalStoreBuilder
+            .create(initialState: state, type: type)
+            .build()
+        )
+        self.actionCreator = actionCreator
+    }
+    
     var body: some View {
         content(person: store.state.person)
             .onDidLoad {
@@ -47,14 +57,12 @@ struct FilmographyScreen: View {
 }
 
 #Preview {
-    let store = LocalStoreBuilder
-        .stub(state: FilmographyState.preview())
-        .build()
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
         reducer: ApplicationState.reducer
     )
-    FilmographyScreen(store: store,
-                      actionCreator: ActionCreatorAssembler().resolve(personId: PersonId(value: "5"), type: .cast))
+    FilmographyScreen(state: FilmographyState.preview(),
+                      actionCreator: FilmographyStateActionCreator(personId: PersonId(value: "5"), filmographyType: .cast),
+                      type: .stub)
         .environment(\.globalStore, globalStore)
 }

@@ -10,6 +10,13 @@ import SwiftUI
 struct DebugFirstModalScreen: View {
     @StateObject var store: Redux.LocalStore<DebugModalState>
     
+    init(state: DebugModalState, type: Redux.LocalStoreType = .normal) {
+        _store = StateObject(wrappedValue: LocalStoreBuilder
+            .create(initialState: state, type: type)
+            .build()
+        )
+    }
+    
     var body: some View {
         let _ = print("DebugFirstModalScreen body")
         NavigationStack() {
