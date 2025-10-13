@@ -88,9 +88,6 @@ struct MovieListScreen: View {
 
 #Preview("loading") {
     let state = MovieListState(movieList: .loading)
-    let store = LocalStoreBuilder
-        .stub(state: state)
-        .build()
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
         reducer: ApplicationState.reducer

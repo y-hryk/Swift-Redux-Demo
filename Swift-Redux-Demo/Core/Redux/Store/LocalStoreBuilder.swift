@@ -19,7 +19,7 @@ struct LocalStoreBuilder<State: Redux.State> {
         self.initialState = initialState
         self.reducer = reducer
     }
-    
+
     // MARK: - Factory Methods
     static func create(
         initialState: State,
@@ -32,8 +32,15 @@ struct LocalStoreBuilder<State: Redux.State> {
             return .stub(state: initialState)
         }
     }
-    
-    static func `default`(
+
+    static func create(
+        initialState: State,
+        reducer: @escaping Redux.Reducer<State>
+    ) -> LocalStoreBuilder<State> {
+        LocalStoreBuilder(initialState: initialState, reducer: reducer)
+    }
+
+    private static func `default`(
         initialState: State
     ) -> LocalStoreBuilder<State> {
         LocalStoreBuilder(
@@ -49,7 +56,7 @@ struct LocalStoreBuilder<State: Redux.State> {
         .enableTrace()
     }
     
-    static func stub(state: State) -> LocalStoreBuilder<State> {
+    private static func stub(state: State) -> LocalStoreBuilder<State> {
         LocalStoreBuilder(
             initialState: state,
             reducer: { state, action in state }

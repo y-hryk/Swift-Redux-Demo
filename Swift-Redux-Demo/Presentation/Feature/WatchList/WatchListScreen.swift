@@ -50,10 +50,6 @@ struct WatchListScreen: View {
 }
 
 #Preview {
-    let store = LocalStoreBuilder
-        .stub(state: WatchListState())
-        .build()
-
     let globalStore = Redux.GlobalStore(
         initialState: ApplicationState.preview(),
         reducer: ApplicationState.reducer
